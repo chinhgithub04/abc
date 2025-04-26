@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sinh viên - Nộp hồ sơ đăng ký học bổng UTE</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="ute_logo.png" alt="UTE Logo" class="logo"> <div class="site-title">
+                <h1>TRƯỜNG ĐẠI HỌC SƯ PHẠM KỸ THUẬT</h1>
+                <p>THE UNIVERSITY OF TECHNOLOGY AND EDUCATION</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="#" class="login-button"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="#" class="active">Trang chủ</a></li>
+            <li><a href="#">Thông báo học bổng</a></li>
+            <li><a href="#">Danh sách sinh viên nhận học bổng</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Thông tin sinh viên</h2>
+            <ul>
+                <li><a href="#">Thông báo học bổng</a></li>
+                <li><a href="#">Danh sách sinh viên nhận học bổng</a></li>
+                <li><a href="#">Đăng nhập cho sinh viên</a></li>
+                <li><a href="#">Đăng nhập cho cán bộ</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+    <div class="space-body"></div>
+    <footer>
+        <div class="footer-section">
+            <h4>TRƯỜNG ĐẠI HỌC SƯ PHẠM KỸ THUẬT</h4>
+            <p><i class="fas fa-map-marker-alt"></i> Cơ sở 1: 48 Cao Thắng, Thanh Bình, Hải Châu, Đà Nẵng</p>
+            <p><i class="fas fa-map-marker-alt"></i> Cơ sở 2: Khu đô thị Đại học, Hòa Quý, Ngũ Hành Sơn, Đà Nẵng</p>
+        </div>
+        <div class="footer-section">
+            <h4>THÔNG TIN LIÊN LẠC</h4>
+            <p><i class="fas fa-phone"></i> Điện thoại: 0236 3820303</p>
+            <p><i class="fas fa-envelope"></i> Email: qlcl@ute.udn.vn</p>
+        </div>
+        <div class="footer-section">
+            <h4>KẾT NỐI ĐẾN TRƯỜNG</h4>
+            <div class="social-icons">
+                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-google-plus-g"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
