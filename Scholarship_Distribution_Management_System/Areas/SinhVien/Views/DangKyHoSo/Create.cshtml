@@ -1,0 +1,92 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong
+
+@{
+    ViewData["Title"] = "Đăng ký đơn xin học bổng";
+}
+
+<h2 class="mb-0">Đăng ký đơn xin học bổng - @ViewBag.DotHocBong.TenDot</h2>
+
+<div class="card-body mt-3">
+    <!-- Thông tin sinh viên -->
+    <div class="mb-4">
+        <h4 class="">Thông tin sinh viên</h4>
+        <dl class="row">
+            <dt class="col-sm-3">Họ và tên:</dt>
+            <dd class="col-sm-9">@User.Identity.Name</dd>
+
+            <dt class="col-sm-3">Mã sinh viên:</dt>
+            <dd class="col-sm-9">@Model.IDSinhVien</dd>
+
+            <dt class="col-sm-3">Ngày sinh:</dt>
+            <dd class="col-sm-9">12/01/2004</dd>
+
+            <dt class="col-sm-3">Giới tính:</dt>
+            <dd class="col-sm-9">Nam</dd>
+        </dl>
+    </div>
+
+    <!-- Form đăng ký -->
+    <form asp-action="Create" method="post">
+        @* Hidden Fields *@
+        <input type="hidden" asp-for="IDDot" />
+        <input type="hidden" asp-for="IDSinhVien" />
+        <input type="hidden" asp-for="NgayNop" />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="DiemHocTap" class="form-label">Điểm học tập</label>
+                <input asp-for="DiemHocTap" type="number" step="0.01" min="0" max="4" class="form-control" required />
+                <span asp-validation-for="DiemHocTap" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label asp-for="DiemRenLuyen" class="form-label">Điểm rèn luyện</label>
+                <input asp-for="DiemRenLuyen" type="number" step="0.01" min="0" max="10" class="form-control" required />
+                <span asp-validation-for="DiemRenLuyen" class="text-danger"></span>
+            </div>
+        </div>
+
+        <hr />
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h4>Nghiên cứu khoa học</h4>
+                <div class="mb-3">
+                    @foreach (var tenDeTai in ViewBag.NghienCuuList)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="selectedNghienCuu" value="@tenDeTai" id="@tenDeTai.Replace(" ", "")" />
+                            <label class="form-check-label" for="@tenDeTai.Replace(" ", "")">
+                                @tenDeTai
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <h4>Hoạt động tham gia</h4>
+                <div class="mb-3">
+                    @foreach (var tenHoatDong in ViewBag.HoatDongList)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="selectedHoatDong" value="@tenHoatDong" id="@tenHoatDong.Replace(" ", "")" />
+                            <label class="form-check-label" for="@tenHoatDong.Replace(" ", "")">
+                                @tenHoatDong
+                            </label>
+                        </div>
+                    }
+                </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success me-2">Đăng ký</button>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">Thoát</a>
+            </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

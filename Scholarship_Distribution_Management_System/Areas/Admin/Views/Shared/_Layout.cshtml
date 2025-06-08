@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sinh viên - Nộp hồ sơ đăng ký học bổng UTE</title>
+    <title>@ViewData["Title"]</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" asp-append-version="true" />
@@ -19,26 +19,52 @@
             </div>
         </a>
         <div class="header-right">
-            <a asp-controller="Account" asp-action="Login" class="login-button"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+            <div class="user-info-dropdown dropdown">
+                <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUserHeader" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="~/Images/Avatar.png" alt="Avatar" width="36" height="36" class="rounded-circle me-2">
+                    <div class="user-text">
+                        @using System.Security.Claims
+                        @{
+                            var hoTen = User.FindFirst("HoTen")?.Value;
+                            var role = User.Claims.FirstOrDefault(c => c.Type == "VaiTro")?.Value;
+                        }
+                        <span class="user-name">@hoTen</span>
+                        <span class="user-role">@User.FindFirst("VaiTro")?.Value</span>
+                    </div>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUserHeader">
+                    <li><a class="dropdown-item" href="#">Xem tài khoản</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
+                            <button type="submit" class="dropdown-item">Đăng xuất</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
     </header>
 
     <nav class="main-nav">
         <ul>
             <li><a asp-controller="Home" asp-action="Index" class="active">Trang chủ</a></li>
-            <li><a asp-controller="DotHocBong" asp-action="Index">Thông báo học bổng</a></li>
+            <li><a href="#">Thông báo học bổng</a></li>
             <li><a href="#">Danh sách sinh viên nhận học bổng</a></li>
         </ul>
     </nav>
 
     <div class="container">
         <aside class="sidebar">
-            <h2>Thông tin sinh viên</h2>
+            <h2>Phòng đào tạo</h2>
             <ul>
-                <li><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                <li><a asp-controller="DotHocBong" asp-action="Index">Thông báo học bổng</a></li>
-                <li><a href="#">Danh sách sinh viên nhận học bổng</a></li>
-                <li><a asp-controller="Account" asp-action="Login">Đăng nhập</a></li>
+                <li><a href="#">Quản lý tài khoản</a></li>
+                <li><a href="#">Danh sách hồ sơ học bổng</a></li>
+                <li>
+                    <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
+                        <button type="submit" class="dropdown-item">Đăng xuất</button>
+                    </form>
+                </li>
             </ul>
         </aside>
 
@@ -63,7 +89,7 @@
             <div class="social-icons">
                 <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
-                <a asp-controller="Account" asp-action="Register"><i class="fab fa-google-plus-g"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-google-plus-g"></i></a>
             </div>
         </div>
     </footer>
@@ -72,6 +98,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model List<Scholarship_Distribution_Management_System.Models.ViewModel.TaiKhoanDayDuViewModel>
+
+@{
+    ViewData["Title"] = "Danh sách tài khoản";
+}
+
+<h2>Danh sách tài khoản</h2>
+<a class="btn btn-primary mb-3" asp-action="Create">Thêm tài khoản</a>
+
+@* Thêm id="myTable" và class="display responsive nowrap" *@
+<table id="myTable" class="table table-bordered table-hover display responsive nowrap" style="width:100%">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th class="text-start">Mã</th>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Vai trò</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@(Model.IndexOf(u) + 1)</td>
+                <td class="text-start">@u.ID</td>
+                <td>@u.HoTen</td>
+                <td>@u.Email</td>
+                <td>@u.VaiTro</td>
+                <td>@if(u.TrangThai == 1)
+                    {
+                        <span class="badge bg-success">Mở</span>
+                    }
+                    else if (u.TrangThai == 0)
+                    {
+                        <span class="badge bg-danger">Khóa</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Hết hạn</span>
+                    }
+
+                </td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@u.ID">Xem</a>
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@u.ID">Sửa</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@u.ID"
+                       onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#myTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
+                },
+                "paging": true,       // Bật phân trang
+                "ordering": true,     // Bật sắp xếp cột
+                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
+                "searching": true,    // Bật ô tìm kiếm toàn cục
+                "responsive": true    // Bật chế độ responsive cho bảng
+            });
+        });
+    </script>
+}

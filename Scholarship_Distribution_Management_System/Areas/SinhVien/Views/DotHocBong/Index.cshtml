@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.DotHocBong>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2 class="mb-4 text-primary fw-bold">Thông báo học bổng</h2>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-bold">
+                    @item.TenDot
+                </div>
+                <div class="card-body">
+                    <p class="m-0" style="font-size: 0.8rem; text-align:end">
+                        @item.NgayTao.ToString("dd/MM/yyyy")
+                    </p>
+                    <p style="font-size: 0.95rem;">
+                        <strong>Điều kiện:</strong> @item.DieuKien
+                    </p>
+                    <p><strong>Số lượng:</strong> @item.SoLuong</p>
+                    <p><strong>Tiền học bổng:</strong> @item.Tien.ToString("N0") VNĐ</p>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.ID">
+                            Xem chi tiết
+                        </a>
+                        <div class="text-end">
+                            @{
+                                var statusText = item.TrangThai == 1 ? "Đang mở" :
+                                item.TrangThai == 0 ? "Chờ duyệt" : "Đã kết thúc";
+                                var statusColor = item.TrangThai == 1 ? "success" :
+                                item.TrangThai == 0 ? "warning" : "secondary";
+                            }
+                            <span class="badge bg-@statusColor">@statusText</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-muted small">
+                    <i class="bi bi-calendar-event"></i> Nộp: @item.NgayBatDauNop.ToString("dd/MM/yyyy") - @item.NgayKetThucNop.ToString("dd/MM/yyyy")
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,81 @@
+﻿@model IPagedList<Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong>
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@{
+    ViewData["Title"] = "Trạng thái xét duyệt học bổng";
+    string GetStatusClass(int status)
+    {
+        return status switch
+        {
+            1 => "bg-warning text-dark",     // Chờ xử lý
+            2 => "bg-success text-white",    // Hoàn thành
+            -1 => "bg-danger text-white",     // Đã hủy
+            0 => "bg-danger text-white",
+            _ => "bg-secondary text-white"
+        };
+    }
+
+    string GetStatusText(int status)
+    {
+        return status switch
+        {
+            -1 =>"Từ chối",
+            1 => "Chờ xử lý",
+            2 => "Hoàn thành",
+            0 => "Đã hủy",
+            _ => "Không xác định"
+        };
+    }
+}
+
+<h2 class="mb-4 text-primary fw-bold">Trạng thái xét duyệt học bổng của tôi</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Bạn chưa nộp hồ sơ học bổng nào.</div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var don in Model)
+        {
+            var dot = don.DotHocBong;
+            <div class="">
+                <div class="card shadow border-0">
+                    <div class="card-header @GetStatusClass(don.TrangThai ?? -1) fw-bold fs-5">
+                        @dot.TenDot
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Mã hồ sơ:</strong> @don.ID</p>
+                        <p><strong>Ngày nộp:</strong> @don.NgayNop.ToString("dd/MM/yyyy")</p>
+                        <p><strong>Trạng thái:</strong> <span class="fw-semibold">@GetStatusText(don.TrangThai ?? -1)</span></p>
+                        <a asp-action="Details" asp-route-id="@don.ID" class="btn btn-info btn-sm">Chi tiết</a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        }
+        @Html.PagedListPager(
+                Model,
+                page => Url.Action("Index", new { page }),
+                new PagedListRenderOptions
+    {
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+        LinkToPreviousPageFormat = "<i class='bi bi-chevron-left'></i> Trước",
+        LinkToNextPageFormat = "Sau <i class='bi bi-chevron-right'></i>",
+        MaximumPageNumbersToDisplay = 4,
+        ContainerDivClasses = new[] { "d-flex", "justify-content-center" },
+        DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+        DisplayLinkToLastPage = PagedListDisplayMode.Never,
+        DisplayLinkToIndividualPages = true,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always
+    }
+                )
+
+    </div>
+}
+

@@ -1,5 +1,5 @@
-﻿/* Giữ lại các kiểu CSS từ lần trước cho body, container, footer */
-/* ... */
+﻿
+
 
 /* Header */
 * {
@@ -8,10 +8,11 @@
     font-size: 16px; /* Kích thước chữ mặc định */
     margin: 0;
     padding: 0;
-    text-decoration: none; /* Bỏ gạch chân mặc định */
     list-style: none; /* Bỏ dấu đầu dòng */
 }
-
+a {
+    text-decoration: none; /* Bỏ gạch chân mặc định */
+}
 header {
     background-color: #007bff; /* Màu xanh dương của UTE */
     color: white;
@@ -20,6 +21,12 @@ header {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng nhẹ */
+}
+td {
+    vertical-align: middle;
+}
+header a {
+    color: white;
 }
 body {
     font-family: Arial, sans-serif;
@@ -137,45 +144,46 @@ header, .main-nav, footer {
 
 /* Sidebar */
 .sidebar {
-    width: 280px; /* Điều chỉnh chiều rộng sidebar */
+    width: 230px; /* Điều chỉnh chiều rộng sidebar */
     background-color: #fff;
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd; /* Viền nhẹ */
+    flex-shrink: 0;
 }
 
 
 
-    .sidebar ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-    .sidebar li {
-        margin-bottom: 8px; /* Tăng khoảng cách giữa các mục */
-    }
+.sidebar li {
+    margin-bottom: 8px; /* Tăng khoảng cách giữa các mục */
+}
 
-    .sidebar a {
-        text-decoration: none;
-        color: #333;
-        display: block;
-        padding: 10px 5px; /* Tăng padding */
-        transition: background-color 0.2s ease, color 0.2s ease;
-        border-radius: 3px;
-    }
+.sidebar a, .sidebar button {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    padding: 10px 5px; /* Tăng padding */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-radius: 3px;
+}
 
-        .sidebar a:hover {
-            background-color: #e9ecef; /* Nền xám nhạt khi hover */
-            color: #007bff;
-        }
+.sidebar a:hover, .sidebar button:hover {
+    background-color: #e9ecef; /* Nền xám nhạt khi hover */
+    color: #007bff;
+}
 
-        .sidebar a.active {
-            background-color: #e9ecef; /* Nền xám nhạt khi active */
-            color: #007bff;
-            font-weight: bold;
-        }
+.sidebar a.active {
+    background-color: #e9ecef; /* Nền xám nhạt khi active */
+    color: #007bff;
+    font-weight: bold;
+}
 
 
 /* Main Content - Homepage Guest */
@@ -188,18 +196,33 @@ header, .main-nav, footer {
     border: 1px solid #ddd; /* Viền nhẹ */
 
 }
-.main-content {
-    width: 100%;
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
 }
-    .main-content h2,
-    .sidebar h2 {
-        margin-top: 0;
-        color: #007bff;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 10px;
-        margin-bottom: 30px; /* Tăng khoảng cách */
-        font-size: 1.3rem;
-    }
+
+.form-container {
+    background-color: #f8f9fa; /* Nền xám nhạt cho box */
+    border: 1px solid #ced4da; /* Viền box */
+    border-radius: 5px;
+    padding: 30px; /* Tăng padding */
+    max-width: 600px; /* Giới hạn chiều rộng box */
+    margin: 0 auto 20px auto; /* Căn giữa box và thêm khoảng cách dưới */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Bóng nhẹ cho box */
+}
+.sidebar h2 {
+    text-align: center; /* Căn giữa tiêu đề */
+}
+.main-content h2,
+.sidebar h2 {
+    margin-top: 0;
+    color: #007bff;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px; /* Tăng khoảng cách */
+    font-size: 1.3rem;
+}
 
 .welcome-box {
     background-color: #f8f9fa; /* Nền xám nhạt cho box */
@@ -218,7 +241,10 @@ header, .main-nav, footer {
     color: #333;
     line-height: 1.5; /* Khoảng cách dòng */
 }
-
+.container-btn {
+    display: flex;
+    justify-content: right; /* Căn giữa nút */
+}
 .login-prompt p {
     font-size: 1rem;
     margin-bottom: 15px; /* Khoảng cách dưới prompt */
@@ -299,7 +325,104 @@ footer i {
     .social-icons a:hover {
         color: #e9ecef; /* Sáng hơn khi hover */
     }
+/* Thêm vào cuối file style.css hiện tại của bạn */
 
+header .header-right {
+    /* Đảm bảo header-right chứa dropdown tốt */
+    position: relative; /* Cần cho dropdown position */
+    display: flex; /* Đảm bảo nội dung trong header-right được căn giữa theo chiều dọc */
+    align-items: center;
+    /* Nếu trước đó bạn đã đặt width hoặc flex-grow cho header-right, có thể cần điều chỉnh */
+}
+
+.user-info-dropdown {
+    /* Tạo kiểu cho hộp chứa thông tin người dùng */
+    background-color: #f8f9fa; /* Màu nền nhẹ nhàng */
+    border: 1px solid #dee2e6; /* Đường viền mảnh */
+    border-radius: 5px; /* Bo góc */
+    padding: 5px 10px; /* Khoảng đệm bên trong */
+    cursor: pointer; /* Hiển thị con trỏ dạng bàn tay khi rê chuột */
+    transition: background-color 0.2s ease;
+    /* Các thuộc tính flex đã được áp dụng bởi class d-flex trên thẻ <a> bên trong */
+}
+
+    .user-info-dropdown:hover {
+        background-color: #e9ecef; /* Đổi màu nền khi hover */
+    }
+
+    .user-info-dropdown .dropdown-toggle {
+        /* Đảm bảo link kích hoạt dropdown không có gạch chân và màu chữ đúng */
+        text-decoration: none;
+        color: #333; /* Màu chữ cho tên và vai trò */
+    }
+
+/* Tạo kiểu cho container tên và vai trò */
+.user-text {
+    display: flex;
+    flex-direction: column; /* Xếp tên và vai trò theo cột dọc */
+    margin-right: 8px; /* Khoảng cách trước mũi tên dropdown */
+    line-height: 1.2; /* Giảm khoảng cách dòng */
+}
+
+.user-name {
+    font-weight: bold; /* Tên in đậm */
+    font-size: 0.9em; /* Kích thước chữ tên */
+    color: #333; /* Màu chữ tên */
+}
+
+.user-role {
+    font-size: 0.75em; /* Kích thước chữ vai trò nhỏ hơn */
+    color: #555; /* Màu chữ vai trò (hơi mờ hơn) */
+}
+
+/* Điều chỉnh ảnh avatar */
+.user-info-dropdown img.rounded-circle {
+    object-fit: cover; /* Đảm bảo ảnh không bị méo khi làm tròn và đặt kích thước */
+}
+
+/* Tùy chỉnh thêm cho menu thả xuống (tùy chọn, Bootstrap đã có kiểu mặc định khá tốt) */
+.user-info-dropdown .dropdown-menu {
+    margin-top: 8px; /* Khoảng cách từ hộp thông tin đến menu */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15); /* Bóng đổ cho menu */
+    font-size: 0.9em;
+}
+
+.user-info-dropdown .dropdown-item {
+    padding: 8px 15px;
+}
+
+.user-info-dropdown .dropdown-header {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #007bff;
+}
+.user-info-dropdown .dropdown-toggle::after {
+    display: none; /* Đặt display: none để ẩn mũi tên */
+}
+
+/* Responsive (điều chỉnh trên màn hình nhỏ nếu cần) */
+@media (max-width: 768px) {
+    .user-info-dropdown {
+        padding: 4px 6px;
+    }
+
+        .user-info-dropdown img {
+            width: 30px !important;
+            height: 30px !important;
+        }
+
+    .user-text {
+        margin-right: 5px;
+    }
+
+    .user-name {
+        font-size: 0.85em;
+    }
+
+    .user-role {
+        font-size: 0.7em;
+    }
+}
 /* Responsive basic (có thể cần điều chỉnh thêm) */
 @media (max-width: 992px) { /* Điều chỉnh breakpoint */
     .container {
@@ -377,3 +500,4 @@ footer i {
         font-size: 1.3rem;
     }
 }
+

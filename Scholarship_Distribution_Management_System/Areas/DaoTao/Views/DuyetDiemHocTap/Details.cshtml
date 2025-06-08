@@ -1,0 +1,81 @@
+﻿@model Scholarship_Distribution_Management_System.Models.ViewModel.InfoHocBongViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết đơn học bổng";
+}
+
+<h2>Chi tiết đơn học bổng</h2>
+
+<div>
+    <h5>Thông tin sinh viên</h5>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Mã sinh viên:</dt>
+        <dd class="col-sm-9">@Model.SinhVienId</dd>
+
+        <dt class="col-sm-3">Họ và tên:</dt>
+        <dd class="col-sm-9">@Model.HoTen</dd>
+
+        <dt class="col-sm-3">Giới tính:</dt>
+        <dd class="col-sm-9">@Model.GioiTinh</dd>
+
+        <dt class="col-sm-3">Ngày sinh:</dt>
+        <dd class="col-sm-9">@Model.NgaySinh?.ToShortDateString()</dd>
+
+        <dt class="col-sm-3">Email:</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+
+
+        <dt class="col-sm-3">Lớp SH:</dt>
+        <dd class="col-sm-9">@Model.TenLopSH</dd>
+
+        <dt class="col-sm-3">Ngành học:</dt>
+        <dd class="col-sm-9">@Model.TenNganh</dd>
+
+        <dt class="col-sm-3">Khoa:</dt>
+        <dd class="col-sm-9">@Model.TenKhoa</dd>
+    </dl>
+
+    <h5>Thông tin đơn học bổng</h5>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3 mb-2">Mã đơn:</dt>
+        <dd class="col-sm-9">@Model.DonHocBongId</dd>
+
+        <dt class="col-sm-3 mb-2">Ngày nộp:</dt>
+        <dd class="col-sm-9">@Model.NgayNop?.ToShortDateString()</dd>
+
+        <dt class="col-sm-3 mb-2">Điểm học tập:</dt>
+        <dd class="col-sm-9">@Model.DiemHocTap</dd>
+
+        <dt class="col-sm-3 mb-2">Điểm rèn luyện:</dt>
+        <dd class="col-sm-9">@Model.DiemRenLuyen</dd>
+
+        <dt class="col-sm-3 mb-2">Kết quả điểm HT:</dt>
+        <dd class="col-sm-9">@Model.KQDiemHT</dd>
+
+        <dt class="col-sm-3 mb-2">Kết quả điểm RL:</dt>
+        <dd class="col-sm-9">@Model.KQDiemRL</dd>
+
+        <dt class="col-sm-3 mb-2">Trạng thái đơn:</dt>
+        <dd class="col-sm-9">
+            @if (Model.KQDiemHT == null)
+            {
+                <span class="badge bg-warning text-dark">Chờ xử lý</span>
+            }
+            else if (Model.KQDiemHT == Model.DiemHocTap)
+            {
+                <span class="badge bg-success">Đã duyệt</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Từ chối</span>
+            }
+        </dd>
+    </dl>
+
+</div>
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+    @* Bạn có thể thêm các nút Duyệt/Từ chối ngay tại đây nếu muốn *@
+</div>

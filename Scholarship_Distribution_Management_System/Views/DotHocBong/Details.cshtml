@@ -1,0 +1,65 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.DotHocBong
+
+@using Microsoft.AspNetCore.Identity
+@using Scholarship_Distribution_Management_System.Models.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Chi tiết đợt học bổng";
+}
+    <div class="card">
+        <div class="card-header bg-primary text-white fw-bold fs-5">
+            📝 @Model.TenDot
+        </div>
+
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4 text-muted">Điều kiện</dt>
+                <dd class="col-sm-8">@Model.DieuKien</dd>
+
+                <dt class="col-sm-4 text-muted">Số lượng</dt>
+                <dd class="col-sm-8">@Model.SoLuong</dd>
+
+                <dt class="col-sm-4 text-muted">Tiền học bổng</dt>
+                <dd class="col-sm-8">@Model.Tien.ToString("N0") VNĐ</dd>
+
+                <dt class="col-sm-4 text-muted">Trạng thái</dt>
+                <dd class="col-sm-8">
+                    @{
+                        var statusText = Model.TrangThai == 1 ? "Đang mở" :
+                                         Model.TrangThai == 0 ? "Chờ duyệt" : "Đã kết thúc";
+                        var statusColor = Model.TrangThai == 1 ? "success" :
+                                          Model.TrangThai == 0 ? "warning" : "secondary";
+                    }
+                    <span class="badge bg-@statusColor">@statusText</span>
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Ngày tạo</dt>
+                <dd class="col-sm-8">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4 text-muted">Thời gian nộp hồ sơ</dt>
+                <dd class="col-sm-8">@Model.NgayBatDauNop.ToString("dd/MM/yyyy") → @Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4 text-muted">Ngày hội đồng duyệt</dt>
+                <dd class="col-sm-8">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4 text-muted">Ngày PTC duyệt</dt>
+                <dd class="col-sm-8">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4 text-muted">Ngày kết thúc</dt>
+                <dd class="col-sm-8">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4 text-muted">Người phụ trách</dt>
+                <dd class="col-sm-8">@Model.NhanVien?.HoTen</dd>
+            </dl>
+        </div>
+
+        <div class="card-footer text-end">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                ⬅ Quay lại
+            </a>
+        
+        </div>
+    </div>

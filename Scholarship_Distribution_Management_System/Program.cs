@@ -1,16 +1,32 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
 using Scholarship_Distribution_Management_System.Models.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using OfficeOpenXml;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddMvc();
-builder.Services.AddDbContext<ClassDbContext>(item =>
+builder.Services.AddDbContext<ApplicationDbContext>(item =>
     item.UseSqlServer(builder.Configuration.GetConnectionString("myconn")));
 
+// Add Identity (Login, Register, Roles)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+
+// Cấu hình đường dẫn login/logout
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // hết hạn sau 20 phút
+    options.SlidingExpiration = true;
+});
 
 var app = builder.Build();
 
@@ -24,13 +40,19 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthentication(); // cho phép hệ thống nhận biết người dùng đăng nhập.
+app.UseAuthorization(); // cho phép kiểm tra quyền truy cập theo vai trò.
 
-app.MapStaticAssets();
+app.UseStaticFiles(); // nếu dùng wwwroot
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapDefaultControllerRoute();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

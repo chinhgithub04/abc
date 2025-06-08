@@ -1,0 +1,26 @@
+﻿@model Scholarship_Distribution_Management_System.Models.ViewModel.TaiKhoanDayDuViewModel
+@{
+    ViewData["Title"] = "Chi tiết tài khoản";
+}
+
+<h2>Chi tiết tài khoản</h2>
+
+<table class="table">
+    <tr><th>ID</th><td>@Model.ID</td></tr>
+    <tr><th>Họ tên</th><td>@Model.HoTen</td></tr>
+    <tr><th>Ngày sinh</th><td>@Model.NgaySinh?.ToString("dd/MM/yyyy")</td></tr>
+    <tr><th>Giới tính</th><td>@Model.GioiTinh</td></tr>
+    <tr><th>Địa chỉ</th><td>@Model.DiaChi</td></tr>
+    <tr><th>Email</th><td>@Model.Email</td></tr>
+    <tr><th>SĐT</th><td>@Model.SDT</td></tr>
+    <tr><th>Trạng thái</th><td>@(Model.TrangThai == 0 ? "Khóa" : "Mở")</td></tr>
+    <tr><th>Vai trò</th><td>@Model.VaiTro</td></tr>
+    @if (Model.VaiTro == "SinhVien")
+    {
+        <tr><th>Lớp</th><td>@Model.TenLopSH</td></tr>
+        <tr><th>Ngành</th><td>@Model.TenNganh</td></tr>
+        <tr><th>Khoa</th><td>@Model.TenKhoa</td></tr>
+    }
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Quay lại</a>

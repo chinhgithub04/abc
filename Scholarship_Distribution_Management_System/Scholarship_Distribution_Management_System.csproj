@@ -7,12 +7,54 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+    <PackageReference Include="EPPlus" Version="5.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\CTSV\Controllers\" />
+    <Folder Include="Areas\CTSV\Data\" />
+    <Folder Include="Areas\CTSV\Models\" />
+    <Folder Include="Areas\DaoTao\Data\" />
+    <Folder Include="Areas\DaoTao\Models\" />
+    <Folder Include="Areas\Doan\Controllers\" />
+    <Folder Include="Areas\Doan\Data\" />
+    <Folder Include="Areas\Doan\Models\" />
+    <Folder Include="Areas\Doan\Views\" />
+    <Folder Include="Areas\HoiDong\Controllers\" />
+    <Folder Include="Areas\HoiDong\Data\" />
+    <Folder Include="Areas\HoiDong\Models\" />
+    <Folder Include="Areas\HoiDong\Views\" />
+    <Folder Include="Areas\NghienCuu\Controllers\" />
+    <Folder Include="Areas\NghienCuu\Data\" />
+    <Folder Include="Areas\NghienCuu\Models\" />
+    <Folder Include="Areas\NghienCuu\Views\" />
+    <Folder Include="Areas\SinhVien\Data\" />
+    <Folder Include="Areas\SinhVien\Models\" />
+    <Folder Include="Areas\TaiChinh\Controllers\" />
+    <Folder Include="Areas\TaiChinh\Data\" />
+    <Folder Include="Areas\TaiChinh\Models\" />
+    <Folder Include="Areas\TaiChinh\Views\" />
+    <Folder Include="Data\" />
+    <Folder Include="Views\Shared\" />
+    <Folder Include="wwwroot\css\User\" />
+    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\lib\bootstrap\" />
+    <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
+    <Folder Include="wwwroot\lib\jquery-validation\" />
+    <Folder Include="wwwroot\lib\jquery-validation\dist\" />
+    <Folder Include="wwwroot\lib\jquery\" />
+    <Folder Include="wwwroot\lib\jquery\dist\" />
   </ItemGroup>
 
 </Project>

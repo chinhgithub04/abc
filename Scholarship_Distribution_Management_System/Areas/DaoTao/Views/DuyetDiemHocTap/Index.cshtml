@@ -1,0 +1,107 @@
+﻿@model List<Scholarship_Distribution_Management_System.Models.ViewModel.InfoHocBongViewModel>
+
+@{
+    ViewData["Title"] = "Duyệt điểm học tập";
+}
+
+<h2>Duyệt điểm học tập</h2>
+<!-- Button để mở form modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">
+    Duyệt tự động
+</button>
+
+<!-- Modal (Form nổi) -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="ImportDiem" enctype="multipart/form-data" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Tải lên file Excel điểm học tập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="fileInput" class="form-label">Chọn file Excel:</label>
+                        <input class="form-control" type="file" id="fileInput" name="file" accept=".xlsx, .xls" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success">Tải lên</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<table id="duyetDiemTable" class="table table-bordered display responsive nowrap">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th class="text-start">Mã</th>
+            <th>Sinh viên</th>
+            <th>Ngày nộp</th>
+            <th>Điểm học tập</th>
+            <th>Kết quả điểm</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(Model.IndexOf(item) + 1)</td>
+                <td class ="text-start">@item.SinhVienId</td>
+                <td>@item.HoTen</td>
+                <td>@item.NgayNop?.ToShortDateString()</td>
+                <td>@item.DiemHocTap</td>
+                <td>@item.KQDiemHT</td>
+
+                <td>
+                    @if (item.KQDiemHT == null)
+                    {
+                        <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                    }
+                    else if (item.KQDiemHT == item.DiemHocTap)
+                    {
+                        <span class="badge bg-success">Đã duyệt</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Từ chối</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.DonHocBongId" class="btn btn-info btn-sm">Xem chi tiết</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Khởi tạo DataTables trên bảng có ID là 'duyetDiemTable'
+            $('#duyetDiemTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
+                },
+                "paging": true,       // Bật phân trang
+                "ordering": true,     // Bật sắp xếp cột
+                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
+                "searching": true,    // Bật ô tìm kiếm toàn cục
+                "responsive": true    // Bật chế độ responsive cho bảng
+            });
+        });
+    </script>
+}
