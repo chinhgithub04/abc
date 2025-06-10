@@ -3,8 +3,6 @@ using Scholarship_Distribution_Management_System.Models.Entities;
 using Scholarship_Distribution_Management_System.Models.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-using System.IO;
-using NuGet.Packaging;
 
 
 namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers

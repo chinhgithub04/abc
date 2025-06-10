@@ -73,9 +73,9 @@
             <h2>@User.FindFirst("VaiTro")?.Value</h2>
             <ul>
                 <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Trang chủ</a></li>
-                <li><a class="@isActive("QLTaiKhoan")" asp-controller="QLTaiKhoan" asp-action="Index">Quản lý tài khoản</a></li>
-                <li><a class="@isActive("DuyetDiemHocTap")" asp-controller="DuyetDiemHocTap" asp-action="Index">Duyệt điểm học tập</a></li>
-                <li><a href="#">Danh sách điểm học tập</a></li>
+                <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Quản lý thông báo</a></li>
+                <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Duyệt điểm rèn luyện</a></li>
+                <li><a href="#">Danh sách điểm rèn luyện</a></li>
                 <li>
                     
                     <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">

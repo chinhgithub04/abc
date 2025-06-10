@@ -23,8 +23,8 @@ namespace Scholarship_Distribution_Management_System.Models.ViewModel
         [DataType(DataType.Password)]
         public string Password { get; set; }
         // Identity
-        public string UserName { get; set; }
-        public string PasswordHash { get; set; }
+        public string ?UserName { get; set; }
+        public string ?PasswordHash { get; set; }
 
         // Vai trò (1 tài khoản chỉ có 1 role)
         public string VaiTro { get; set; }
