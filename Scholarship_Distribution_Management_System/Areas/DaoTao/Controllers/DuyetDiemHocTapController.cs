@@ -26,8 +26,9 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
                          join lop in _context.LopSHs on sinhvien.IDLopSH equals lop.ID
                          join nganh in _context.Nganhs on lop.IDNganh equals nganh.ID
                          join khoa in _context.Khoas on nganh.IDKhoa equals khoa.ID
-                         //join dot in _context.DotHocBongs on don.IDDot equals dot.ID
-                         where don.TrangThai == 1 || don.TrangThai == -1
+                         join dot in _context.DotHocBongs on don.IDDot equals dot.ID
+                         where (don.TrangThai == 1 || don.TrangThai == -1) &&
+                               (dot.NgayKetThucNop <= DateTime.UtcNow && dot.NgayHoiDongDuyet >= DateTime.UtcNow)
                          select new InfoHocBongViewModel
                          {
                              SinhVienId = sinhvien.Id,
@@ -49,14 +50,14 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
                              KQDiemRL = don.KQDiemRL,
 
                              DotHocBongId = don.IDDot,
-                             //TenDot = dot.TenDot,
+                             TenDot = dot.TenDot,
                              //TrangThaiDot = dot.TrangThai,
-                             //NgayTao = dot.NgayTao,
-                             //NgayBatDauNop = dot.NgayBatDauNop,
-                             //NgayKetThucNop = dot.NgayKetThucNop,
-                             //NgayHoiDongDuyet = dot.NgayHoiDongDuyet,
-                             //NgayPTCDuyet = dot.NgayPTCDuyet,
-                             //NgayKetThuc = dot.NgayKetThuc
+                             NgayTao = dot.NgayTao,
+                             NgayBatDauNop = dot.NgayBatDauNop,
+                             NgayKetThucNop = dot.NgayKetThucNop,
+                             NgayHoiDongDuyet = dot.NgayHoiDongDuyet,
+                             NgayPTCDuyet = dot.NgayPTCDuyet,
+                             NgayKetThuc = dot.NgayKetThuc
                          };
 
             return View(result.ToList());

@@ -148,10 +148,10 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
             var don = await _context.DonXinHocBongs
                 .Include(d => d.DotHocBong)
                 .Include(d => d.SinhVien)
-                .Include(d => d.NghienCuuCuaSinhViens)
-                    .ThenInclude(n => n.NghienCuu)
-                .Include(d => d.HoatDongCuaSinhViens)
-                    .ThenInclude(h => h.HoatDong)
+                .Include(d => d.NghienCuuCuaSinhViens!)
+                    .ThenInclude(n => n.NghienCuu!)
+                .Include(d => d.HoatDongCuaSinhViens!)
+                    .ThenInclude(h => h.HoatDong!)
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (don == null)

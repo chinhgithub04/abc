@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.DotHocBong>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Thông báo học bổng";
 }
 
 <h2 class="mb-4 text-primary fw-bold">Thông báo học bổng</h2>
@@ -30,10 +30,49 @@
                         </a>
                         <div class="text-end">
                             @{
-                                var statusText = item.TrangThai == 1 ? "Đang mở" :
-                                item.TrangThai == 0 ? "Chờ duyệt" : "Đã kết thúc";
-                                var statusColor = item.TrangThai == 1 ? "success" :
-                                item.TrangThai == 0 ? "warning" : "secondary";
+                                var now = DateTime.UtcNow;
+
+                                string statusText;
+                                string statusColor;
+
+                                if (item.TrangThai == 0)
+                                {
+                                    statusText = "Đã hủy";
+                                    statusColor = "danger";
+                                }
+                                else if (item.TrangThai == 1)
+                                {
+                                    if (now < item.NgayBatDauNop)
+                                    {
+                                        statusText = "Sắp mở";
+                                        statusColor = "info";
+                                    }
+                                    else if (now >= item.NgayBatDauNop && now <= item.NgayKetThucNop)
+                                    {
+                                        statusText = "Đang mở";
+                                        statusColor = "success";
+                                    }
+                                    else if (now > item.NgayKetThucNop && now <= item.NgayKetThuc)
+                                    {
+                                        statusText = "Đang xét duyệt";
+                                        statusColor = "warning";
+                                    }
+                                    else if (now > item.NgayKetThuc)
+                                    {
+                                        statusText = "Kết thúc";
+                                        statusColor = "secondary";
+                                    }
+                                    else
+                                    {
+                                        statusText = "Không xác định";
+                                        statusColor = "dark";
+                                    }
+                                }
+                                else
+                                {
+                                    statusText = "Không xác định";
+                                    statusColor = "dark";
+                                }
                             }
                             <span class="badge bg-@statusColor">@statusText</span>
                         </div>

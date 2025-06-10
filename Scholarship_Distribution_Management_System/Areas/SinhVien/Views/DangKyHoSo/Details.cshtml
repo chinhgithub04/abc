@@ -2,12 +2,32 @@
 
 @{
     ViewData["Title"] = "Chi tiết đơn xin học bổng";
+
+    var status = Model.TrangThai switch
+    {
+        -1 => "Từ chối",
+        1 => "Chờ xử lý",
+        2 => "Hoàn thành",
+        0 => "Đã hủy",
+        _ => "Không xác định"
+    };
+    string GetStatusClass(int status)
+    {
+        return status switch
+        {
+            1 => "bg-warning text-dark",     // Chờ xử lý
+            2 => "bg-success text-white",    // Hoàn thành
+            -1 => "bg-danger text-white",     // Đã hủy
+            0 => "bg-danger text-white",
+            _ => "bg-secondary text-white"
+        };
+    }
+
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <div class="card shadow-sm p-4 mt-3">
-
     <dl class="row">
         <dt class="col-sm-3">Mã hồ sơ:</dt>
         <dd class="col-sm-9">@Model.ID</dd>
@@ -17,20 +37,11 @@
 
         <dt class="col-sm-3">Trạng thái:</dt>
         <dd class="col-sm-9">
-            @{
-                var status = Model.TrangThai switch
-                {
-                    -1 => "Từ chối",
-                    1 => "Chờ xử lý",
-                    2 => "Hoàn thành",
-                    0 => "Đã hủy",
-                    _ => "Không xác định"
-                };
-            }
-            @status
+            <span class="badge @GetStatusClass(Model.TrangThai ?? -1)">@status</span>
+            
         </dd>
 
-        <dt class="col-sm-3">Đợt học bổng:</dt>
+        <dt class="col-sm-3">Tên đợt học bổng:</dt>
         <dd class="col-sm-9">@Model.DotHocBong?.TenDot</dd>
     </dl>
 
@@ -50,15 +61,22 @@
         }
     </ul>
 </div>
+@{
+    var now = DateTime.UtcNow;
+    bool isInSubmissionPeriod = Model.DotHocBong != null &&
+                                Model.DotHocBong.NgayBatDauNop <= now &&
+                                Model.DotHocBong.NgayKetThucNop >= now;
+}
+
 <div class="container-btn">
     <a asp-action="Index" class="btn btn-secondary m-3">Quay lại</a>
-    @if (Model.TrangThai == 0)
+    @if (Model.TrangThai == 1 && isInSubmissionPeriod)
     {
         <form asp-action="HuyDon" asp-route-id="@Model.ID" method="post">
             <button type="submit" class="btn btn-danger m-3">
-                Hủy đơn đăng ký
+                Rút lại hồ sơ
             </button>
         </form>
     }
-
 </div>
+

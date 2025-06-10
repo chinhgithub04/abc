@@ -13,7 +13,7 @@ namespace Scholarship_Distribution_Management_System.Models.Entities
         public string DieuKien { get; set; }
         public int SoLuong { get; set; }
         [Precision(18, 2)]
-        public decimal Tien { get; set; }
+        public long Tien { get; set; }
         public int TrangThai { get; set; }
         public DateTime NgayTao { get; set; }
         public DateTime NgayBatDauNop { get; set; }

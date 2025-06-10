@@ -195,11 +195,18 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            if (user != null)
+            if (user != null && user.TrangThai!=0)
             {
-                await _userManager.DeleteAsync(user);
+                user.TrangThai = 0; // Gán trạng thái là 0
             }
+            else
+            {
+                user.TrangThai = 1; // Gán trạng thái là 0
+                
+            }
+            await _userManager.UpdateAsync(user); // Cập nhật lại tài khoản
             return RedirectToAction("Index");
         }
+
     }
 }

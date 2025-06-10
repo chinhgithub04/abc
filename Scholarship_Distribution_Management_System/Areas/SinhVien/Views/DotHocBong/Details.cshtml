@@ -28,10 +28,49 @@
             <dt class="col-sm-4 text-muted">Trạng thái</dt>
             <dd class="col-sm-8">
                 @{
-                    var statusText = Model.TrangThai == 1 ? "Đang mở" :
-                    Model.TrangThai == 0 ? "Chờ duyệt" : "Đã kết thúc";
-                    var statusColor = Model.TrangThai == 1 ? "success" :
-                    Model.TrangThai == 0 ? "warning" : "secondary";
+                    var now = DateTime.UtcNow;
+
+                    string statusText;
+                    string statusColor;
+
+                    if (Model.TrangThai == 0)
+                    {
+                        statusText = "Đã hủy";
+                        statusColor = "danger";
+                    }
+                    else if (Model.TrangThai == 1)
+                    {
+                        if (now < Model.NgayBatDauNop)
+                        {
+                            statusText = "Sắp mở";
+                            statusColor = "info";
+                        }
+                        else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
+                        {
+                            statusText = "Đang mở";
+                            statusColor = "success";
+                        }
+                        else if (now > Model.NgayKetThucNop && now <= Model.NgayKetThuc)
+                        {
+                            statusText = "Đang xét duyệt";
+                            statusColor = "warning";
+                        }
+                        else if (now > Model.NgayKetThuc)
+                        {
+                            statusText = "Kết thúc";
+                            statusColor = "secondary";
+                        }
+                        else
+                        {
+                            statusText = "Không xác định";
+                            statusColor = "dark";
+                        }
+                    }
+                    else
+                    {
+                        statusText = "Không xác định";
+                        statusColor = "dark";
+                    }
                 }
                 <span class="badge bg-@statusColor">@statusText</span>
             </dd>
@@ -42,11 +81,14 @@
             <dt class="col-sm-4 text-muted">Thời gian nộp hồ sơ</dt>
             <dd class="col-sm-8">@Model.NgayBatDauNop.ToString("dd/MM/yyyy") → @Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
 
+            <dt class="col-sm-4 text-muted">Ngày xét duyệt</dt>
+            <dd class="col-sm-8">@Model.NgayKetThucNop.ToString("dd/MM/yyyy") → @Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
+
             <dt class="col-sm-4 text-muted">Ngày hội đồng duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
+            <dd class="col-sm-8">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy") → @Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
 
             <dt class="col-sm-4 text-muted">Ngày PTC duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
+            <dd class="col-sm-8">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy") → @Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
 
             <dt class="col-sm-4 text-muted">Ngày kết thúc</dt>
             <dd class="col-sm-8">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
@@ -63,13 +105,12 @@
 
         @if ((bool)ViewBag.DaDangKy)
         {
-            <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Details" asp-route-idDot="@ViewBag.IDDot"
+            <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Index"
                class="btn btn-info">Xem trạng thái đơn</a>
         }
         else
         {
             var dot = Model;
-            // Cho phép đăng ký nếu đang trong thời gian nộp
             if (dot.NgayBatDauNop <= DateTime.Now && DateTime.Now <= dot.NgayKetThucNop)
             {
                 <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@dot.ID"
