@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Scholarship_Distribution_Management_System.Models;
 using Scholarship_Distribution_Management_System.Models.Entities;
 using X.PagedList;
 using X.PagedList.Extensions;
@@ -29,12 +30,38 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
             var danhSach = _context.DonXinHocBongs
                 .Include(d => d.DotHocBong)
                 .Where(d => d.IDSinhVien == user.Id)
-                .OrderByDescending(d => d.NgayNop)
+                .OrderByDescending(d => d.TrangThai == 1)
+                .ThenByDescending(d => d.NgayNop)
                 .ToPagedList(pageNumber, pageSize);
-
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Trạng thái xét duyệt học bổng ", IsActive = true }
+            };
             return View(danhSach);
         }
+        public async Task<IActionResult> Details(string id)
+        {
+            if (id == null)
+                return NotFound();
 
+            var don = await _context.DonXinHocBongs
+                .Include(d => d.DotHocBong)
+                .Include(d => d.SinhVien)
+                .Include(d => d.NghienCuuCuaSinhViens!)
+                    .ThenInclude(n => n.NghienCuu!)
+                .Include(d => d.HoatDongCuaSinhViens!)
+                    .ThenInclude(h => h.HoatDong!)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (don == null)
+                return NotFound();
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Trạng thái xét duyệt học bổng", Url = Url.Action("Index"), IsActive = false },
+                new BreadcrumbItem { Title = "Chi tiết " + @id,IsActive = true }
+            };
+            return View(don);
+        }
         public async Task<IActionResult> Create(string idDot)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -50,13 +77,17 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
             }
 
             // Fetch lists for research and activities
-            var nghienCuuList = await _context.NghienCuuKhoaHocs.Select(n => n.TenDeTai).ToListAsync();
-            var hoatDongList = await _context.HoatDongs.Select(h => h.TenHoatDong).ToListAsync();
+            var nghienCuuList = await _context.NghienCuuKhoaHocs.Select(n => new { n.ID, Label = n.TenDeTai + " - " + n.ThanhTich }).ToListAsync();
+            var hoatDongList = await _context.HoatDongs.Select(n => n.TenHoatDong).ToListAsync();
 
             ViewBag.NghienCuuList = nghienCuuList;
             ViewBag.HoatDongList = hoatDongList;
             ViewBag.DotHocBong = dotHocBong;
-
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Trạng thái xét duyệt học bổng", Url = Url.Action("Index"), IsActive = false },
+                new BreadcrumbItem { Title = "Tạo hồ sơ xin cấp phát học bổng ", IsActive = true }
+            };
             return View(new DonXinHocBong
             {
                 IDDot = idDot,
@@ -91,25 +122,20 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
                 // Save selected NGHIENCUUCUASINHVIEN
                 if (selectedNghienCuu != null)
                 {
-                    var uniqueDeTais = selectedNghienCuu.Distinct();
-                    foreach (var tenDeTai in uniqueDeTais)
+                    foreach (var idNghienCuu in selectedNghienCuu.Distinct())
                     {
-                        var nghienCuu = await _context.NghienCuuKhoaHocs
-                            .FirstOrDefaultAsync(n => n.TenDeTai == tenDeTai);
-                        if (nghienCuu != null)
+                        var exists = await _context.nghienCuuCuaSinhViens
+                            .AnyAsync(n => n.IDDon == model.ID && n.IDNghienCuu == idNghienCuu);
+                        if (!exists)
                         {
-                            bool exists = await _context.nghienCuuCuaSinhViens
-                                .AnyAsync(n => n.IDDon == model.ID && n.IDNghienCuu == nghienCuu.ID);
-                            if (!exists)
+                            _context.nghienCuuCuaSinhViens.Add(new NghienCuuCuaSinhVien
                             {
-                                _context.nghienCuuCuaSinhViens.Add(new NghienCuuCuaSinhVien
-                                {
-                                    IDDon = model.ID,
-                                    IDNghienCuu = nghienCuu.ID
-                                });
-                            }
+                                IDDon = model.ID,
+                                IDNghienCuu = idNghienCuu
+                            });
                         }
                     }
+
                 }
 
                 // Save selected HOATDONGCUASINHVIEN
@@ -140,25 +166,7 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
             ViewBag.DotHocBong = await _context.DotHocBongs.FindAsync(model.IDDot);
             return View(model);
         }
-        public async Task<IActionResult> Details(string id)
-        {
-            if (id == null)
-                return NotFound();
 
-            var don = await _context.DonXinHocBongs
-                .Include(d => d.DotHocBong)
-                .Include(d => d.SinhVien)
-                .Include(d => d.NghienCuuCuaSinhViens!)
-                    .ThenInclude(n => n.NghienCuu!)
-                .Include(d => d.HoatDongCuaSinhViens!)
-                    .ThenInclude(h => h.HoatDong!)
-                .FirstOrDefaultAsync(m => m.ID == id);
-
-            if (don == null)
-                return NotFound();
-
-            return View(don);
-        }
         [HttpPost]
         public async Task<IActionResult> HuyDon(string id)
         {

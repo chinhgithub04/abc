@@ -44,9 +44,7 @@
     <Folder Include="Areas\TaiChinh\Models\" />
     <Folder Include="Areas\TaiChinh\Views\" />
     <Folder Include="Data\" />
-    <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\css\User\" />
-    <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\lib\bootstrap\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Scholarship_Distribution_Management_System.Models;
 using Scholarship_Distribution_Management_System.Models.Entities;
 using Scholarship_Distribution_Management_System.Models.ViewModel;
 
@@ -60,12 +61,20 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
 
                 userViewModels.Add(model);
             }
-
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Quản lý tài khoản ", IsActive = true }
+            };
             return View(userViewModels);
         }
         [HttpGet]
         public IActionResult Create()
         {
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Quản lý tài khoản", Url = Url.Action("Index"), IsActive = false },
+                new BreadcrumbItem { Title = "Tạo tài khoản", IsActive = true }
+            };
             return View();
         }
 
@@ -148,7 +157,11 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
                 TenNganh = user.LopSH?.Nganh?.TenNganh,
                 TenKhoa = user.LopSH?.Nganh?.Khoa?.TenKhoa
             };
-
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Quản lý tài khoản", Url = Url.Action("Index"), IsActive = false },
+                new BreadcrumbItem { Title = "Chi tiết "+@id, IsActive = true }
+            };
             return View(model);
         }
 
@@ -169,7 +182,11 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
                 SDT = user.PhoneNumber,
                 TrangThai = (int)user.TrangThai,
             };
-
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Quản lý tài khoản", Url = Url.Action("Index"), IsActive = false },
+                new BreadcrumbItem { Title = "Sửa tài khoản "+@id, IsActive = true }
+            };
             return View(model);
         }
 

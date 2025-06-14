@@ -1,0 +1,93 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.DotHocBong
+
+@{
+    ViewData["Title"] = "Chi tiết đợt học bổng";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Tên đợt:</dt>
+            <dd class="col-sm-9">@Model.TenDot</dd>
+
+            <dt class="col-sm-3">Điều kiện:</dt>
+            <dd class="col-sm-9">@Model.DieuKien</dd>
+
+            <dt class="col-sm-3">Số lượng:</dt>
+            <dd class="col-sm-9">@Model.SoLuong</dd>
+
+            <dt class="col-sm-3">Tiền:</dt>
+            <dd class="col-sm-9">@Model.Tien.ToString("N0") VNĐ</dd>
+
+            <dt class="col-sm-3">Ngày tạo:</dt>
+            <dd class="col-sm-9">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Ngày bắt đầu nộp:</dt>
+            <dd class="col-sm-9">@Model.NgayBatDauNop.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Ngày kết thúc nộp:</dt>
+            <dd class="col-sm-9">@Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Ngày hội đồng duyệt:</dt>
+            <dd class="col-sm-9">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Ngày phòng tài chính xác nhận phát học bổng:</dt>
+            <dd class="col-sm-9">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Ngày kết thúc:</dt>
+            <dd class="col-sm-9">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Trạng thái:</dt>
+            <dd class="col-sm-9">
+                @{
+                    var now = DateTime.Now;
+                    string statusText = "";
+                    string statusColor = "";
+
+                    if (Model.TrangThai == 0)
+                    {
+                        statusText = "Đã hủy";
+                        statusColor = "danger";
+                    }
+                    else if (Model.TrangThai == 1)
+                    {
+                        if (now < Model.NgayBatDauNop)
+                        {
+                            statusText = "Sắp mở";
+                            statusColor = "info";
+                        }
+                        else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThuc)
+                        {
+                            statusText = "Đang mở";
+                            statusColor = "success";
+                        }
+                        else if (now > Model.NgayKetThuc)
+                        {
+                            statusText = "Kết thúc";
+                            statusColor = "secondary";
+                        }
+                        else
+                        {
+                            statusText = "Không xác định";
+                            statusColor = "dark";
+                        }
+                    }
+                    else
+                    {
+                        statusText = "Không xác định";
+                        statusColor = "dark";
+                    }
+                }
+                <span class="badge bg-@statusColor">@statusText</span>
+            </dd>
+
+        </dl>
+
+        <div class="mt-3">
+            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-warning me-2">Chỉnh sửa</a>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+</div>

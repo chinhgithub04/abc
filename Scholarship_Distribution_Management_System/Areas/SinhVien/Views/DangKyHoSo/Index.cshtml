@@ -2,6 +2,8 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList
 @{
+
+
     ViewData["Title"] = "Trạng thái xét duyệt học bổng";
     string GetStatusClass(int status)
     {
@@ -19,7 +21,7 @@
     {
         return status switch
         {
-            -1 =>"Từ chối",
+            -1 => "Từ chối",
             1 => "Chờ xử lý",
             2 => "Hoàn thành",
             0 => "Đã hủy",
@@ -39,17 +41,46 @@ else
     <div class="row g-4">
         @foreach (var don in Model)
         {
+
+            var now = DateTime.UtcNow;
+            bool isInSubmissionPeriod = don.DotHocBong != null &&
+            don.DotHocBong.NgayBatDauNop <= now &&
+            don.DotHocBong.NgayKetThucNop >= now;
+
             var dot = don.DotHocBong;
-            <div class="">
+            <div>
                 <div class="card shadow border-0">
-                    <div class="card-header @GetStatusClass(don.TrangThai ?? -1) fw-bold fs-5">
-                        @dot.TenDot
-                    </div>
+                    @if (don.TrangThai == 1 && isInSubmissionPeriod)
+                    {
+                        <div class="card-header bg-primary text-white fw-bold fs-5">
+                            @don.DotHocBong.TenDot
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card-header @GetStatusClass(don.TrangThai ?? -1) fw-bold fs-5">
+                            @don.DotHocBong.TenDot
+                        </div>
+                    }
+
                     <div class="card-body">
                         <p><strong>Mã hồ sơ:</strong> @don.ID</p>
                         <p><strong>Ngày nộp:</strong> @don.NgayNop.ToString("dd/MM/yyyy")</p>
-                        <p><strong>Trạng thái:</strong> <span class="fw-semibold">@GetStatusText(don.TrangThai ?? -1)</span></p>
-                        <a asp-action="Details" asp-route-id="@don.ID" class="btn btn-info btn-sm">Chi tiết</a>
+                        <p>
+                            <strong>Trạng thái:</strong>
+                            @if (don.TrangThai == 1 && isInSubmissionPeriod)
+                            {
+                                <span class="fw-semibold">Đã nộp</span>
+                            }
+                            else
+                            {
+                                <span class="fw-semibold">@GetStatusText(don.TrangThai ?? -1)</span>
+                            }
+
+                        </p>
+                        <div style="float: right">
+                            <a asp-action="Details" asp-route-id="@don.ID" class="btn btn-info btn-sm ms-sm-4">Xem chi tiết</a>
+                        </div>
                     </div>
 
                 </div>

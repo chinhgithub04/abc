@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sinh viên - Nộp hồ sơ đăng ký học bổng UTE</title>
+    <title>@ViewData["Title"]</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
+    <link rel="icon" type="image/png" href="~/images/Logo1.png">
     @* DataTables CSS *@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/3.0.0/css/responsive.dataTables.min.css" /> @* Để bảng responsive *@
@@ -60,24 +60,18 @@
             </div>
     </header>
 
-    <nav class="main-nav">
-        <ul>
-            <li><a asp-controller="TrangChu" asp-action="Index">Trang chủ</a></li>
-            <li><a asp-controller="DotHocBong" asp-action="Index">Thông báo học bổng</a></li>
-            <li><a href="#">Danh sách sinh viên nhận học bổng</a></li>
-        </ul>
-    </nav>
+    @await Html.PartialAsync("_Breadcrumb", ViewBag.Breadcrumbs as List<Scholarship_Distribution_Management_System.Models.BreadcrumbItem>)
+
 
     <div class="container">
         <aside class="sidebar">
             <h2>@User.FindFirst("VaiTro")?.Value</h2>
             <ul>
                 <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Trang chủ</a></li>
-                <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Quản lý thông báo</a></li>
-                <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Duyệt điểm rèn luyện</a></li>
+                <li><a class="@isActive("QLDotHocBong")" asp-controller="QLDotHocBong" asp-action="Index">Quản lý đợt học bổng</a></li>
+                <li><a class="@isActive("DotHocBong") @isActive("DuyetDiemRenLuyen")" asp-controller="DotHocBong" asp-action="Index">Duyệt điểm rèn luyện</a></li>
                 <li><a href="#">Danh sách điểm rèn luyện</a></li>
                 <li>
-                    
                     <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
                         <button type="submit" class="dropdown-item">Đăng xuất</button>
                     </form>

@@ -1,6 +1,12 @@
 ﻿@model Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong
 
 @{
+
+    var now = DateTime.UtcNow;
+    bool isInSubmissionPeriod = Model.DotHocBong != null &&
+                                Model.DotHocBong.NgayBatDauNop <= now &&
+                                Model.DotHocBong.NgayKetThucNop >= now;
+
     ViewData["Title"] = "Chi tiết đơn xin học bổng";
 
     var status = Model.TrangThai switch
@@ -37,7 +43,15 @@
 
         <dt class="col-sm-3">Trạng thái:</dt>
         <dd class="col-sm-9">
-            <span class="badge @GetStatusClass(Model.TrangThai ?? -1)">@status</span>
+            @if (Model.TrangThai == 1 && isInSubmissionPeriod)
+            {
+                <span class="badge bg-primary text-white">Đã nộp</span>
+            }
+            else
+            {
+                <span class="badge @GetStatusClass(Model.TrangThai ?? -1)">@status</span>
+            }
+            
             
         </dd>
 
@@ -61,12 +75,7 @@
         }
     </ul>
 </div>
-@{
-    var now = DateTime.UtcNow;
-    bool isInSubmissionPeriod = Model.DotHocBong != null &&
-                                Model.DotHocBong.NgayBatDauNop <= now &&
-                                Model.DotHocBong.NgayKetThucNop >= now;
-}
+
 
 <div class="container-btn">
     <a asp-action="Index" class="btn btn-secondary m-3">Quay lại</a>
@@ -77,6 +86,9 @@
                 Rút lại hồ sơ
             </button>
         </form>
+    }else if (Model.TrangThai == 0 && isInSubmissionPeriod){
+        <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@Model.IDDot"
+           class="btn btn-primary m-3">Đăng ký lại</a>
     }
 </div>
 

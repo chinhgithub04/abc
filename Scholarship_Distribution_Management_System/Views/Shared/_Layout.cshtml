@@ -3,11 +3,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sinh viên - Nộp hồ sơ đăng ký học bổng UTE</title>
+    <title>@ViewData["Title"]</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="icon" type="image/png" href="~/images/Logo1.png">
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -23,13 +24,7 @@
         </div>
     </header>
 
-    <nav class="main-nav">
-        <ul>
-            <li><a asp-controller="Home" asp-action="Index" class="active">Trang chủ</a></li>
-            <li><a asp-controller="DotHocBong" asp-action="Index">Thông báo học bổng</a></li>
-            <li><a href="#">Danh sách sinh viên nhận học bổng</a></li>
-        </ul>
-    </nav>
+        @await Html.PartialAsync("_Breadcrumb", ViewBag.Breadcrumbs as List<Scholarship_Distribution_Management_System.Models.BreadcrumbItem>)
 
     <div class="container">
         <aside class="sidebar">

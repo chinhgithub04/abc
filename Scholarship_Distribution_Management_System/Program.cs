@@ -47,12 +47,12 @@ app.UseStaticFiles(); // nếu dùng wwwroot
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
 
 app.MapDefaultControllerRoute();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=TrangChu}/{action=Index}/{id?}");
 
 app.Run();

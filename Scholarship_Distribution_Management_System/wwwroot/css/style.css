@@ -135,7 +135,6 @@ header, .main-nav, footer {
 /* Container */
 .container {
     display: flex;
-    padding: 20px;
     max-width: 1400px;
     margin: 20px auto; /* Thêm margin top/bottom */
     gap: 20px; /* Khoảng cách giữa sidebar và main content */
@@ -500,4 +499,21 @@ header .header-right {
         font-size: 1.3rem;
     }
 }
+.breadcrumb-no-wrap a {
+    white-space: nowrap;
+}
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding:1rem 2rem;
+    margin-bottom: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+}
 
+.breadcrumb-separator {
+    color: #6c757d;
+    font-size: 1rem;
+    padding: 0 0.5rem;
+}

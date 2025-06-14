@@ -33,11 +33,10 @@
                     string statusText;
                     string statusColor;
 
-
                     if (now < Model.NgayBatDauNop)
                     {
                         statusText = "Sắp mở";
-                        statusColor = "info";
+                        statusColor = "secondary";
                     }
                     else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
                     {
@@ -59,9 +58,9 @@
                         statusText = "Không xác định";
                         statusColor = "dark";
                     }
-
                 }
                 <span class="badge bg-@statusColor">@statusText</span>
+
             </dd>
 
             <dt class="col-sm-4 text-muted">Ngày tạo</dt>
@@ -91,21 +90,6 @@
         <a asp-action="Index" class="btn btn-outline-secondary">
             ⬅ Quay lại
         </a>
-
-        @if ((bool)ViewBag.DaDangKy)
-        {
-            <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Index"
-               class="btn btn-info">Xem trạng thái đơn</a>
-        }
-        else
-        {
-            var dot = Model;
-            if (dot.NgayBatDauNop <= DateTime.Now && DateTime.Now <= dot.NgayKetThucNop)
-            {
-                <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@dot.ID"
-                   class="btn btn-primary ml-2">Đăng ký học bổng</a>
-            }
-        }
 
     </div>
 </div>

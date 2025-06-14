@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.DotHocBong>
 
 @{
-    ViewData["Title"] = "Thông báo học bổng";
+    ViewData["Title"] = "Duyệt điểm học tập";
 }
 
-<h2 class="mb-4 text-primary fw-bold">Thông báo học bổng</h2>
+<h2 class="mb-4 text-primary fw-bold">Danh sách đợt xét duyệt</h2>
 
 @foreach (var item in Model)
 {
@@ -24,6 +24,9 @@
             <div class="d-flex justify-content-between mt-3">
                 <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.ID">
                     Xem chi tiết
+                </a>
+                <a class="btn btn-sm btn-outline-primary" asp-action="Index" asp-controller="DuyetDiemRenLuyen" asp-route-IdDot="@item.ID">
+                    Danh sách hồ sơ cần duyệt
                 </a>
                 <div class="text-end">
                     @{
@@ -57,7 +60,6 @@
                             statusText = "Không xác định";
                             statusColor = "dark";
                         }
-
                     }
                     <span class="badge bg-@statusColor">@statusText</span>
                 </div>

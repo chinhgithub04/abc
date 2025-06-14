@@ -1,14 +1,12 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Scholarship_Distribution_Management_System.Models;
 
 namespace Scholarship_Distribution_Management_System.Controllers
 {
-    public class HomeController : Controller
+    public class TrangChuController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<TrangChuController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public TrangChuController(ILogger<TrangChuController> logger)
         {
             _logger = logger;
         }

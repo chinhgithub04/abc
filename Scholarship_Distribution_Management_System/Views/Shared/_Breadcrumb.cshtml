@@ -1,0 +1,44 @@
+﻿@model List<Scholarship_Distribution_Management_System.Models.BreadcrumbItem>
+
+@{
+    var breadcrumbs = new List<Scholarship_Distribution_Management_System.Models.BreadcrumbItem>
+    {
+        new Scholarship_Distribution_Management_System.Models.BreadcrumbItem
+        {
+            Title = "<i class='fa-solid fa-house'></i> Trang chủ",
+            Url = Url.Action("Index","TrangChu"),
+            IsActive = false
+        }
+    };
+
+    if (Model != null)
+    {
+        breadcrumbs.AddRange(Model);
+    }
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb align-items-center">
+        @for (int i = 0; i < breadcrumbs.Count; i++)
+        {
+            var crumb = breadcrumbs[i];
+
+            if (i > 0)
+            {
+                <li class="breadcrumb-separator">›</li>
+            }
+
+            if (crumb.IsActive)
+            {
+                <li class="breadcrumb-item active fw-bold" aria-current="page">@Html.Raw(crumb.Title)</li>
+            }
+            else
+            {
+                <li class="breadcrumb-item">
+                    <a href="@crumb.Url">@Html.Raw(crumb.Title)</a>
+                </li>
+            }
+        }
+    </ol>
+
+</nav>

@@ -59,11 +59,11 @@
 
         <dt class="col-sm-3 mb-2">Trạng thái đơn:</dt>
         <dd class="col-sm-9">
-            @if (Model.KQDiemHT == null && Model.TrangThaiDon == 1)
+            @if (Model.KQDiemRL == null && Model.TrangThaiDon == 1)
             {
                 <span class="badge bg-warning text-dark">Chờ xử lý</span>
             }
-            else if (Model.KQDiemHT == Model.DiemHocTap && Model.TrangThaiDon == 1)
+            else if (Model.KQDiemRL == Model.DiemRenLuyen && Model.TrangThaiDon == 1)
             {
                 <span class="badge bg-success">Đã duyệt</span>
             }
@@ -73,8 +73,7 @@
             }
         </dd>
     </dl>
-
 </div>
 <div class="mt-3">
-    <a asp-controller="DuyetDiemHocTap" asp-action="Index" asp-route-IdDot="@Model.DotHocBongId" class="btn btn-secondary">Quay lại danh sách</a>
+    <a asp-controller="DuyetDiemRenLuyen" asp-action="Index" asp-route-IdDot="@Model.DotHocBongId" class="btn btn-secondary">Quay lại danh sách</a>
 </div>

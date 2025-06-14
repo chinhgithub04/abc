@@ -1,0 +1,75 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.DotHocBong
+
+@{
+    ViewData["Title"] = "Chỉnh sửa đợt học bổng";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post" class="mt-4">
+    <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="TrangThai"/>
+    <input type="hidden" asp-for="IDNhanVien" />
+    <input type="hidden" asp-for="NgayTao" />
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="TenDot" class="form-label">Tên đợt</label>
+            <input asp-for="TenDot" class="form-control" />
+            <span asp-validation-for="TenDot" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="SoLuong" class="form-label">Số lượng học bổng</label>
+            <input asp-for="SoLuong" class="form-control" />
+            <span asp-validation-for="SoLuong" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="Tien" class="form-label">Số tiền cho mỗi học bổng</label>
+            <input asp-for="Tien" class="form-control" />
+            <span asp-validation-for="Tien" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="DieuKien" class="form-label">Nội dung</label>
+            <textarea asp-for="DieuKien" class="form-control"></textarea>
+            <span asp-validation-for="DieuKien" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="NgayBatDauNop" class="form-label">Ngày bắt đầu nộp</label>
+            <input asp-for="NgayBatDauNop" class="form-control" type="date" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="NgayKetThucNop" class="form-label">Ngày kết thúc nộp</label>
+            <input asp-for="NgayKetThucNop" class="form-control" type="date" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="NgayHoiDongDuyet" class="form-label">Ngày hội đồng bắt đầu duyệt</label>
+            <input asp-for="NgayHoiDongDuyet" class="form-control" type="date" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="NgayPTCDuyet" class="form-label">Ngày kết thúc hội đồng duyệt</label>
+            <input asp-for="NgayPTCDuyet" class="form-control" type="date" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="NgayKetThuc" class="form-label">Ngày kết thúc</label>
+            <input asp-for="NgayKetThuc" class="form-control" type="date" />
+        </div>
+
+        <div class="col-md-12">
+            <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

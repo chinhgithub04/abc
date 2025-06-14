@@ -18,7 +18,7 @@
                 <input type="hidden" name="IdDot" value="@ViewData["IdDot"]" />
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="importModalLabel">Tải lên file Excel điểm học tập</h5>
+                    <h5 class="modal-title" id="importModalLabel">Tải lên file Excel điểm rèn luyện</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
 
@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="diemCol" class="form-label">Vị trí cột có chứa điểm học tập:</label>
+                        <label for="diemCol" class="form-label">Vị trí cột có chứa điểm rèn luyện:</label>
                         <input class="form-control" type="number" id="diemCol" name="diemCol" value="2" min="1" required />
                     </div>
                 </div>
@@ -64,7 +64,7 @@
             <th class="text-start">Mã</th>
             <th>Sinh viên</th>
             <th>Ngày nộp</th>
-            <th>Điểm học tập</th>
+            <th>Điểm rèn luyện</th>
             <th>Kết quả điểm</th>
             <th>Trạng thái</th>
             <th>Thao tác</th>
@@ -78,15 +78,15 @@
                 <td class ="text-start">@item.SinhVienId</td>
                 <td>@item.HoTen</td>
                 <td>@item.NgayNop?.ToShortDateString()</td>
-                <td>@item.DiemHocTap</td>
-                <td>@item.KQDiemHT</td>
+                <td>@string.Format("{0:0.##}",item.DiemRenLuyen)</td>
+                <td>@string.Format("{0:0.##}",item.KQDiemRL)</td>
 
                 <td>
-                    @if (item.KQDiemHT == null && item.TrangThaiDon == 1)
+                    @if (item.KQDiemRL == null && item.TrangThaiDon == 1)
                     {
                         <span class="badge bg-warning text-dark">Chờ xử lý</span>
                     }
-                    else if (item.KQDiemHT == item.DiemHocTap && item.TrangThaiDon == 1)
+                    else if (item.KQDiemRL == item.DiemRenLuyen && item.TrangThaiDon == 1)
                     {
                         <span class="badge bg-success">Đã duyệt</span>
                     }

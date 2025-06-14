@@ -23,7 +23,7 @@ namespace Scholarship_Distribution_Management_System.Models.Entities
         public DateTime NgayKetThuc { get; set; }
 
         [ForeignKey("IDNhanVien")]
-        public ApplicationUser NhanVien { get; set; }
+        public ApplicationUser? NhanVien { get; set; }
     }
 
 }

@@ -6,14 +6,14 @@ using OfficeOpenXml;
 using Scholarship_Distribution_Management_System.Models;
 
 
-namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
+namespace Scholarship_Distribution_Management_System.Areas.CTSV.Controllers
 {
-    [Area("DaoTao")]
-    public class DuyetDiemHocTapController : Controller
+    [Area("CTSV")]
+    public class DuyetDiemRenLuyenController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public DuyetDiemHocTapController(ApplicationDbContext context)
+        public DuyetDiemRenLuyenController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -64,13 +64,11 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
                 x.KQDiemHT = x.KQDiemHT.HasValue ? Math.Round(x.KQDiemHT.Value, 2) : null;
                 return x;
             }).ToList();
-
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem { Title = "Danh sách đợt xét duyệt", Url = Url.Action("Index", "DotHocBong", new { area = "DaoTao" }), IsActive = false },
-                new BreadcrumbItem { Title = "Duyệt điểm học tập", IsActive = true },
+                new BreadcrumbItem { Title = "Danh sách đợt xét duyệt", Url = Url.Action("Index", "DotHocBong", new { area = "CTSV" }), IsActive = false },
+                new BreadcrumbItem { Title = "Duyệt điểm rèn luyện", IsActive = true },
             };
-
             return View(result);
 
         }
@@ -116,10 +114,11 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
             {
                 return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn
             }
+
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem { Title = "Danh sách đợt xét duyệt", Url = Url.Action("Index", "DotHocBong", new { area = "DaoTao" }), IsActive = false },
-                new BreadcrumbItem { Title = "Duyệt điểm học tập", Url = Url.Action("Index", "DuyetDiemHocTap", new { area = "DaoTao", IdDot = infoHocBong.DotHocBongId }), IsActive = false },
+                new BreadcrumbItem { Title = "Danh sách đợt xét duyệt", Url = Url.Action("Index", "DotHocBong", new { area = "CTSV" }), IsActive = false },
+                new BreadcrumbItem { Title = "Duyệt điểm rèn luyện", Url = Url.Action("Index", "DuyetDiemRenLuyen", new { area = "CTSV", IdDot = infoHocBong.DotHocBongId }), IsActive = false },
                 new BreadcrumbItem { Title = "Chi tiết "+@id, IsActive = true }
             };
             return View(infoHocBong); // Truyền ViewModel chi tiết đến View
@@ -160,7 +159,7 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
 
                         if (don != null && double.TryParse(diemStr, out double diem))
                         {
-                            don.KQDiemHT = (float?)Math.Round(diem, 2);
+                            don.KQDiemRL = (float?)Math.Round(diem, 2);
                             _context.DonXinHocBongs.Update(don);
                         }
                     }

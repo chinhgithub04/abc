@@ -32,45 +32,32 @@
 
                     string statusText;
                     string statusColor;
-
-                    if (Model.TrangThai == 0)
+                    if (now < Model.NgayBatDauNop)
                     {
-                        statusText = "Đã hủy";
-                        statusColor = "danger";
+                        statusText = "Sắp mở";
+                        statusColor = "secondary";
                     }
-                    else if (Model.TrangThai == 1)
+                    else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
                     {
-                        if (now < Model.NgayBatDauNop)
-                        {
-                            statusText = "Sắp mở";
-                            statusColor = "secondary";
-                        }
-                        else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
-                        {
-                            statusText = "Đang mở";
-                            statusColor = "success";
-                        }
-                        else if (now > Model.NgayKetThucNop && now <= Model.NgayKetThuc)
-                        {
-                            statusText = "Đang xét duyệt";
-                            statusColor = "warning";
-                        }
-                        else if (now > Model.NgayKetThuc)
-                        {
-                            statusText = "Kết thúc";
-                            statusColor = "secondary";
-                        }
-                        else
-                        {
-                            statusText = "Không xác định";
-                            statusColor = "dark";
-                        }
+                        statusText = "Đang mở";
+                        statusColor = "success";
+                    }
+                    else if (now > Model.NgayKetThucNop && now <= Model.NgayKetThuc)
+                    {
+                        statusText = "Đang xét duyệt";
+                        statusColor = "warning";
+                    }
+                    else if (now > Model.NgayKetThuc)
+                    {
+                        statusText = "Kết thúc";
+                        statusColor = "secondary";
                     }
                     else
                     {
                         statusText = "Không xác định";
                         statusColor = "dark";
                     }
+
                 }
                 <span class="badge bg-@statusColor">@statusText</span>
 

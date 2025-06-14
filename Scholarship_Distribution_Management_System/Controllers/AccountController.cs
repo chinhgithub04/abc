@@ -7,6 +7,7 @@ using Scholarship_Distribution_Management_System.Models.ViewModel;
 using System.Security.Claims;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
+using Scholarship_Distribution_Management_System.Models;
 
 namespace Scholarship_Distribution_Management_System.Controllers
 {
@@ -42,23 +43,26 @@ namespace Scholarship_Distribution_Management_System.Controllers
                     return RedirectToAction("Index", "TrangChu", new { area = "CTSV" });
 
                 else if (role == "Doan")
-                    return RedirectToAction("Index", "Home", new { area = "Doan" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "Doan" });
 
                 else if (role == "NghienCuu")
-                    return RedirectToAction("Index", "Home", new { area = "NghienCuu" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "NghienCuu" });
 
                 else if (role == "HoiDong")
-                    return RedirectToAction("Index", "Home", new { area = "HoiDong" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "HoiDong" });
 
                 else if (role == "TaiChinh")
-                    return RedirectToAction("Index", "Home", new { area = "TaiChinh" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "TaiChinh" });
 
                 else if (role == "Admin")
                     return RedirectToAction("Index", "Home", new { area = "Admin" });
 
                 return RedirectToAction("AccessDenied", "Account");
             }
-
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Đăng nhập", IsActive = true }
+            };
             return View();
         }
 
@@ -78,7 +82,6 @@ namespace Scholarship_Distribution_Management_System.Controllers
             if (result.Succeeded)
             {
 
-                // Lấy vai trò
                 var roles = await _userManager.GetRolesAsync(user);
                 var role = roles.FirstOrDefault();
                 string vaiTroHienThi = role switch
@@ -116,16 +119,16 @@ namespace Scholarship_Distribution_Management_System.Controllers
                     return RedirectToAction("Index", "TrangChu", new { area = "CTSV" });
 
                 else if (role == "Doan")
-                    return RedirectToAction("Index", "Home", new { area = "Doan" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "Doan" });
 
                 else if (role == "NghienCuu")
-                    return RedirectToAction("Index", "Home", new { area = "NghienCuu" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "NghienCuu" });
 
                 else if (role == "HoiDong")
-                    return RedirectToAction("Index", "Home", new { area = "HoiDong" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "HoiDong" });
 
                 else if (role == "TaiChinh")
-                    return RedirectToAction("Index", "Home", new { area = "TaiChinh" });
+                    return RedirectToAction("Index", "TrangChu", new { area = "TaiChinh" });
 
                 if (role == "Admin")
                     return RedirectToAction("Index", "Home", new { area = "Admin" });
@@ -165,7 +168,7 @@ namespace Scholarship_Distribution_Management_System.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
-            
+
             if (result.Succeeded)
             {
                 Console.WriteLine(_userManager.GetRolesAsync);

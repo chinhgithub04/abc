@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Scholarship_Distribution_Management_System.Models;
 using Scholarship_Distribution_Management_System.Models.Entities;
 
 namespace Scholarship_Distribution_Management_System.Controllers
@@ -23,7 +24,11 @@ namespace Scholarship_Distribution_Management_System.Controllers
         // GET: DotHocBongs
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.DotHocBongs.Include(d => d.NhanVien);
+            var applicationDbContext = _context.DotHocBongs.Include(d => d.NhanVien).Where(d => d.TrangThai == 1);
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Thông báo", IsActive = true }
+            };
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -38,7 +43,11 @@ namespace Scholarship_Distribution_Management_System.Controllers
                 return NotFound();
 
             ViewBag.IDDot = id;
-
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Title = "Thông báo", Url = Url.Action("Index"), IsActive = false },
+                new BreadcrumbItem { Title = "Chi tiết "+@id, IsActive = true }
+            };
             return View(dot);
         }
 
