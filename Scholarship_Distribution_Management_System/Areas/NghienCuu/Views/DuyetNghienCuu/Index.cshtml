@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.ViewModel.NghienCuuCuaSinhVienViewModel>
+
+@{
+    ViewData["Title"] = "Duyệt nghiên cứu khoa học";
+}
+
+<h2>Duyệt nghiên cứu khoa học</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>STT</th>
+            <th>ID Sinh viên</th>
+            <th>Đề tài</th>
+            <th>Thành tích</th>
+            <th>ID Đơn</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(Model.ToList().IndexOf(item) + 1)</td>
+                <td>@item.IDSinhVien</td>
+                <td>@item.TenDeTai</td>
+                <td>@item.ThanhTich</td>
+                <td>@item.IDDon</td>
+                <td>
+                    @if (item.DaDuyet)
+                    {
+                        <span class="badge bg-success">Đã duyệt</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Chưa xác nhận</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

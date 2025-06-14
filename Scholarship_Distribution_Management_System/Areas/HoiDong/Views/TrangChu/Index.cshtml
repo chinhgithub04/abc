@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Trang Chủ";
+    Layout = "~/Areas/HoiDong/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Trang chủ</h2>
+@using System.Security.Claims
+@{
+    var hoTen = User.FindFirst("HoTen")?.Value;
+    var role = User.Claims.FirstOrDefault(c => c.Type == "VaiTro")?.Value;
+}
+<div class="welcome-box">
+    <p class="welcome-message">
+        Chào mừng @hoTen đến với hệ thống quản lý phân phát học bổng cho sinh viên trường đại học Sư phạm Kỹ thuật Đà Nẵng
+    </p>
+</div>

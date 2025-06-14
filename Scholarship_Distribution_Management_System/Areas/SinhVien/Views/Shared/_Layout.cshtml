@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="~/images/Logo1.png">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/3.0.0/css/responsive.dataTables.min.css" />
+
     @await RenderSectionAsync("Styles", required: false)
 </head>
 @{
@@ -43,16 +47,16 @@
                 </a>
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUserHeader">
-                    <li><a class="dropdown-item" href="#">Xem tài khoản</a></li>
+                    <li><a asp-controller="ThongTinTaiKhoan" asp-action="Details" class="dropdown-item">Xem tài khoản</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li> 
+                    <li>
                         <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
                             <button type="submit" class="dropdown-item">Đăng xuất</button>
                         </form>
                     </li>
                 </ul>
             </div>
-            </div>
+        </div>
     </header>
 
     @await Html.PartialAsync("_Breadcrumb", ViewBag.Breadcrumbs as List<Scholarship_Distribution_Management_System.Models.BreadcrumbItem>)
@@ -70,7 +74,7 @@
                 <li><a href="#">Danh sách hoạt động Đoàn – Hội</a></li>
                 <li><a href="#">Danh sách nghiên cứu khoa học</a></li>
                 <li>
-                    
+
                     <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
                         <button type="submit" class="dropdown-item">Đăng xuất</button>
                     </form>

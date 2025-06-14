@@ -48,7 +48,7 @@
                 </a>
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUserHeader">
-                    <li><a class="dropdown-item" href="#">Xem tài khoản</a></li>
+                    <li><a asp-controller="ThongTinTaiKhoan" asp-action="Details" class="dropdown-item">Xem tài khoản</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li> 
                         <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">

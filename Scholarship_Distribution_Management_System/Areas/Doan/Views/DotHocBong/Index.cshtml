@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.DotHocBong>
+
+@{
+    ViewData["Title"] = "Duyệt điểm học tập";
+}
+
+<h2 class="mb-4 text-primary fw-bold">Danh sách đợt xét duyệt</h2>
+
+@foreach (var item in Model)
+{
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white fw-bold">
+            <span class="me-sm-5">@item.TenDot</span>
+            <p class="m-0" style="font-size: 0.8rem; float: right">
+                @item.NgayTao.ToString("dd/MM/yyyy")
+            </p>
+        </div>
+        <div class="card-body">
+
+            <p style="font-size: 0.95rem;">
+                <strong>Nội dung:</strong> @item.DieuKien
+            </p>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.ID">
+                    Xem chi tiết
+                </a>
+                <a class="btn btn-sm btn-outline-primary" asp-action="Index" asp-controller="DuyetHoatDong" asp-route-IdDot="@item.ID">
+                    Danh sách hồ sơ cần duyệt
+                </a>
+                <div class="text-end">
+                    @{
+                        var now = DateTime.UtcNow;
+
+                        string statusText;
+                        string statusColor;
+
+                        if (now < item.NgayBatDauNop)
+                        {
+                            statusText = "Sắp mở";
+                            statusColor = "info";
+                        }
+                        else if (now >= item.NgayBatDauNop && now <= item.NgayKetThucNop)
+                        {
+                            statusText = "Đang mở";
+                            statusColor = "success";
+                        }
+                        else if (now > item.NgayKetThucNop && now <= item.NgayKetThuc)
+                        {
+                            statusText = "Đang xét duyệt";
+                            statusColor = "warning";
+                        }
+                        else if (now > item.NgayKetThuc)
+                        {
+                            statusText = "Kết thúc";
+                            statusColor = "secondary";
+                        }
+                        else
+                        {
+                            statusText = "Không xác định";
+                            statusColor = "dark";
+                        }
+                    }
+                    <span class="badge bg-@statusColor">@statusText</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted small">
+            <i class="bi bi-calendar-event"></i> Nộp: @item.NgayBatDauNop.ToString("dd/MM/yyyy") - @item.NgayKetThucNop.ToString("dd/MM/yyyy")
+        </div>
+    </div>
+}
+

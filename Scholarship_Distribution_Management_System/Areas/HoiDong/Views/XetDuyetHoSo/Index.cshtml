@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong>
+
+@{
+    ViewData["Title"] = "Danh sách hồ sơ chờ xét duyệt";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-bordered" id="XetDuyetTable">
+    <thead>
+        <tr>
+            <th>Sinh viên</th>
+            <th>Đợt học bổng</th>
+            <th>Ngày nộp</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var don in Model)
+        {
+            <tr>
+                <td>@don.SinhVien?.HoTen</td>
+                <td>@don.DotHocBong?.TenDot</td>
+                <td>@don.NgayNop.ToString("dd/MM/yyyy")</td>
+                <td>
+                    @switch (don.TrangThai)
+                    {
+                        case 1:
+                            <span class="badge bg-warning text-dark">Chờ xét</span>
+                            ; break;
+                        case 2:
+                            <span class="badge bg-success">Đã duyệt</span>
+                            ; break;
+                        case -1:
+                            <span class="badge bg-danger">Bị từ chối</span>
+                            ; break;
+                        default:
+                            <span class="badge bg-secondary">Khác</span>
+                            ; break;
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@don.ID">Xem chi tiết</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Khởi tạo DataTables trên bảng có ID là 'duyetDiemTable'
+            $('#XetDuyetTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
+                },
+                "paging": true,       // Bật phân trang
+                "ordering": true,     // Bật sắp xếp cột
+                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
+                "searching": true,    // Bật ô tìm kiếm toàn cục
+                "responsive": true    // Bật chế độ responsive cho bảng
+            });
+        });
+    </script>
+}

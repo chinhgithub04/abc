@@ -1,0 +1,66 @@
+﻿@model Scholarship_Distribution_Management_System.Models.ViewModel.TaiKhoanDayDuViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết tài khoản";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Mã người dùng:</dt>
+            <dd class="col-sm-9">@Model.ID</dd>
+
+            <dt class="col-sm-3">Họ tên:</dt>
+            <dd class="col-sm-9">@Model.HoTen</dd>
+
+            <dt class="col-sm-3">Ngày sinh:</dt>
+            <dd class="col-sm-9">@Model.NgaySinh?.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Giới tính:</dt>
+            <dd class="col-sm-9">@Model.GioiTinh</dd>
+
+            <dt class="col-sm-3">Địa chỉ:</dt>
+            <dd class="col-sm-9">@Model.DiaChi</dd>
+
+            <dt class="col-sm-3">Email:</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Số điện thoại:</dt>
+            <dd class="col-sm-9">@Model.SDT</dd>
+
+            <dt class="col-sm-3">Trạng thái:</dt>
+            <dd class="col-sm-9">
+                @if (Model.TrangThai == 0)
+                {
+                    <span class="badge bg-danger">Khóa</span>
+                }
+                else
+                {
+                    <span class="badge bg-success">Mở</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Vai trò:</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-primary">@Model.VaiTro</span>
+            </dd>
+
+            @if (Model.VaiTro == "SinhVien")
+            {
+                <dt class="col-sm-3">Lớp:</dt>
+                <dd class="col-sm-9">@Model.TenLopSH</dd>
+
+                <dt class="col-sm-3">Ngành:</dt>
+                <dd class="col-sm-9">@Model.TenNganh</dd>
+
+                <dt class="col-sm-3">Khoa:</dt>
+                <dd class="col-sm-9">@Model.TenKhoa</dd>
+            }
+        </dl>
+    </div>
+</div>
+<a asp-controller="TrangChu" asp-action="Index" class="btn btn-secondary mt-3">Thoát</a>
+<a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-warning mt-3 mx-3">Sửa thông tin cá nhân</a>
+

@@ -9,37 +9,37 @@
 <div class="card mt-4">
     <div class="card-body">
         <dl class="row">
-            <dt class="col-sm-3">Tên đợt:</dt>
+            <dt class="col-sm-3 text-muted">Tên đợt:</dt>
             <dd class="col-sm-9">@Model.TenDot</dd>
 
-            <dt class="col-sm-3">Điều kiện:</dt>
+            <dt class="col-sm-3 text-muted">Điều kiện:</dt>
             <dd class="col-sm-9">@Model.DieuKien</dd>
 
-            <dt class="col-sm-3">Số lượng:</dt>
+            <dt class="col-sm-3 text-muted">Số lượng:</dt>
             <dd class="col-sm-9">@Model.SoLuong</dd>
 
-            <dt class="col-sm-3">Tiền:</dt>
+            <dt class="col-sm-3 text-muted">Tiền:</dt>
             <dd class="col-sm-9">@Model.Tien.ToString("N0") VNĐ</dd>
 
-            <dt class="col-sm-3">Ngày tạo:</dt>
+            <dt class="col-sm-3 text-muted">Ngày tạo:</dt>
             <dd class="col-sm-9">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3">Ngày bắt đầu nộp:</dt>
-            <dd class="col-sm-9">@Model.NgayBatDauNop.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-3 text-muted">Thời gian nộp hồ sơ:</dt>
+            <dd class="col-sm-9">@Model.NgayBatDauNop.ToString("dd/MM/yyyy") → @Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3">Ngày kết thúc nộp:</dt>
-            <dd class="col-sm-9">@Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-3 text-muted">Ngày xét duyệt:</dt>
+            <dd class="col-sm-9">@Model.NgayKetThucNop.ToString("dd/MM/yyyy") → @Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3">Ngày hội đồng duyệt:</dt>
-            <dd class="col-sm-9">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-3 text-muted">Ngày hội đồng duyệt:</dt>
+            <dd class="col-sm-9">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy") → @Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3">Ngày phòng tài chính xác nhận phát học bổng:</dt>
-            <dd class="col-sm-9">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-3 text-muted">Ngày PTC duyệt:</dt>
+            <dd class="col-sm-9">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy") → @Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3">Ngày kết thúc:</dt>
+            <dt class="col-sm-3 text-muted">Ngày kết thúc:</dt>
             <dd class="col-sm-9">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3">Trạng thái:</dt>
+            <dt class="col-sm-3 text-muted">Trạng thái:</dt>
             <dd class="col-sm-9">
                 @{
                     var now = DateTime.Now;

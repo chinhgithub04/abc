@@ -1,0 +1,16 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.HoatDong
+@{
+    ViewData["Title"] = "Chi tiết hoạt động";
+}
+
+<h2>Chi tiết hoạt động</h2>
+<div class="mb-3">
+    <strong>Mã hoạt động:</strong> @Model.ID
+</div>
+
+<div class="mb-3">
+    <strong>Tên hoạt động:</strong> @Model.TenHoatDong
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-warning">Sửa</a>
+<a asp-action="Index" class="btn btn-secondary">Quay lại</a>

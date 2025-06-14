@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.NghienCuuKhoaHoc>
+@{
+    ViewData["Title"] = "Danh sách nghiên cứu khoa học";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Thêm đề tài</a>
+</p>
+
+<table class="table table-bordered table-striped" id="NghienCuuTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên đề tài</th>
+            <th>Thành tích</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ID</td>
+                <td>@item.TenDeTai</td>
+                <td>@item.ThanhTich</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-info btn-sm">Chi tiết</a>
+                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-warning btn-sm">Sửa</a>
+                    <form asp-action="Delete" asp-route-id="@item.ID" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Khởi tạo DataTables trên bảng có ID là 'duyetDiemTable'
+            $('#NghienCuuTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
+                },
+                "paging": true,       // Bật phân trang
+                "ordering": true,     // Bật sắp xếp cột
+                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
+                "searching": true,    // Bật ô tìm kiếm toàn cục
+                "responsive": true    // Bật chế độ responsive cho bảng
+            });
+        });
+    </script>
+}

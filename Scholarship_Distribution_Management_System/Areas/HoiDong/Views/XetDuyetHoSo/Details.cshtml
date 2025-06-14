@@ -1,0 +1,139 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong
+
+@{
+    ViewData["Title"] = "Chi tiết hồ sơ xin học bổng";
+}
+
+<h2 class="mb-4 text-primary">@ViewData["Title"]</h2>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <strong>Thông tin sinh viên</strong>
+    </div>
+    <div class="card-body">
+        <table class="table table-borderless mb-0">
+
+            <tr>
+                <th>MSV:</th>
+                <td>@Model.SinhVien?.Id</td>
+            </tr>
+            <tr>
+                <th>Họ tên:</th>
+                <td>@Model.SinhVien?.HoTen</td>
+            </tr>
+
+            <tr>
+                <th>Email:</th>
+                <td>@Model.SinhVien?.Email</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <strong>Thông tin hồ sơ</strong>
+    </div>
+    <div class="card-body">
+        <table class="table table-borderless mb-0">
+            <tr>
+                <th>Đợt học bổng:</th>
+                <td>@Model.DotHocBong?.TenDot</td>
+            </tr>
+            <tr>
+                <th>Ngày nộp:</th>
+                <td>@Model.NgayNop.ToString("dd/MM/yyyy")</td>
+            </tr>
+            <tr>
+                <th>Điểm học tập:</th>
+                <td>@Model.DiemHocTap</td>
+            </tr>
+            <tr>
+                <th>Điểm rèn luyện:</th>
+                <td>@Model.DiemRenLuyen</td>
+            </tr>
+            <tr>
+                <th>Trạng thái:</th>
+                <td>
+                    @switch (Model.TrangThai)
+                    {
+                        case 1:
+                            <span class="badge bg-warning text-dark">Chờ xét</span>
+                            ; break;
+                        case 2:
+                            <span class="badge bg-success">Đã duyệt</span>
+                            ; break;
+                        case -1:
+                            <span class="badge bg-danger">Bị từ chối</span>
+                            ; break;
+                        default:
+                            <span class="badge bg-secondary">Không xác định</span>
+                            ; break;
+                    }
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <strong>Hoạt động tham gia</strong>
+    </div>
+    <div class="card-body">
+        @if (Model.HoatDongCuaSinhViens != null && Model.HoatDongCuaSinhViens.Any())
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var hoatDong in Model.HoatDongCuaSinhViens!)
+                {
+                    <li class="list-group-item">@hoatDong.HoatDong?.TenHoatDong</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">Không có hoạt động nào được ghi nhận.</p>
+        }
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <strong>Nghiên cứu khoa học</strong>
+    </div>
+    <div class="card-body">
+        @if (Model.NghienCuuCuaSinhViens != null && Model.NghienCuuCuaSinhViens.Any())
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var nc in Model.NghienCuuCuaSinhViens!)
+                {
+                    <li class="list-group-item">
+                        <strong>@nc.NghienCuu?.TenDeTai</strong> — <em>@nc.NghienCuu?.ThanhTich</em>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">Không có nghiên cứu khoa học nào được ghi nhận.</p>
+        }
+    </div>
+</div>
+
+@if (Model.TrangThai == 1)
+{
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        <form asp-action="TuChoi" asp-route-id="@Model.ID" method="post" class="d-inline m-3" onsubmit="return confirm('Bạn có chắc muốn từ chối hồ sơ này không?');">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-x-circle"></i> Từ chối hồ sơ
+            </button>
+        </form>
+        <form asp-action="Duyet" asp-route-id="@Model.ID" method="post" class="d-inline">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-circle"></i> Duyệt hồ sơ
+            </button>
+        </form>
+</div>
+}

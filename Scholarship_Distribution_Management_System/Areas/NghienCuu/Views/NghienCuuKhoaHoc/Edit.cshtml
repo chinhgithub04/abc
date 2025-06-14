@@ -1,0 +1,22 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.NghienCuuKhoaHoc
+@{
+    ViewData["Title"] = "Sửa đề tài";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ID" />
+    <div class="form-group mb-2">
+        <label asp-for="TenDeTai" class="control-label">Tên đề tài</label>
+        <input asp-for="TenDeTai" class="form-control" />
+        <span asp-validation-for="TenDeTai" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="ThanhTich" class="control-label">Thành tích</label>
+        <input asp-for="ThanhTich" class="form-control" />
+        <span asp-validation-for="ThanhTich" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

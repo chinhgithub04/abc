@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] </title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="icon" type="image/png" href="~/images/Logo1.png">
+    @* DataTables CSS *@
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/3.0.0/css/responsive.dataTables.min.css" /> @* Để bảng responsive *@
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+@{
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+
+    string isActive(string controller) =>
+        controller == currentController ? "active" : "";
+}
+
+<body>
+    <header>
+        <a class="header-left" asp-controller="TrangChu" asp-action="Index">
+            <img src="~/Images/logo.png" alt="UTE Logo" class="logo"> <div class="site-title">
+                <h1>TRƯỜNG ĐẠI HỌC SƯ PHẠM KỸ THUẬT</h1>
+                <p>THE UNIVERSITY OF TECHNOLOGY AND EDUCATION</p>
+            </div>
+        </a>
+        <div class="header-right">
+            <div class="user-info-dropdown dropdown">
+
+                <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUserHeader" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="~/Images/Avatar.png" alt="Avatar" width="36" height="36" class="rounded-circle me-2">
+                    <div class="user-text">
+                        @using System.Security.Claims
+                        @{
+                            var hoTen = User.FindFirst("HoTen")?.Value;
+                            var role = User.Claims.FirstOrDefault(c => c.Type == "VaiTro")?.Value;
+                        }
+                        <span class="user-name">@hoTen</span>
+                        <span class="user-role">@User.FindFirst("VaiTro")?.Value</span>
+                    </div>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUserHeader">
+                    <li><a asp-controller="ThongTinTaiKhoan" asp-action="Details" class="dropdown-item">Xem tài khoản</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li> 
+                        <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
+                            <button type="submit" class="dropdown-item">Đăng xuất</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            </div>
+    </header>
+
+    @await Html.PartialAsync("_Breadcrumb", ViewBag.Breadcrumbs as List<Scholarship_Distribution_Management_System.Models.BreadcrumbItem>)
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>@User.FindFirst("VaiTro")?.Value</h2>
+            <ul>
+                <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Trang chủ</a></li>
+                <li><a class="@isActive("XetDuyetHoSo") @isActive("DotHocBong")" asp-controller="DotHocBong" asp-action="Index">Duyệt hồ sơ học bổng</a></li>
+                <li>
+                    
+                    <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
+                        <button type="submit" class="dropdown-item">Đăng xuất</button>
+                    </form>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+    <div class="space-body"></div>
+    <footer>
+        <div class="footer-section">
+            <h4>TRƯỜNG ĐẠI HỌC SƯ PHẠM KỸ THUẬT</h4>
+            <p><i class="fas fa-map-marker-alt"></i> Cơ sở 1: 48 Cao Thắng, Thanh Bình, Hải Châu, Đà Nẵng</p>
+            <p><i class="fas fa-map-marker-alt"></i> Cơ sở 2: Khu đô thị Đại học, Hòa Quý, Ngũ Hành Sơn, Đà Nẵng</p>
+        </div>
+        <div class="footer-section">
+            <h4>THÔNG TIN LIÊN LẠC</h4>
+            <p><i class="fas fa-phone"></i> Điện thoại: 0236 3820303</p>
+            <p><i class="fas fa-envelope"></i> Email: qlcl@ute.udn.vn</p>
+        </div>
+        <div class="footer-section">
+            <h4>KẾT NỐI ĐẾN TRƯỜNG</h4>
+            <div class="social-icons">
+                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-google-plus-g"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    @* DataTables JavaScript (sau jQuery) *@
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.0/js/dataTables.responsive.min.js"></script>
+
+    @* Tùy chọn: File ngôn ngữ tiếng Việt cho DataTables *@
+    <script src="https://cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"></script>
+</body>
+</html>

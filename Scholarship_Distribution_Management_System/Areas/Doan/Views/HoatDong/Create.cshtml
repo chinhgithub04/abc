@@ -1,0 +1,25 @@
+﻿@model Scholarship_Distribution_Management_System.Models.Entities.HoatDong
+@{
+    ViewData["Title"] = "Thêm hoạt động";
+}
+
+<h2>Thêm hoạt động</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="ID" class="form-label">Mã hoạt động</label>
+        <input asp-for="ID" class="form-control" />
+        <span asp-validation-for="ID" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="TenHoatDong" class="form-label">Tên hoạt động</label>
+        <input asp-for="TenHoatDong" class="form-control" />
+        <span asp-validation-for="TenHoatDong" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

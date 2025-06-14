@@ -214,14 +214,14 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user != null && user.TrangThai!=0)
             {
-                user.TrangThai = 0; // Gán trạng thái là 0
+                user.TrangThai = 0;
             }
             else
             {
-                user.TrangThai = 1; // Gán trạng thái là 0
+                user.TrangThai = 1;
                 
             }
-            await _userManager.UpdateAsync(user); // Cập nhật lại tài khoản
+            await _userManager.UpdateAsync(user);
             return RedirectToAction("Index");
         }
 
