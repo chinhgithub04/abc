@@ -66,11 +66,10 @@
     <div class="container">
         <aside class="sidebar">
             <h2>@User.FindFirst("VaiTro")?.Value</h2>
-            <ul>
-                <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Trang chủ</a></li>
+            <ul>                <li><a class="@isActive("TrangChu")" asp-controller="TrangChu" asp-action="Index">Trang chủ</a></li>
                 <li><a class="@isActive("QLDotHocBong")" asp-controller="QLDotHocBong" asp-action="Index">Quản lý đợt học bổng</a></li>
                 <li><a class="@isActive("DotHocBong") @isActive("DuyetDiemRenLuyen")" asp-controller="DotHocBong" asp-action="Index">Duyệt điểm rèn luyện</a></li>
-                <li><a href="#">Danh sách điểm rèn luyện</a></li>
+                <li><a class="@isActive("DiemRenLuyen")" asp-controller="DiemRenLuyen" asp-action="Index">Danh sách điểm rèn luyện</a></li>
                 <li>
                     <form asp-controller="Account" asp-action="Logout" asp-area="" method="post" id="logoutForm">
                         <button type="submit" class="dropdown-item">Đăng xuất</button>

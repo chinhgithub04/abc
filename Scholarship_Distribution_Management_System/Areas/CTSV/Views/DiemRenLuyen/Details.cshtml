@@ -1,0 +1,83 @@
+@model Scholarship_Distribution_Management_System.Models.Entities.Diem
+
+@{
+    ViewData["Title"] = "Chi tiết điểm rèn luyện";
+}
+
+<div class="diem-ren-luyen-container">
+    <div class="diem-ren-luyen-header">
+        <h2>@ViewData["Title"]</h2>
+        <p class="text-muted">Thông tin chi tiết điểm rèn luyện của sinh viên</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-info-group">
+                        <label class="info-label">Mã sinh viên</label>
+                        <div class="info-value">@Model.ID</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-info-group">
+                        <label class="info-label">Họ và tên</label>
+                        <div class="info-value">@Model.User?.HoTen</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="form-info-group">
+                        <label class="info-label">Lớp</label>
+                        <div class="info-value">@Model.User?.LopSH?.TenLopSH</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-info-group">
+                        <label class="info-label">Ngành</label>
+                        <div class="info-value">@Model.User?.LopSH?.Nganh?.TenNganh</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-info-group">
+                        <label class="info-label">Khoa</label>
+                        <div class="info-value">@Model.User?.LopSH?.Nganh?.Khoa?.TenKhoa</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="form-info-group">
+                        <label class="info-label">Điểm rèn luyện</label>                        <div class="info-value score-value">
+                            @if (Model.DiemRenLuyen.HasValue)
+                            {
+                                @((int)Model.DiemRenLuyen.Value)
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/diemRenLuyen.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/diemRenLuyen.css" />
+}

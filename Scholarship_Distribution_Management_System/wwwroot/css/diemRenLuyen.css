@@ -1,0 +1,173 @@
+/**
+ * Điểm Rèn Luyện CSS
+ * Styles for the student discipline score management screens
+ */
+
+/* Container styling */
+.diem-ren-luyen-container {
+    padding: 20px 0;
+}
+
+.diem-ren-luyen-header {
+    margin-bottom: 25px;
+}
+
+/* Ensuring left alignment for headers */
+.diem-ren-luyen-header .col-md-8 {
+    text-align: left;
+}
+
+.diem-ren-luyen-header h2 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling enhancements */
+#diemRenLuyenTable {
+    width: 100% !important;
+    border-collapse: collapse;
+}
+
+#diemRenLuyenTable thead th {    
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+#diemRenLuyenTable tbody td {
+    text-align: left;
+    padding: 12px 15px;
+}
+
+/* Action button container */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Export button styling */
+.export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #198754;
+    border-color: #198754;
+    transition: all 0.3s;
+    padding: 8px 15px;
+}
+
+.export-btn:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+.export-btn i {
+    font-size: 1.1rem;
+}
+
+/* Detail form styling */
+.form-info-group {
+    margin-bottom: 15px;
+}
+
+.info-label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    padding: 8px 12px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.score-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #198754;
+}
+
+/* Custom DataTables styling */
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    padding: 6px 10px;
+    margin-left: 10px;
+}
+
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    padding: 5px 10px;
+    margin: 0 5px;
+}
+
+.dataTables_wrapper .dataTables_info {
+    padding-top: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    padding-top: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 5px 10px;
+    margin: 0 2px;
+    border-radius: 4px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: white !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .button-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .form-info-group {
+        margin-bottom: 20px;
+    }
+    
+    #diemRenLuyenTable th, 
+    #diemRenLuyenTable td {
+        padding: 8px 5px;
+    }
+}

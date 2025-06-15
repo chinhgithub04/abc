@@ -1,0 +1,78 @@
+@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.Diem>
+
+@{
+    ViewData["Title"] = "Danh sách điểm rèn luyện";
+}
+
+<div class="diem-ren-luyen-container">
+    <div class="diem-ren-luyen-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2>@ViewData["Title"]</h2>
+                <p class="text-muted">Quản lý điểm rèn luyện của sinh viên trong hệ thống</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="ExportToExcel" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="diemRenLuyenTable" class="table table-striped table-hover responsive nowrap text-start" width="100%">                <thead>
+                    <tr>
+                        <th class="text-center">STT</th>
+                        <th>Mã sinh viên</th>
+                        <th>Họ và tên</th>
+                        <th>Khoa</th>
+                        <th>Lớp</th>
+                        <th class="text-center">Điểm rèn luyện</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int stt = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(stt++)</td>
+                            <td>@item.ID</td>
+                            <td>@item.User?.HoTen</td>
+                            <td>@item.User?.LopSH?.Nganh?.Khoa?.TenKhoa</td>
+                            <td>@item.User?.LopSH?.TenLopSH</td>
+                            <td>
+                                @if (item.DiemRenLuyen.HasValue)
+                                {
+                                    <span class="badge bg-success">@((int)item.DiemRenLuyen.Value)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Chưa có</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info" title="Xem">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/diemRenLuyen.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/diemRenLuyen.css" />
+}
