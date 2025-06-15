@@ -1,0 +1,82 @@
+@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.Diem>
+
+@{
+    ViewData["Title"] = "Danh sách điểm học tập";
+}
+
+<div class="diem-hoc-tap-container">
+    <div class="diem-hoc-tap-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2>@ViewData["Title"]</h2>
+                <p class="text-muted">Quản lý điểm học tập của sinh viên trong hệ thống</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="ExportToExcel" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="diemHocTapTable" class="table table-striped table-hover responsive nowrap text-start" width="100%">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã sinh viên</th>
+                        <th>Họ và tên</th>
+                        <th>Khoa</th>
+                        <th>Lớp</th>
+                        <th>Điểm học tập</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int stt = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(stt++)</td>
+                            <td>@item.ID</td>
+                            <td>@item.User?.HoTen</td>
+                            <td>@item.User?.LopSH?.Nganh?.Khoa?.TenKhoa</td>
+                            <td>@item.User?.LopSH?.TenLopSH</td>
+                            <td>
+                                @if (item.DiemHocTap.HasValue)
+                                {
+                                    <span class="badge bg-success">@item.DiemHocTap.Value.ToString("F2")</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Chưa có</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info" title="Xem">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-primary" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/diemHocTap.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/diemHocTap.css" />
+}

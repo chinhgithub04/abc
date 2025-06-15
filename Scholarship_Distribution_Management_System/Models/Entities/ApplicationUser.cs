@@ -14,6 +14,7 @@
 
         // Điều hướng
         public LopSH? LopSH { get; set; }
+        public ICollection<Diem>? DiemList { get; set; }
     }
 
 }

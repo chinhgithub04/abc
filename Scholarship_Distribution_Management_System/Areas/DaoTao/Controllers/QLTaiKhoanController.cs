@@ -117,6 +117,21 @@ namespace Scholarship_Distribution_Management_System.Areas.DaoTao.Controllers
                 }
 
                 await _userManager.AddToRoleAsync(user, model.VaiTro);
+                
+                // Nếu là sinh viên, tạo bản ghi điểm mới
+                if (model.VaiTro == "SinhVien")
+                {
+                    var diem = new Diem
+                    {
+                        ID = model.ID,
+                        DiemHocTap = null,
+                        DiemRenLuyen = null
+                    };
+                    
+                    _context.Diems.Add(diem);
+                    await _context.SaveChangesAsync();
+                }
+                
                 return RedirectToAction("Index");
             }
 

@@ -22,7 +22,7 @@ namespace Scholarship_Distribution_Management_System.Models.Entities
         public DbSet<LopSH> LopSHs { get; set; }
         public DbSet<Khoa> Khoas { get; set; }
         public DbSet<Nganh> Nganhs { get; set; }
-
+        public DbSet<Diem> Diems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

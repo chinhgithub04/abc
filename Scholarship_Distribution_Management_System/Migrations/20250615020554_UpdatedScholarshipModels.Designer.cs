@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scholarship_Distribution_Management_System.Models.Entities;
 
@@ -11,9 +12,11 @@ using Scholarship_Distribution_Management_System.Models.Entities;
 namespace Scholarship_Distribution_Management_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250615020554_UpdatedScholarshipModels")]
+    partial class UpdatedScholarshipModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,22 +244,6 @@ namespace Scholarship_Distribution_Management_System.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Scholarship_Distribution_Management_System.Models.Entities.Diem", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<float?>("DiemHocTap")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("DiemRenLuyen")
-                        .HasColumnType("real");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Diems");
                 });
 
             modelBuilder.Entity("Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong", b =>
@@ -589,17 +576,6 @@ namespace Scholarship_Distribution_Management_System.Migrations
                     b.Navigation("LopSH");
                 });
 
-            modelBuilder.Entity("Scholarship_Distribution_Management_System.Models.Entities.Diem", b =>
-                {
-                    b.HasOne("Scholarship_Distribution_Management_System.Models.Entities.ApplicationUser", "User")
-                        .WithMany("DiemList")
-                        .HasForeignKey("ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong", b =>
                 {
                     b.HasOne("Scholarship_Distribution_Management_System.Models.Entities.DotHocBong", "DotHocBong")
@@ -742,11 +718,6 @@ namespace Scholarship_Distribution_Management_System.Migrations
                     b.Navigation("DonXinHocBong");
 
                     b.Navigation("NghienCuu");
-                });
-
-            modelBuilder.Entity("Scholarship_Distribution_Management_System.Models.Entities.ApplicationUser", b =>
-                {
-                    b.Navigation("DiemList");
                 });
 
             modelBuilder.Entity("Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong", b =>
