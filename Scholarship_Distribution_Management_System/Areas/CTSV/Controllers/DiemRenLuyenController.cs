@@ -21,9 +21,7 @@ namespace Scholarship_Distribution_Management_System.Areas.CTSV.Controllers
         public DiemRenLuyenController(ApplicationDbContext context)
         {
             _context = context;
-        }
-
-        public async Task<IActionResult> Index()
+        }        public async Task<IActionResult> Index()
         {
             var diemRenLuyenList = await _context.Diems
                 .Include(d => d.User)
@@ -32,6 +30,14 @@ namespace Scholarship_Distribution_Management_System.Areas.CTSV.Controllers
                             .ThenInclude(n => n.Khoa)
                 .Where(d => d.User != null)
                 .ToListAsync();
+
+            // Get active scholarship types for the dropdown
+            var activeScholarships = await _context.DotHocBongs
+                .Where(d => d.TrangThai == 1) // Assuming 1 = active status
+                .OrderByDescending(d => d.NgayTao)
+                .ToListAsync();
+            
+            ViewBag.ActiveScholarships = activeScholarships;
 
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
@@ -152,6 +158,119 @@ namespace Scholarship_Distribution_Management_System.Areas.CTSV.Controllers
                 
                 // Generate a file name with timestamp
                 string fileName = $"DanhSachDiemRenLuyen_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+                
+                // Convert to bytes
+                var content = package.GetAsByteArray();
+                
+                // Return the file
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+        }
+
+        public async Task<IActionResult> ExportByScholarshipType(string scholarshipId)
+        {
+            if (string.IsNullOrEmpty(scholarshipId))
+            {
+                return BadRequest("Vui lòng chọn một đợt học bổng");
+            }
+
+            // Get the scholarship details
+            var dotHocBong = await _context.DotHocBongs
+                .FirstOrDefaultAsync(d => d.ID == scholarshipId);
+
+            if (dotHocBong == null)
+            {
+                return NotFound("Không tìm thấy đợt học bổng");
+            }
+
+            // Get students who registered for this scholarship
+            var studentIds = await _context.DonXinHocBongs
+                .Where(d => d.IDDot == scholarshipId)
+                .Select(d => d.IDSinhVien)
+                .ToListAsync();
+
+            // Get the scores for those students
+            var diemRenLuyenList = await _context.Diems
+                .Include(d => d.User)
+                    .ThenInclude(u => u.LopSH)
+                        .ThenInclude(l => l.Nganh)
+                            .ThenInclude(n => n.Khoa)
+                .Where(d => d.User != null && studentIds.Contains(d.ID))
+                .ToListAsync();
+            
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add($"Điểm RL - {dotHocBong.TenDot}");
+                
+                // Add header with styling
+                worksheet.Cells[1, 1].Value = "STT";
+                worksheet.Cells[1, 2].Value = "Mã sinh viên";
+                worksheet.Cells[1, 3].Value = "Họ và tên";
+                worksheet.Cells[1, 4].Value = "Khoa";
+                worksheet.Cells[1, 5].Value = "Ngành";
+                worksheet.Cells[1, 6].Value = "Lớp";
+                worksheet.Cells[1, 7].Value = "Điểm rèn luyện";
+                
+                // Style the header
+                using (var range = worksheet.Cells[1, 1, 1, 7])
+                {
+                    range.Style.Font.Bold = true;
+                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                    range.Style.Font.Color.SetColor(Color.Black);
+                    range.Style.Border.Bottom.Style = ExcelBorderStyle.Medium;
+                    range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                }
+                
+                // Add data
+                int row = 2;
+                for (int i = 0; i < diemRenLuyenList.Count; i++)
+                {
+                    var diem = diemRenLuyenList[i];
+                    
+                    worksheet.Cells[row, 1].Value = i + 1;
+                    worksheet.Cells[row, 2].Value = diem.ID;
+                    worksheet.Cells[row, 3].Value = diem.User?.HoTen;
+                    worksheet.Cells[row, 4].Value = diem.User?.LopSH?.Nganh?.Khoa?.TenKhoa;
+                    worksheet.Cells[row, 5].Value = diem.User?.LopSH?.Nganh?.TenNganh;
+                    worksheet.Cells[row, 6].Value = diem.User?.LopSH?.TenLopSH;
+                    
+                    // Format the scores
+                    if (diem.DiemRenLuyen.HasValue)
+                    {
+                        worksheet.Cells[row, 7].Value = (int)diem.DiemRenLuyen.Value;
+                        worksheet.Cells[row, 7].Style.Numberformat.Format = "0";
+                    }
+                    else
+                    {
+                        worksheet.Cells[row, 7].Value = "Chưa có";
+                    }
+                    
+                    row++;
+                }
+                
+                // Auto-fit columns
+                worksheet.Cells.AutoFitColumns();
+                
+                // Set column styles
+                worksheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // STT
+                worksheet.Column(7).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Điểm rèn luyện
+                
+                // Apply a banded row style for readability
+                for (int i = 2; i < row; i++)
+                {
+                    if (i % 2 == 0)
+                    {
+                        using (var range = worksheet.Cells[i, 1, i, 7])
+                        {
+                            range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(240, 240, 240));
+                        }
+                    }
+                }
+                
+                // Generate a file name with timestamp
+                string fileName = $"DiemRenLuyen_{dotHocBong.TenDot}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 
                 // Convert to bytes
                 var content = package.GetAsByteArray();

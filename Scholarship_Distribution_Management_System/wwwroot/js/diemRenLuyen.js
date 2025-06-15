@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (exportBtn) {
         initializeExportButton(exportBtn);
     }
+    
+    // Initialize scholarship dropdown if it exists
+    const scholarshipDropdown = document.getElementById('scholarshipDropdown');
+    if (scholarshipDropdown) {
+        initializeScholarshipDropdown();
+    }
 });
 
 /**
@@ -97,4 +103,28 @@ function initializeExportButton(exportBtn) {
             placement: 'bottom'
         });
     }
+}
+
+/**
+ * Initialize scholarship dropdown interactions
+ */
+function initializeScholarshipDropdown() {
+    const dropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
+    
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Add loading indicator when clicked
+            if (!this.classList.contains('disabled')) {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Đang xuất...';
+                this.classList.add('disabled');
+                
+                // Reset after a short delay if the browser doesn't navigate away
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('disabled');
+                }, 3000);
+            }
+        });
+    });
 }

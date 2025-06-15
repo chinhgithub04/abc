@@ -10,11 +10,30 @@
             <div class="col-md-8">
                 <h2>@ViewData["Title"]</h2>
                 <p class="text-muted">Quản lý điểm rèn luyện của sinh viên trong hệ thống</p>
-            </div>
-            <div class="col-md-4 text-end">
-                <a asp-action="ExportToExcel" class="btn btn-success">
-                    <i class="bi bi-file-earmark-excel"></i> Xuất Excel
-                </a>
+            </div>            <div class="col-md-4 text-end">
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="ExportToExcel" class="btn btn-success">
+                        <i class="bi bi-file-earmark-excel"></i> Xuất tất cả
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="scholarshipDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-filter"></i> Xuất theo đợt học bổng
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="scholarshipDropdown">
+                            @if (ViewBag.ActiveScholarships != null && ((List<Scholarship_Distribution_Management_System.Models.Entities.DotHocBong>)ViewBag.ActiveScholarships).Any())
+                            {
+                                @foreach (var scholarship in ViewBag.ActiveScholarships)
+                                {
+                                    <li><a class="dropdown-item" href="@Url.Action("ExportByScholarshipType", new { scholarshipId = scholarship.ID })">@scholarship.TenDot</a></li>
+                                }
+                            }
+                            else
+                            {
+                                <li><span class="dropdown-item">Không có đợt học bổng nào</span></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

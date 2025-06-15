@@ -1,24 +1,114 @@
-﻿@model List<Scholarship_Distribution_Management_System.Models.ViewModel.InfoHocBongViewModel>
+@model List<Scholarship_Distribution_Management_System.Models.ViewModel.InfoHocBongViewModel>
 
 @{
-    ViewData["Title"] = "Danh sách hồ sơ đăng ký học bổng";
+    ViewData["Title"] = "Duyệt điểm học tập";
 }
 
-<h2>@ViewData["Title"]</h2>
-<!-- Button để mở form modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">
-    Duyệt tự động
-</button>
+<div class="duyet-diem-container">
+    <div class="duyet-diem-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2>@ViewData["Title"]</h2>
+                <p class="text-muted">Quản lý điểm học tập của sinh viên trong hệ thống</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button type="button" class="btn btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#importModal">
+                    <i class="bi bi-upload"></i> Duyệt tự động
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="duyetDiemTable" class="table table-striped table-hover responsive nowrap text-start" width="100%">
+                <thead>
+                    <tr>
+                        <th class="text-center">STT</th>
+                        <th>Mã sinh viên</th>
+                        <th>Họ và tên</th>
+                        <th class="text-center">Ngày nộp</th>
+                        <th class="text-center">Điểm HT (SV)</th>
+                        <th class="text-center">Điểm HT (KQ)</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center"></td>
+                            <td>@item.SinhVienId</td>
+                            <td>@item.HoTen</td>
+                            <td class="text-center">@item.NgayNop?.ToShortDateString()</td>
+                            <td class="text-center">
+                                @if (item.DiemHocTap.HasValue)
+                                {
+                                    <span class="badge bg-secondary">@string.Format("{0:0.00}", item.DiemHocTap)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">-</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (item.KQDiemHT.HasValue)
+                                {
+                                    <span class="badge bg-success">@string.Format("{0:0.00}", item.KQDiemHT)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Chưa duyệt</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (item.KQDiemHT == null && item.TrangThaiDon == 1)
+                                {
+                                    <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                }
+                                else if (item.KQDiemHT == item.DiemHocTap && item.TrangThaiDon == 1)
+                                {
+                                    <span class="badge bg-success">Đã duyệt</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Từ chối</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@item.DonHocBongId" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <!-- Modal (Form nổi) -->
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form asp-action="ImportDiem" enctype="multipart/form-data" method="post">
-                <input type="hidden" name="IdDot" value="@ViewData["IdDot"]" />
+                <input type="hidden" name="IdDot" value="@ViewBag.IDDot" />
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="importModalLabel">Tải lên file Excel điểm học tập</h5>
+                    <h5 class="modal-title" id="importModalLabel">
+                        <i class="bi bi-file-earmark-excel me-2"></i>
+                        Tải lên file Excel điểm học tập
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
 
@@ -40,83 +130,22 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-success">Tải lên</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Hủy
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload"></i> Tải lên
+                    </button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
 
-@if (TempData["Message"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-        @TempData["Message"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+@section Scripts {
+    <script src="~/js/duyetDiemHocTap.js"></script>
 }
 
-<table id="duyetDiemTable" class="table table-bordered display responsive nowrap">
-    <thead>
-        <tr>
-            <th>STT</th>
-            <th class="text-start">Mã</th>
-            <th>Sinh viên</th>
-            <th>Ngày nộp</th>
-            <th>Điểm học tập</th>
-            <th>Kết quả điểm</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@(Model.IndexOf(item) + 1)</td>
-                <td class ="text-start">@item.SinhVienId</td>
-                <td>@item.HoTen</td>
-                <td>@item.NgayNop?.ToShortDateString()</td>
-                <td>@item.DiemHocTap</td>
-                <td>@item.KQDiemHT</td>
-
-                <td>
-                    @if (item.KQDiemHT == null && item.TrangThaiDon == 1)
-                    {
-                        <span class="badge bg-warning text-dark">Chờ xử lý</span>
-                    }
-                    else if (item.KQDiemHT == item.DiemHocTap && item.TrangThaiDon == 1)
-                    {
-                        <span class="badge bg-success">Đã duyệt</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Từ chối</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.DonHocBongId" class="btn btn-info btn-sm">Xem chi tiết</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            // Khởi tạo DataTables trên bảng có ID là 'duyetDiemTable'
-            $('#duyetDiemTable').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
-                },
-                "paging": true,       // Bật phân trang
-                "ordering": true,     // Bật sắp xếp cột
-                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
-                "searching": true,    // Bật ô tìm kiếm toàn cục
-                "responsive": true    // Bật chế độ responsive cho bảng
-            });
-        });
-    </script>
+@section Styles {
+    <link rel="stylesheet" href="~/css/duyetDiemHocTap.css" />
 }
