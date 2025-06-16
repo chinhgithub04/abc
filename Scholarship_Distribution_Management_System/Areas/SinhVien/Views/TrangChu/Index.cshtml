@@ -1,16 +1,711 @@
 ﻿@{
-    ViewData["Title"] = "Trang Chủ";
+    ViewData["Title"] = "Trang Chủ Sinh Viên";
     Layout = "~/Areas/SinhVien/Views/Shared/_Layout.cshtml";
-}
-
-<h2>Trang chủ</h2>
-@using System.Security.Claims
-@{
+    
     var hoTen = User.FindFirst("HoTen")?.Value;
     var role = User.Claims.FirstOrDefault(c => c.Type == "VaiTro")?.Value;
+    var maSinhVien = User.FindFirst("MaSV")?.Value ?? "SV123456"; // Fallback value
 }
-<div class="welcome-box">
-    <p class="welcome-message">
-        Chào mừng @hoTen đến với hệ thống quản lý phân phát học bổng cho sinh viên trường đại học Sư phạm Kỹ thuật Đà Nẵng
-    </p>
+
+<div class="student-dashboard">
+    <div class="dashboard-header">
+        <h1>Cổng thông tin học bổng</h1>
+        <div class="dashboard-date">
+            <i class="far fa-calendar-alt"></i> @DateTime.Now.ToString("dddd, dd/MM/yyyy")
+        </div>
+    </div>
+
+    <div class="student-profile-card">
+        <div class="student-avatar">
+            <img src="~/Images/Avatar.png" alt="Avatar" class="avatar-img">
+            <div class="status-badge active">
+                <i class="fas fa-check"></i>
+            </div>
+        </div>
+        <div class="student-info">
+            <h2>Xin chào, @hoTen!</h2>
+            <div class="student-details">
+                <span><i class="fas fa-id-card"></i> MSSV: @maSinhVien</span>
+                <span><i class="fas fa-user-graduate"></i> @role</span>
+            </div>
+            <p class="welcome-text">Cảm ơn bạn đã sử dụng hệ thống quản lý học bổng của trường ĐH Sư Phạm Kỹ Thuật Đà Nẵng. Dưới đây là tổng quan về tình trạng học bổng và thông tin học tập của bạn.</p>
+        </div>
+    </div>
+
+    <div class="stats-overview">
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="stats-info">
+                <h3>Điểm trung bình</h3>
+                <div class="stats-value">3.65</div>
+                <div class="stats-detail">Học kỳ: HK2 (2024-2025)</div>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-medal"></i>
+            </div>
+            <div class="stats-info">
+                <h3>Điểm rèn luyện</h3>
+                <div class="stats-value">85</div>
+                <div class="stats-detail">Xếp loại: Tốt</div>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="stats-info">
+                <h3>Đơn đã nộp</h3>
+                <div class="stats-value">2</div>
+                <div class="stats-detail">1 đơn đã được duyệt</div>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-award"></i>
+            </div>
+            <div class="stats-info">
+                <h3>Học bổng đã nhận</h3>
+                <div class="stats-value">1</div>
+                <div class="stats-detail">Giá trị: 3,000,000 VNĐ</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-sections">
+        <div class="scholarship-opportunities">
+            <div class="section-header">
+                <h3><i class="fas fa-bullhorn"></i> Cơ hội học bổng</h3>
+                <a asp-controller="DotHocBong" asp-action="Index" asp-area="SinhVien" class="view-all">Xem tất cả <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="scholarship-list">
+                <div class="scholarship-item available">
+                    <div class="scholarship-header">
+                        <h4>Học bổng khuyến khích học tập HK2 (2024-2025)</h4>
+                        <span class="scholarship-tag">Đang mở</span>
+                    </div>
+                    <div class="scholarship-details">
+                        <div class="scholarship-info">
+                            <div><i class="fas fa-money-bill-wave"></i> Giá trị: 3,000,000 VNĐ - 5,000,000 VNĐ</div>
+                            <div><i class="fas fa-users"></i> Số lượng: 120 suất</div>
+                        </div>
+                        <div class="scholarship-deadline">
+                            <div class="deadline-label">Hạn nộp hồ sơ:</div>
+                            <div class="deadline-date">30/06/2025</div>
+                            <div class="deadline-countdown">Còn 15 ngày</div>
+                        </div>
+                    </div>
+                    <div class="scholarship-actions">
+                        <a href="#" class="btn-apply">Đăng ký ngay</a>
+                    </div>
+                </div>
+
+                <div class="scholarship-item available">
+                    <div class="scholarship-header">
+                        <h4>Học bổng Doanh nghiệp ABC</h4>
+                        <span class="scholarship-tag">Đang mở</span>
+                    </div>
+                    <div class="scholarship-details">
+                        <div class="scholarship-info">
+                            <div><i class="fas fa-money-bill-wave"></i> Giá trị: 10,000,000 VNĐ</div>
+                            <div><i class="fas fa-users"></i> Số lượng: 5 suất</div>
+                        </div>
+                        <div class="scholarship-deadline">
+                            <div class="deadline-label">Hạn nộp hồ sơ:</div>
+                            <div class="deadline-date">15/07/2025</div>
+                            <div class="deadline-countdown">Còn 30 ngày</div>
+                        </div>
+                    </div>
+                    <div class="scholarship-actions">
+                        <a href="#" class="btn-apply">Đăng ký ngay</a>
+                    </div>
+                </div>
+                
+                <div class="scholarship-item closed">
+                    <div class="scholarship-header">
+                        <h4>Học bổng Vượt khó HK1 (2024-2025)</h4>
+                        <span class="scholarship-tag">Đã đóng</span>
+                    </div>
+                    <div class="scholarship-details">
+                        <div class="scholarship-info">
+                            <div><i class="fas fa-money-bill-wave"></i> Giá trị: 4,000,000 VNĐ</div>
+                            <div><i class="fas fa-users"></i> Số lượng: 25 suất</div>
+                        </div>
+                        <div class="scholarship-deadline">
+                            <div class="deadline-label">Đã kết thúc vào:</div>
+                            <div class="deadline-date">15/01/2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-sidebar">
+            <div class="your-applications">
+                <div class="section-header">
+                    <h3><i class="fas fa-clipboard-list"></i> Đơn của bạn</h3>
+                    <a asp-controller="DangKyHoSo" asp-action="Index" asp-area="SinhVien" class="view-all">Chi tiết <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="applications-list">
+                        <div class="application-details">
+                            <h4>Học bổng khuyến khích HK1</h4>
+                            <div class="submission-date">Nộp ngày: 15/12/2024</div>
+                        </div>
+                    </div>
+                    <div class="application-item">
+                        <div class="application-details">
+                            <h4>Học bổng Doanh nghiệp XYZ</h4>
+                            <div class="submission-date">Nộp ngày: 10/06/2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-calendar">
+                <div class="section-header">
+                    <h3><i class="fas fa-calendar-alt"></i> Lịch hoạt động</h3>
+                </div>
+                <div class="calendar-list">
+                    <div class="calendar-item">
+                        <div class="calendar-date">
+                            <span class="day">25</span>
+                            <span class="month">Tháng 6</span>
+                        </div>
+                        <div class="calendar-content">
+                            <h4>Hạn nộp minh chứng hoạt động</h4>
+                            <p>Hạn cuối để nộp minh chứng hoạt động Đoàn - Hội học kỳ 2</p>
+                        </div>
+                    </div>
+                    <div class="calendar-item">
+                        <div class="calendar-date">
+                            <span class="day">30</span>
+                            <span class="month">Tháng 6</span>
+                        </div>
+                        <div class="calendar-content">
+                            <h4>Hạn nộp học bổng KKHT</h4>
+                            <p>Hạn cuối nộp hồ sơ học bổng khuyến khích học tập HK2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to stats cards
+            document.querySelectorAll('.stats-card').forEach((card, index) => {
+                card.style.animationDelay = (index * 0.1) + 's';
+                card.classList.add('animate-in');
+            });
+            
+            // Add animation to scholarship items
+            document.querySelectorAll('.scholarship-item').forEach((item, index) => {
+                item.style.animationDelay = (index * 0.15) + 's';
+                item.classList.add('fade-in');
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .student-dashboard {
+            padding: 0;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .dashboard-date {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .student-profile-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            display: flex;
+            gap: 1.5rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .student-profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+        }
+        
+        .student-avatar {
+            position: relative;
+        }
+        
+        .avatar-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.3);
+            object-fit: cover;
+        }
+        
+        .status-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 2px solid white;
+        }
+        
+        .student-info {
+            flex: 1;
+        }
+        
+        .student-info h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .student-details {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .welcome-text {
+            margin: 0.5rem 0 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            opacity: 0.8;
+            max-width: 90%;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stats-card {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.08);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        .stats-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transform: translateY(-3px) !important;
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.5s forwards;
+        }
+        
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stats-icon {
+            background-color: rgba(var(--primary-rgb), 0.1);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+        
+        .stats-info {
+            flex: 1;
+        }
+        
+        .stats-info h3 {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .stats-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0.3rem 0;
+        }
+        
+        .stats-detail {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        .dashboard-sections {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-header h3 i {
+            color: var(--primary-color);
+        }
+        
+        .view-all {
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .scholarship-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .scholarship-item {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.08);
+            padding: 1.25rem;
+            transition: var(--transition);
+            opacity: 0;
+        }
+        
+        .scholarship-item.available:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+        
+        .scholarship-item.closed {
+            opacity: 0.7;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+        
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .scholarship-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+        
+        .scholarship-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            flex: 1;
+        }
+        
+        .scholarship-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .scholarship-item.available .scholarship-tag {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .scholarship-item.closed .scholarship-tag {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+        
+        .scholarship-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .scholarship-info {
+            font-size: 0.85rem;
+            color: #555;
+        }
+        
+        .scholarship-info div {
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .scholarship-deadline {
+            text-align: right;
+            font-size: 0.85rem;
+        }
+        
+        .deadline-label {
+            color: #666;
+            margin-bottom: 0.2rem;
+        }
+        
+        .deadline-date {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .deadline-countdown {
+            color: #dc3545;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .scholarship-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .btn-apply {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .btn-apply:hover {
+            background-color: var(--dark-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .right-sidebar > div {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .applications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .application-item {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .application-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .status-badge.approved {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .status-badge.pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #f1a700;
+        }
+        
+        .status-badge.rejected {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .application-details {
+            flex: 1;
+        }
+        
+        .application-details h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .submission-date {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .calendar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .calendar-item {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .calendar-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .calendar-date {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .calendar-date .day {
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .calendar-date .month {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+        }
+        
+        .calendar-content {
+            flex: 1;
+        }
+        
+        .calendar-content h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .calendar-content p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        @@media (max-width: 992px) {
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .student-profile-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .student-details {
+                justify-content: center;
+            }
+            
+            .welcome-text {
+                max-width: 100%;
+            }
+        }
+    </style>
+}

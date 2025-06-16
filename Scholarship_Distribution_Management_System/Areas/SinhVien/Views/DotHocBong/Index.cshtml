@@ -1,71 +1,622 @@
 ﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.DotHocBong>
 
 @{
-    ViewData["Title"] = "Thông báo học bổng";
+    ViewData["Title"] = "Danh sách học bổng hiện có";
+    
+    // Helper method to calculate remaining days
+    string GetRemainingDays(DateTime endDate)
+    {
+        var remainingDays = (endDate - DateTime.UtcNow).Days;
+        if (remainingDays < 0) return "Đã hết hạn";
+        if (remainingDays == 0) return "Hết hạn hôm nay";
+        return $"Còn {remainingDays} ngày";
+    }
+    
+    // Helper to generate progress percentage for scholarship timeline
+    int GetProgressPercentage(DateTime startDate, DateTime endDate)
+    {
+        var totalDays = (endDate - startDate).TotalDays;
+        var daysPassed = (DateTime.UtcNow - startDate).TotalDays;
+        
+        if (daysPassed < 0) return 0;
+        if (daysPassed > totalDays) return 100;
+        
+        return (int)Math.Round((daysPassed / totalDays) * 100);
+    }
 }
 
-<h2 class="mb-4 text-primary fw-bold">Thông báo học bổng</h2>
-
-@foreach (var item in Model)
-{
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-primary text-white fw-bold">
-            <span class="me-sm-5">@item.TenDot</span>
-            <p class="m-0" style="font-size: 0.8rem; float: right">
-                @item.NgayTao.ToString("dd/MM/yyyy")
-            </p>
+<div class="scholarship-listing-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Danh sách học bổng</h1>
+            <p class="subtitle">Khám phá các học bổng hiện có và tìm cơ hội phù hợp với bạn</p>
         </div>
-        <div class="card-body">
-
-            <p style="font-size: 0.95rem;">
-                <strong>Nội dung:</strong> @item.DieuKien
-            </p>
-
-            <div class="d-flex justify-content-between mt-3">
-                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.ID">
-                    Xem chi tiết
-                </a>
-                <div class="text-end">
-                    @{
-                        var now = DateTime.UtcNow;
-
-                        string statusText;
-                        string statusColor;
-
-                        if (now < item.NgayBatDauNop)
-                        {
-                            statusText = "Sắp mở";
-                            statusColor = "info";
-                        }
-                        else if (now >= item.NgayBatDauNop && now <= item.NgayKetThucNop)
-                        {
-                            statusText = "Đang mở";
-                            statusColor = "success";
-                        }
-                        else if (now > item.NgayKetThucNop && now <= item.NgayKetThuc)
-                        {
-                            statusText = "Đang xét duyệt";
-                            statusColor = "warning";
-                        }
-                        else if (now > item.NgayKetThuc)
-                        {
-                            statusText = "Kết thúc";
-                            statusColor = "secondary";
-                        }
-                        else
-                        {
-                            statusText = "Không xác định";
-                            statusColor = "dark";
-                        }
-
-                    }
-                    <span class="badge bg-@statusColor">@statusText</span>
-                </div>
-            </div>
-        </div>
-        <div class="card-footer text-muted small">
-            <i class="bi bi-calendar-event"></i> Nộp: @item.NgayBatDauNop.ToString("dd/MM/yyyy") - @item.NgayKetThucNop.ToString("dd/MM/yyyy")
+        <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all">Tất cả</button>
+            <button class="filter-btn" data-filter="open">Đang mở</button>
+            <button class="filter-btn" data-filter="upcoming">Sắp mở</button>
+            <button class="filter-btn" data-filter="closed">Đã đóng</button>
         </div>
     </div>
+    
+    <div class="scholarship-summary">
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-award"></i>
+            </div>
+            <div class="summary-content">
+                <span class="summary-value">@Model.Count()</span>
+                <span class="summary-label">Tổng số học bổng</span>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="summary-content">
+                <span class="summary-value">@Model.Count(m => DateTime.UtcNow >= m.NgayBatDauNop && DateTime.UtcNow <= m.NgayKetThucNop)</span>
+                <span class="summary-label">Đang mở</span>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-hourglass-start"></i>
+            </div>
+            <div class="summary-content">
+                <span class="summary-value">@Model.Count(m => DateTime.UtcNow < m.NgayBatDauNop)</span>
+                <span class="summary-label">Sắp mở</span>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="summary-content">
+                <span class="summary-value">@Model.Where(m => m.NgayKetThucNop > DateTime.UtcNow).Min(m => (m.NgayKetThucNop - DateTime.UtcNow).Days)</span>
+                <span class="summary-label">Ngày đến hạn gần nhất</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="scholarship-grid">
+        @foreach (var item in Model)
+        {
+            var now = DateTime.UtcNow;
+            string statusClass = "";
+            string statusText = "";
+            
+            if (now < item.NgayBatDauNop)
+            {
+                statusClass = "upcoming";
+                statusText = "Sắp mở";
+            }
+            else if (now >= item.NgayBatDauNop && now <= item.NgayKetThucNop)
+            {
+                statusClass = "open";
+                statusText = "Đang mở";
+            }
+            else if (now > item.NgayKetThucNop && now <= item.NgayKetThuc)
+            {
+                statusClass = "reviewing";
+                statusText = "Đang xét duyệt";
+            }
+            else
+            {
+                statusClass = "closed";
+                statusText = "Kết thúc";
+            }
+            
+            <div class="scholarship-card @statusClass">
+                <div class="scholarship-status">
+                    <span class="status-indicator @statusClass"></span>
+                    <span class="status-text">@statusText</span>
+                </div>
+                
+                <div class="scholarship-content">
+                    <h3 class="scholarship-title">@item.TenDot</h3>
+                    
+                    <div class="scholarship-meta">                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Ngày tạo: @item.NgayTao.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-coins"></i>
+                            <span>Giá trị: @string.Format("{0:N0} VNĐ", item.Tien)</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Số lượng: @item.SoLuong.ToString()</span>
+                        </div>
+                    </div>
+                    
+                    <div class="scholarship-description">
+                        @(item.DieuKien?.Length > 150 ? item.DieuKien.Substring(0, 150) + "..." : item.DieuKien)
+                    </div>
+                    
+                    <div class="scholarship-timeline">
+                        <div class="timeline-label">
+                            <span>Thời gian nộp hồ sơ:</span>
+                            <span class="timeline-dates">@item.NgayBatDauNop.ToString("dd/MM") - @item.NgayKetThucNop.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="timeline-progress">
+                            @if (statusClass == "open" || statusClass == "reviewing" || statusClass == "closed")
+                            {
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: @(GetProgressPercentage(item.NgayBatDauNop, item.NgayKetThucNop))%"></div>
+                                </div>
+                                <div class="progress-status">
+                                    @if (statusClass == "open")
+                                    {
+                                        <span class="countdown">@GetRemainingDays(item.NgayKetThucNop)</span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="upcoming-label">
+                                    <i class="fas fa-clock"></i> Bắt đầu sau @GetRemainingDays(item.NgayBatDauNop)
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="scholarship-actions">
+                        <a asp-action="Details" asp-route-id="@item.ID" class="btn-details">
+                            <i class="fas fa-info-circle"></i> Xem chi tiết
+                        </a>
+                        @if (statusClass == "open")
+                        {
+                            <a href="#" class="btn-apply">
+                                <i class="fas fa-paper-plane"></i> Đăng ký ngay
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <img src="~/images/empty-scholarship.svg" alt="Không có học bổng" class="empty-image">
+            <h3>Không có học bổng nào hiện tại</h3>
+            <p>Hiện tại chưa có đợt học bổng nào được mở. Vui lòng quay lại sau.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const scholarshipCards = document.querySelectorAll('.scholarship-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Show/hide cards based on filter
+                    scholarshipCards.forEach(card => {
+                        if (filter === 'all') {
+                            card.style.display = 'flex';
+                        } else {
+                            if (card.classList.contains(filter)) {
+                                card.style.display = 'flex';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // Animate cards on page load
+            scholarshipCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('show');
+                }, 100 * index);
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .scholarship-listing-page {
+            padding: 0;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+        
+        .filter-btn:hover {
+            background-color: rgba(var(--primary-rgb), 0.05);
+            color: var(--primary-color);
+            border-color: rgba(var(--primary-rgb), 0.2);
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 6px rgba(var(--primary-rgb), 0.25);
+        }
+        
+        .scholarship-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .summary-icon {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(var(--primary-rgb), 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+        
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .scholarship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .scholarship-card {
+            position: relative;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .scholarship-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .scholarship-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        
+        .scholarship-card.open {
+            border-top: 4px solid #28a745;
+        }
+        
+        .scholarship-card.upcoming {
+            border-top: 4px solid #17a2b8;
+        }
+        
+        .scholarship-card.reviewing {
+            border-top: 4px solid #ffc107;
+        }
+        
+        .scholarship-card.closed {
+            border-top: 4px solid #6c757d;
+            opacity: 0.8;
+        }
+        
+        .scholarship-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-indicator.open {
+            background-color: #28a745;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+        }
+        
+        .status-indicator.upcoming {
+            background-color: #17a2b8;
+            box-shadow: 0 0 0 2px rgba(23, 162, 184, 0.2);
+        }
+        
+        .status-indicator.reviewing {
+            background-color: #ffc107;
+            box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+        }
+        
+        .status-indicator.closed {
+            background-color: #6c757d;
+            box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.2);
+        }
+        
+        .scholarship-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .scholarship-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-right: 80px; /* Space for the status badge */
+        }
+        
+        .scholarship-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+        
+        .meta-item i {
+            color: var(--primary-color);
+        }
+        
+        .scholarship-description {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.5;
+            flex: 1;
+        }
+        
+        .scholarship-timeline {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: rgba(0,0,0,0.02);
+            border-radius: var(--radius);
+        }
+        
+        .timeline-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-dates {
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        .progress-status {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .countdown {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #dc3545;
+        }
+        
+        .upcoming-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #17a2b8;
+            font-weight: 500;
+        }
+        
+        .scholarship-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-details, .btn-apply {
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-details {
+            color: var(--primary-color);
+            background-color: rgba(var(--primary-rgb), 0.1);
+        }
+        
+        .btn-details:hover {
+            background-color: rgba(var(--primary-rgb), 0.2);
+            color: var(--primary-color);
+        }
+        
+        .btn-apply {
+            color: white;
+            background-color: var(--primary-color);
+        }
+        
+        .btn-apply:hover {
+            background-color: var(--dark-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+        }
+        
+        .empty-image {
+            max-width: 200px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        @@media (max-width: 768px) {
+            .scholarship-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .scholarship-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .filter-tabs {
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                justify-content: flex-start;
+                width: 100%;
+            }
+            
+            .filter-btn {
+                white-space: nowrap;
+            }
+            
+            .summary-card {
+                padding: 1rem;
+            }
+            
+            .summary-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            
+            .summary-value {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
 }
 
