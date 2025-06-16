@@ -1,17 +1,205 @@
 ﻿@{
-    ViewData["Title"] = "Trang chủ";
+    ViewData["Title"] = "Hệ thống Học bổng UTE";
 }
 
-<h2>Trang chủ</h2>
-
 <div class="welcome-box">
+    <h1 class="welcome-title">HỆ THỐNG QUẢN LÝ HỌC BỔNG</h1>
     <p class="welcome-message">
-        Chào mừng bạn đến với hệ thống quản lý phân phát học bổng cho sinh viên trường đại học Sư phạm Kỹ thuật Đà Nẵng
+        Chào mừng bạn đến với hệ thống quản lý phân phát học bổng sinh viên trường Đại học Sư phạm Kỹ thuật Đà Nẵng
     </p>
-    <div class="login-prompt">
-        <p>Để sử dụng hệ thống, vui lòng đăng nhập</p>
-        <div class="login-buttons">
-            <a class="button-primary" asp-controller="Account" asp-action="Login"><i class="fas fa-user-graduate"></i> Đăng nhập</a>
+
+    <div class="features-grid">
+        <div class="feature-item">
+            <i class="fas fa-search fa-2x"></i>
+            <h3>Tra cứu thông tin</h3>
+            <p>Dễ dàng tìm kiếm và theo dõi các chương trình học bổng hiện có</p>
+        </div>
+        <div class="feature-item">
+            <i class="fas fa-file-alt fa-2x"></i>
+            <h3>Nộp đơn trực tuyến</h3>
+            <p>Đăng ký và nộp hồ sơ xin học bổng trực tuyến nhanh chóng</p>
+        </div>
+        <div class="feature-item">
+            <i class="fas fa-chart-line fa-2x"></i>
+            <h3>Theo dõi tiến trình</h3>
+            <p>Theo dõi tiến độ xét duyệt và kết quả học bổng của bạn</p>
         </div>
     </div>
+
+    <div class="login-prompt">
+        <p>Để sử dụng đầy đủ các tính năng của hệ thống, vui lòng đăng nhập</p>
+        <div class="login-buttons">
+            <a class="button-primary" asp-controller="Account" asp-action="Login">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+            <a class="button-secondary" asp-controller="Account" asp-action="Register">
+                <i class="fas fa-user-plus"></i> Đăng ký tài khoản
+            </a>
+        </div>    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Add any JavaScript here if needed
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation effect for feature items
+            const featureItems = document.querySelectorAll('.feature-item');
+            featureItems.forEach((item, index) => {
+                item.style.animationDelay = (index * 0.2) + 's';
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .welcome-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            background-color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .feature-item i {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-item h3 {
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .feature-item p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .button-secondary {
+            background-color: transparent;
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+            padding: 0.8rem 2rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        
+        .info-section {
+            margin-top: 3rem;
+            padding: 2rem 0;
+        }
+        
+        .info-section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .info-section-header h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-section-header p {
+            color: #666;
+        }
+        
+        .scholarship-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .scholarship-card {
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            background-color: white;
+        }
+        
+        .scholarship-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .scholarship-card-header {
+            padding: 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            position: relative;
+        }
+        
+        .scholarship-card-header h3 {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+        
+        .scholarship-card-body {
+            padding: 1.5rem;
+        }
+        
+        .deadline {
+            color: var(--accent-color);
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 0;
+            right: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .button-info {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .button-info:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+    </style>
+}
