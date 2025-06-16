@@ -126,13 +126,21 @@
                                     <i class="fas fa-id-card"></i>
                                     <span>@item.IDSinhVien</span>
                                 </div>
-                            </td>
-                            <td>
+                            </td>                            <td>
                                 <div class="activities-list">
-                                    @foreach (var activity in item.ActivityNames)
+                                    @if (item.ActivityNames.Any())
                                     {
-                                        <span class="activity-pill">
-                                            <i class="fas fa-certificate"></i> @activity
+                                        foreach (var activity in item.ActivityNames)
+                                        {
+                                            <span class="activity-pill">
+                                                <i class="fas fa-certificate"></i> @activity
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="no-activities">
+                                            <i class="fas fa-info-circle"></i> Không có hoạt động nào
                                         </span>
                                     }
                                 </div>
@@ -405,10 +413,22 @@
         align-items: center;
         gap: 5px;
     }
-    
-    .activity-pill i {
+      .activity-pill i {
         color: #3498db;
         font-size: 11px;
+    }
+    
+    .no-activities {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-style: italic;
+        color: #95a5a6;
+        font-size: 13px;
+    }
+    
+    .no-activities i {
+        color: #95a5a6;
     }
     
     /* Status Badge Styles */
@@ -531,13 +551,12 @@
                     approvalTable.column(3).search(status).draw();
                 }
             });
-            
-            // Details button click handler (to be implemented later)
+              // Details button click handler
             $('.btn-view-details').on('click', function() {
                 const id = $(this).data('id');
                 const student = $(this).data('student');
-                // We'll implement this later as mentioned in requirements
-                console.log(`View details for application ${id} of student ${student}`);
+                window.location.href = '@Url.Action("Details", "DuyetHoatDong", new { area = "Doan" })' + 
+                                       '?idDon=' + id + '&idSinhVien=' + student;
             });
             
             // Auto hide alerts after 5 seconds

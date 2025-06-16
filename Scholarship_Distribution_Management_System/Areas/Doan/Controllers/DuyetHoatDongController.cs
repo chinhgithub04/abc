@@ -23,51 +23,76 @@ namespace Scholarship_Distribution_Management_System.Areas.Doan.Controllers
         
         public async Task<IActionResult> Index(String idDot)
         {
-            // Get all activities for applications in this scholarship period
+            // Get all applications for this scholarship period
+            var applications = await _context.DonXinHocBongs
+                .Where(d => d.IDDot == idDot && d.TrangThai == 1)
+                .Select(d => new {
+                    IDDon = d.ID,
+                    IDSinhVien = d.IDSinhVien,
+                    IsDuyetHoatDong = d.isDuyetHoatDong
+                })
+                .ToListAsync();
+
+            // Get all activities for these applications
             var activities = await (
                 from hdsv in _context.HoatDongCuaSinhViens
                 join hoatDong in _context.HoatDongs on hdsv.IDHoatDong equals hoatDong.ID
                 join don in _context.DonXinHocBongs on hdsv.IDDon equals don.ID
-                where don.IDDot == idDot &&
-                      don.TrangThai == 1
-                select new 
+                where don.IDDot == idDot && don.TrangThai == 1
+                select new
                 {
                     IDDon = hdsv.IDDon,
                     IDHoatDong = hdsv.IDHoatDong,
                     IDSinhVien = don.IDSinhVien,
-                    TenHoatDong = hoatDong.TenHoatDong,
-                    IsDuyetHoatDong = don.isDuyetHoatDong
+                    TenHoatDong = hoatDong.TenHoatDong
                 }
             ).ToListAsync();
 
-            // Group activities by IDDon and IDSinhVien
-            var groupedActivities = activities
-                .GroupBy(a => new { a.IDDon, a.IDSinhVien })
-                .Select(group => {
-                    // Get all activity IDs for this application
-                    var activityIds = group.Select(a => a.IDHoatDong).ToList();
-                    
-                    // Get approved activity IDs from KQHoatDong
-                    var approvedActivityIds = _context.KqHoatDong
-                        .Where(k => k.IDDon == group.Key.IDDon && k.IDSinhVien == group.Key.IDSinhVien)
-                        .Select(k => k.IDHoatDong)
-                        .ToList();
-                    
-                    // Check if application has already been reviewed
-                    var application = _context.DonXinHocBongs
-                        .FirstOrDefault(d => d.ID == group.Key.IDDon);
+            // Get all approved activities
+            var approvedActivities = await (
+                from kq in _context.KqHoatDong
+                join don in _context.DonXinHocBongs on kq.IDDon equals don.ID
+                where don.IDDot == idDot
+                select new
+                {
+                    IDDon = kq.IDDon,
+                    IDSinhVien = kq.IDSinhVien,
+                    IDHoatDong = kq.IDHoatDong
+                }
+            ).ToListAsync();
 
-                    return new HoatDongCuaSinhVienViewModel
-                    {
-                        IDDon = group.Key.IDDon,
-                        IDSinhVien = group.Key.IDSinhVien,
-                        TenHoatDong = string.Join(", ", group.Select(a => a.TenHoatDong)),
-                        DaDuyet = application.isDuyetHoatDong,
-                        AllActivitiesApproved = activityIds.Count > 0 && activityIds.All(id => approvedActivityIds.Contains(id)),
-                        AnyActivityApproved = approvedActivityIds.Any(),
-                        ActivityNames = group.Select(a => a.TenHoatDong).ToList()
-                    };
-                })                .ToList();
+            // Create view models for all applications, including those without activities
+            var groupedActivities = new List<HoatDongCuaSinhVienViewModel>();
+
+            foreach (var app in applications)
+            {
+                // Get activities for this application
+                var appActivities = activities
+                    .Where(a => a.IDDon == app.IDDon)
+                    .ToList();
+
+                // Get approved activity IDs for this application
+                var approvedIds = approvedActivities
+                    .Where(a => a.IDDon == app.IDDon && a.IDSinhVien == app.IDSinhVien)
+                    .Select(a => a.IDHoatDong)
+                    .ToList();
+
+                // Get activity names and IDs
+                var activityNames = appActivities.Select(a => a.TenHoatDong).ToList();
+                var activityIds = appActivities.Select(a => a.IDHoatDong).ToList();                // Create view model
+                var viewModel = new HoatDongCuaSinhVienViewModel
+                {
+                    IDDon = app.IDDon,
+                    IDSinhVien = app.IDSinhVien,
+                    TenHoatDong = string.Join(", ", activityNames),
+                    DaDuyet = app.IsDuyetHoatDong,
+                    AllActivitiesApproved = activityIds.Count == 0 || activityIds.All(id => approvedIds.Contains(id)),
+                    AnyActivityApproved = approvedIds.Any(),
+                    ActivityNames = activityNames
+                };
+
+                groupedActivities.Add(viewModel);
+            }
 
             // Get the scholarship period details for the view title
             var dotHocBong = await _context.DotHocBongs.FindAsync(idDot);
@@ -222,12 +247,106 @@ namespace Scholarship_Distribution_Management_System.Areas.Doan.Controllers
             // Save all changes to the database
             await _context.SaveChangesAsync();
             
+            // Find and approve applications without any activities
+            var applicationsWithoutActivities = await _context.DonXinHocBongs
+                .Where(d => d.IDDot == idDot && 
+                       d.TrangThai == 1 && 
+                       !d.isDuyetHoatDong &&
+                       !_context.HoatDongCuaSinhViens.Any(h => h.IDDon == d.ID))
+                .ToListAsync();
+                
+            int noActivityApprovals = 0;
+            
+            foreach (var app in applicationsWithoutActivities)
+            {
+                app.isDuyetHoatDong = true;
+                _context.DonXinHocBongs.Update(app);
+                noActivityApprovals++;
+            }
+            
+            if (noActivityApprovals > 0)
+            {
+                await _context.SaveChangesAsync();
+                totalApproved += noActivityApprovals;
+            }
+            
             // Prepare success message with statistics
             TempData["SuccessMessage"] = $"Đã xử lý {totalProcessed} hoạt động từ các file Excel. " +
-                                        $"Đã duyệt thành công {totalApproved} hoạt động. " +
-                                        (totalErrors > 0 ? $"Có {totalErrors} lỗi xảy ra." : "");
+                                        $"Đã duyệt thành công {totalApproved} hoạt động" + 
+                                        (noActivityApprovals > 0 ? $" (bao gồm {noActivityApprovals} sinh viên không có hoạt động)" : "");
                                         
             return RedirectToAction("Index", new { idDot });
+        }
+
+        public async Task<IActionResult> Details(string idDon, string idSinhVien)
+        {
+            if (string.IsNullOrEmpty(idDon) || string.IsNullOrEmpty(idSinhVien))
+            {
+                return NotFound();
+            }
+            
+            // Get the student's application
+            var application = await _context.DonXinHocBongs
+                .Include(d => d.SinhVien)
+                .Include(d => d.DotHocBong)
+                .FirstOrDefaultAsync(d => d.ID == idDon && d.IDSinhVien == idSinhVien);
+                
+            if (application == null)
+            {
+                return NotFound();
+            }
+            
+            // Get all activities registered by the student for this application
+            var registeredActivities = await (
+                from hdsv in _context.HoatDongCuaSinhViens
+                join hoatDong in _context.HoatDongs on hdsv.IDHoatDong equals hoatDong.ID
+                where hdsv.IDDon == idDon
+                select new ActivityItem
+                {
+                    ID = hoatDong.ID,
+                    Name = hoatDong.TenHoatDong
+                }
+            ).ToListAsync();
+            
+            // Get all approved activities for this application
+            var approvedActivities = await (
+                from kq in _context.KqHoatDong
+                join hoatDong in _context.HoatDongs on kq.IDHoatDong equals hoatDong.ID
+                where kq.IDDon == idDon && kq.IDSinhVien == idSinhVien
+                select new ActivityItem
+                {
+                    ID = hoatDong.ID,
+                    Name = hoatDong.TenHoatDong
+                }
+            ).ToListAsync();
+            
+            // Calculate pending activities (registered but not approved)
+            var approvedIds = approvedActivities.Select(a => a.ID).ToHashSet();
+            var pendingActivities = registeredActivities
+                .Where(a => !approvedIds.Contains(a.ID))
+                .ToList();
+            
+            // Get student information
+            var student = await _context.Users.FindAsync(idSinhVien);
+            var studentClass = await _context.LopSHs.FirstOrDefaultAsync(l => l.ID == student.IDLopSH);
+              // Create the view model
+            var viewModel = new ActivityDetailViewModel
+            {
+                IDDon = idDon,
+                IDSinhVien = idSinhVien,
+                StudentName = student?.HoTen ?? "Unknown",
+                StudentClass = studentClass?.TenLopSH ?? "Unknown",
+                ScholarshipName = application.DotHocBong?.TenDot ?? "Unknown",
+                RegisteredActivities = registeredActivities,
+                ApprovedActivities = approvedActivities,
+                PendingActivities = pendingActivities,
+                IsDuyetHoatDong = application.isDuyetHoatDong
+            };
+            
+            // Pass the scholarship ID for the back button
+            ViewBag.IdDot = application.IDDot;
+
+            return View(viewModel);
         }
     }
 }

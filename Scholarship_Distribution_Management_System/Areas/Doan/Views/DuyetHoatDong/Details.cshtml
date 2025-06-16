@@ -1,0 +1,458 @@
+@model Scholarship_Distribution_Management_System.Models.ViewModel.ActivityDetailViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết hoạt động";
+}
+
+<div class="activity-details-container">    <!-- Header Section -->
+    <div class="details-header">
+        <div class="back-link">
+            <a href="@Url.Action("Index", "DuyetHoatDong", new { area = "Doan", idDot = ViewBag.IdDot })" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+        <div class="details-title">
+            <h1><i class="fas fa-clipboard-list"></i> Chi tiết hoạt động sinh viên</h1>
+            <p>Đợt học bổng: <span class="scholarship-name">@Model.ScholarshipName</span></p>
+        </div>
+    </div>
+    
+    <!-- Student Info Card -->
+    <div class="student-info-card">
+        <div class="student-header">
+            <div class="student-avatar">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="student-basic-info">
+                <h2>@Model.StudentName</h2>
+                <div class="student-id-section">
+                    <span class="label">Mã sinh viên:</span>
+                    <span class="value">@Model.IDSinhVien</span>
+                </div>
+                <div class="student-class-section">
+                    <span class="label">Lớp:</span>
+                    <span class="value">@Model.StudentClass</span>
+                </div>
+            </div>        </div>
+        <div class="approval-status">            @{
+                string statusClass;
+                string statusIcon;
+                string statusText;
+                
+                if (!Model.IsDuyetHoatDong)
+                {
+                    statusClass = "pending";
+                    statusIcon = "hourglass-half";
+                    statusText = "Chưa xác nhận";
+                }
+                else if (Model.AllActivitiesApproved || Model.RegisteredActivities.Count == 0)
+                {
+                    statusClass = "approved";
+                    statusIcon = "check-circle";
+                    statusText = "Đã duyệt";
+                }
+                else
+                {
+                    statusClass = "rejected";
+                    statusIcon = "times-circle";
+                    statusText = "Từ chối";
+                }
+            }
+            <div class="status-badge @statusClass">
+                <i class="fas fa-@statusIcon"></i>
+                @statusText
+            </div>
+        </div>
+    </div>
+    
+    <!-- Activities Section -->
+    <div class="activities-section">
+        <div class="row">
+            <!-- Registered Activities -->
+            <div class="col-md-4">
+                <div class="activity-card registered">
+                    <div class="card-header">
+                        <i class="fas fa-list-alt"></i>
+                        <h3>Hoạt động đã chọn</h3>
+                        <span class="count-badge">@Model.RegisteredActivities.Count</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.RegisteredActivities.Any())
+                        {
+                            <ul class="activity-list">
+                                @foreach (var activity in Model.RegisteredActivities)
+                                {
+                                    <li class="activity-item">
+                                        <i class="fas fa-certificate"></i>
+                                        <span class="activity-name">@activity.Name</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-info-circle"></i>
+                                <p>Chưa đăng ký hoạt động nào</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Approved Activities -->
+            <div class="col-md-4">
+                <div class="activity-card approved">
+                    <div class="card-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Hoạt động có tham gia</h3>
+                        <span class="count-badge">@Model.ApprovedActivities.Count</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.ApprovedActivities.Any())
+                        {
+                            <ul class="activity-list">
+                                @foreach (var activity in Model.ApprovedActivities)
+                                {
+                                    <li class="activity-item">
+                                        <i class="fas fa-check"></i>
+                                        <span class="activity-name">@activity.Name</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-info-circle"></i>
+                                <p>Chưa có hoạt động nào được duyệt</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pending Activities -->
+            <div class="col-md-4">
+                <div class="activity-card pending">
+                    <div class="card-header">
+                        <i class="fas fa-hourglass-half"></i>
+                        <h3>Hoạt động không tham gia</h3>
+                        <span class="count-badge">@Model.PendingActivities.Count</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.PendingActivities.Any())
+                        {
+                            <ul class="activity-list">
+                                @foreach (var activity in Model.PendingActivities)
+                                {
+                                    <li class="activity-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span class="activity-name">@activity.Name</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-info-circle"></i>
+                                <p>Không có hoạt động nào không tham gia</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Main Container Styles */
+    .activity-details-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    /* Header Section Styles */
+    .details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .back-link {
+        margin-bottom: 15px;
+    }
+    
+    .back-link a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 5px;
+        transition: all 0.3s;
+    }
+    
+    .back-link a:hover {
+        transform: translateX(-5px);
+    }
+    
+    .details-title h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .details-title p {
+        margin: 8px 0 0;
+        color: #7f8c8d;
+        font-size: 16px;
+    }
+    
+    .scholarship-name {
+        font-weight: 600;
+        color: #3498db;
+    }
+    
+    /* Student Info Card Styles */
+    .student-info-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .student-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .student-avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #f1f9ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        color: #3498db;
+    }
+    
+    .student-basic-info h2 {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0 0 10px;
+        color: #2c3e50;
+    }
+    
+    .student-id-section,
+    .student-class-section {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+    
+    .label {
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+    
+    .value {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    .approval-status {
+        margin-top: 15px;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        gap: 8px;
+    }
+      .status-badge.approved {
+        background-color: rgba(46,204,113,0.1);
+        color: #2ecc71;
+    }
+    
+    .status-badge.pending {
+        background-color: rgba(243,156,18,0.1);
+        color: #f39c12;
+    }
+    
+    .status-badge.rejected {
+        background-color: rgba(231,76,60,0.1);
+        color: #e74c3c;
+    }
+    
+    /* Activities Section Styles */
+    .activities-section {
+        margin-top: 30px;
+    }
+    
+    .activity-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 100%;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-header {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+    }
+    
+    .card-header h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        flex-grow: 1;
+    }
+    
+    .count-badge {
+        background-color: #f8f9fa;
+        color: #7f8c8d;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 50px;
+    }
+    
+    .activity-card.registered .card-header {
+        background-color: #f1f9ff;
+        color: #3498db;
+    }
+    
+    .activity-card.approved .card-header {
+        background-color: #e8f5e9;
+        color: #2ecc71;
+    }
+    
+    .activity-card.pending .card-header {
+        background-color: #fff8e1;
+        color: #e74c3c;
+    }
+    
+    .card-body {
+        padding: 20px;
+        flex-grow: 1;
+    }
+    
+    .activity-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        border-bottom: 1px solid #f1f1f1;
+        transition: background-color 0.3s;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-item:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .activity-item i {
+        font-size: 14px;
+    }
+    
+    .activity-card.registered .activity-item i {
+        color: #3498db;
+    }
+    
+    .activity-card.approved .activity-item i {
+        color: #2ecc71;
+    }
+    
+    .activity-card.pending .activity-item i {
+        color: #e74c3c;
+    }
+    
+    .activity-name {
+        font-size: 14px;
+        color: #2c3e50;
+    }
+    
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+        text-align: center;
+        color: #95a5a6;
+    }
+    
+    .empty-state i {
+        font-size: 30px;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state p {
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    /* Responsive Adjustments */
+    @@media (max-width: 992px) {
+        .details-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .student-info-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .approval-status {
+            margin-top: 20px;
+            align-self: flex-start;
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .col-md-4 {
+            margin-bottom: 20px;
+        }
+    }
+</style>
