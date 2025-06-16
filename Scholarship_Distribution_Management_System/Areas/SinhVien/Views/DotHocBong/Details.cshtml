@@ -7,105 +7,311 @@
 @using System.Security.Claims
 
 @{
-    ViewData["Title"] = "Chi tiết đợt học bổng";
+    ViewData["Title"] = "Chi tiết học bổng";
+    
+    var now = DateTime.UtcNow;
+    string statusText;
+    string statusColor;
+    string statusIcon;
+
+    if (now < Model.NgayBatDauNop)
+    {
+        statusText = "Sắp mở";
+        statusColor = "info";
+        statusIcon = "fa-hourglass-start";
+    }
+    else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
+    {
+        statusText = "Đang mở";
+        statusColor = "success";
+        statusIcon = "fa-check-circle";
+    }
+    else if (now > Model.NgayKetThucNop && now <= Model.NgayKetThuc)
+    {
+        statusText = "Đang xét duyệt";
+        statusColor = "warning";
+        statusIcon = "fa-clock";
+    }
+    else if (now > Model.NgayKetThuc)
+    {
+        statusText = "Kết thúc";
+        statusColor = "secondary";
+        statusIcon = "fa-flag-checkered";
+    }
+    else
+    {
+        statusText = "Không xác định";
+        statusColor = "dark";
+        statusIcon = "fa-question-circle";
+    }
+    
+    // Tính tiến độ
+    int progressPercentage = 0;
+    string progressStage = "";
+    
+    if (now < Model.NgayBatDauNop)
+    {
+        progressPercentage = 0;
+        progressStage = "Chưa bắt đầu";
+    }
+    else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
+    {
+        var totalDays = (Model.NgayKetThucNop - Model.NgayBatDauNop).TotalDays;
+        var daysPassed = (now - Model.NgayBatDauNop).TotalDays;
+        progressPercentage = (int)Math.Min(100, Math.Max(0, (daysPassed / totalDays) * 25));
+        progressStage = "Giai đoạn nộp hồ sơ";
+    }
+    else if (now > Model.NgayKetThucNop && now <= Model.NgayHoiDongDuyet)
+    {
+        var totalDays = (Model.NgayHoiDongDuyet - Model.NgayKetThucNop).TotalDays;
+        var daysPassed = (now - Model.NgayKetThucNop).TotalDays;
+        progressPercentage = 25 + (int)Math.Min(75, Math.Max(0, (daysPassed / totalDays) * 25));
+        progressStage = "Giai đoạn xét duyệt";
+    }
+    else if (now > Model.NgayHoiDongDuyet && now <= Model.NgayPTCDuyet)
+    {
+        var totalDays = (Model.NgayPTCDuyet - Model.NgayHoiDongDuyet).TotalDays;
+        var daysPassed = (now - Model.NgayHoiDongDuyet).TotalDays;
+        progressPercentage = 50 + (int)Math.Min(50, Math.Max(0, (daysPassed / totalDays) * 25));
+        progressStage = "Giai đoạn hội đồng xét duyệt";
+    }
+    else if (now > Model.NgayPTCDuyet && now <= Model.NgayKetThuc)
+    {
+        var totalDays = (Model.NgayKetThuc - Model.NgayPTCDuyet).TotalDays;
+        var daysPassed = (now - Model.NgayPTCDuyet).TotalDays;
+        progressPercentage = 75 + (int)Math.Min(25, Math.Max(0, (daysPassed / totalDays) * 25));
+        progressStage = "Giai đoạn PTC duyệt";
+    }
+    else if (now > Model.NgayKetThuc)
+    {
+        progressPercentage = 100;
+        progressStage = "Đã kết thúc";
+    }
 }
-<div class="card">
-    <div class="card-header bg-primary text-white fw-bold fs-5">
-        📝 @Model.TenDot
-    </div>
 
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-4 text-muted">Điều kiện</dt>
-            <dd class="col-sm-8">@Model.DieuKien</dd>
-
-            <dt class="col-sm-4 text-muted">Số lượng</dt>
-            <dd class="col-sm-8">@Model.SoLuong</dd>
-
-            <dt class="col-sm-4 text-muted">Tiền học bổng</dt>
-            <dd class="col-sm-8">@Model.Tien.ToString("N0") VNĐ</dd>
-
-            <dt class="col-sm-4 text-muted">Trạng thái</dt>
-            <dd class="col-sm-8">
-                @{
-                    var now = DateTime.UtcNow;
-
-                    string statusText;
-                    string statusColor;
-
-
-                    if (now < Model.NgayBatDauNop)
-                    {
-                        statusText = "Sắp mở";
-                        statusColor = "info";
-                    }
-                    else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
-                    {
-                        statusText = "Đang mở";
-                        statusColor = "success";
-                    }
-                    else if (now > Model.NgayKetThucNop && now <= Model.NgayKetThuc)
-                    {
-                        statusText = "Đang xét duyệt";
-                        statusColor = "warning";
-                    }
-                    else if (now > Model.NgayKetThuc)
-                    {
-                        statusText = "Kết thúc";
-                        statusColor = "secondary";
-                    }
-                    else
-                    {
-                        statusText = "Không xác định";
-                        statusColor = "dark";
-                    }
-
-                }
-                <span class="badge bg-@statusColor">@statusText</span>
-            </dd>
-
-            <dt class="col-sm-4 text-muted">Ngày tạo</dt>
-            <dd class="col-sm-8">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Thời gian nộp hồ sơ</dt>
-            <dd class="col-sm-8">@Model.NgayBatDauNop.ToString("dd/MM/yyyy") → @Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày xét duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayKetThucNop.ToString("dd/MM/yyyy") → @Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày hội đồng duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy") → @Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày PTC duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy") → @Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày kết thúc</dt>
-            <dd class="col-sm-8">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Người phụ trách</dt>
-            <dd class="col-sm-8">@Model.NhanVien?.HoTen</dd>
-        </dl>
-    </div>
-
-    <div class="card-footer text-end">
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            ⬅ Quay lại
-        </a>
-
-        @if ((bool)ViewBag.DaDangKy)
-        {
-            <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Index"
-               class="btn btn-info">Xem trạng thái đơn</a>
-        }
-        else
-        {
-            var dot = Model;
-            if (dot.NgayBatDauNop <= DateTime.Now && DateTime.Now <= dot.NgayKetThucNop)
-            {
-                <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@dot.ID"
-                   class="btn btn-primary ml-2">Đăng ký học bổng</a>
-            }
-        }
-
+<div class="container py-4">
+    <div class="row">
+        <!-- Left column -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="position-relative">
+                    <div class="bg-primary text-white p-4 rounded-top">
+                        <h2 class="mb-0 fw-bold">
+                            <i class="fas fa-award me-2"></i>@Model.TenDot
+                        </h2>
+                    </div>
+                    <div class="position-absolute top-0 end-0 p-3">
+                        <span class="badge bg-@statusColor p-2">
+                            <i class="fas @statusIcon me-1"></i> @statusText
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2 text-primary">
+                            <i class="fas fa-info-circle me-2"></i>Thông tin chung
+                        </h5>
+                        <div class="row py-2">
+                            <div class="col-md-4 fw-bold text-secondary">
+                                <i class="fas fa-filter me-2"></i>Điều kiện:
+                            </div>
+                            <div class="col-md-8">
+                                @Model.DieuKien
+                            </div>
+                        </div>
+                        <div class="row py-2">
+                            <div class="col-md-4 fw-bold text-secondary">
+                                <i class="fas fa-users me-2"></i>Số lượng:
+                            </div>
+                            <div class="col-md-8">
+                                @Model.SoLuong suất học bổng
+                            </div>
+                        </div>
+                        <div class="row py-2">
+                            <div class="col-md-4 fw-bold text-secondary">
+                                <i class="fas fa-money-bill-wave me-2"></i>Giá trị:
+                            </div>
+                            <div class="col-md-8">
+                                <span class="fw-bold text-success fs-5">@Model.Tien.ToString("N0") VNĐ</span> / suất
+                            </div>
+                        </div>
+                        <div class="row py-2">
+                            <div class="col-md-4 fw-bold text-secondary">
+                                <i class="fas fa-user-tie me-2"></i>Người phụ trách:
+                            </div>
+                            <div class="col-md-8">
+                                <i class="fas fa-user me-1"></i> @Model.NhanVien?.HoTen
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h5 class="border-bottom pb-2 text-primary">
+                            <i class="fas fa-calendar-alt me-2"></i>Lịch trình
+                        </h5>
+                        <div class="timeline mt-4">
+                            <div class="timeline-item @(now >= Model.NgayTao ? "active" : "")">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Ngày tạo đợt học bổng</h6>
+                                    <p class="text-muted mb-0">@Model.NgayTao.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(now >= Model.NgayBatDauNop ? "active" : "")">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Mở đơn đăng ký</h6>
+                                    <p class="text-muted mb-0">@Model.NgayBatDauNop.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(now > Model.NgayKetThucNop ? "active" : "")">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Kết thúc nhận đơn</h6>
+                                    <p class="text-muted mb-0">@Model.NgayKetThucNop.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(now > Model.NgayHoiDongDuyet ? "active" : "")">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Hội đồng xét duyệt</h6>
+                                    <p class="text-muted mb-0">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(now > Model.NgayPTCDuyet ? "active" : "")">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Phòng tài chính duyệt</h6>
+                                    <p class="text-muted mb-0">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(now > Model.NgayKetThuc ? "active" : "")">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Kết thúc đợt học bổng</h6>
+                                    <p class="text-muted mb-0">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right column -->
+        <div class="col-lg-4">
+            <!-- Status Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-tasks me-2"></i>Trạng thái hiện tại
+                    </h5>
+                    
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="me-3">
+                            <div class="bg-@statusColor text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="fas @statusIcon fa-lg"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">@statusText</h6>
+                            <p class="mb-0 text-muted small">@progressStage</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Action Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>Thao tác
+                    </h5>
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+                        </a>
+                        
+                        @if ((bool)ViewBag.DaDangKy)
+                        {
+                            <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Index"
+                               class="btn btn-info">
+                                <i class="fas fa-file-alt me-2"></i>Xem trạng thái đơn của bạn
+                            </a>
+                        }
+                        else
+                        {
+                            var dot = Model;
+                            if (dot.NgayBatDauNop <= DateTime.Now && DateTime.Now <= dot.NgayKetThucNop)
+                            {
+                                <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@dot.ID"
+                                   class="btn btn-primary">
+                                    <i class="fas fa-pen-to-square me-2"></i>Đăng ký học bổng ngay
+                                </a>
+                            }
+                            else if (DateTime.Now < dot.NgayBatDauNop)
+                            {
+                                <button class="btn btn-secondary" disabled>
+                                    <i class="fas fa-clock me-2"></i>Chưa đến thời gian đăng ký
+                                </button>
+                                <small class="text-muted mt-2 d-block">Đợt học bổng sẽ mở đăng ký vào ngày @dot.NgayBatDauNop.ToString("dd/MM/yyyy")</small>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled>
+                                    <i class="fas fa-ban me-2"></i>Đã kết thúc đăng ký
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Timeline styles */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline:before {
+        content: '';
+        position: absolute;
+        left: 9px;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background: #e9ecef;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #e9ecef;
+        background: #fff;
+    }
+    
+    .timeline-item.active .timeline-marker {
+        background: #0d6efd;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+    }
+    
+    .timeline-content {
+        padding-bottom: 10px;
+    }
+</style>
