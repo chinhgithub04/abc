@@ -30,12 +30,12 @@
         <div class="header-content">
             <h1>Danh sách học bổng</h1>
             <p class="subtitle">Khám phá các học bổng hiện có và tìm cơ hội phù hợp với bạn</p>
-        </div>
-        <div class="filter-tabs">
+        </div>        <div class="filter-tabs">
             <button class="filter-btn active" data-filter="all">Tất cả</button>
             <button class="filter-btn" data-filter="open">Đang mở</button>
             <button class="filter-btn" data-filter="upcoming">Sắp mở</button>
-            <button class="filter-btn" data-filter="closed">Đã đóng</button>
+            <button class="filter-btn" data-filter="reviewing">Đang xét duyệt</button>
+            <button class="filter-btn" data-filter="closed">Kết thúc</button>
         </div>
     </div>
     
@@ -69,14 +69,13 @@
                 <span class="summary-label">Sắp mở</span>
             </div>
         </div>
-        
-        <div class="summary-card">
+          <div class="summary-card">
             <div class="summary-icon">
                 <i class="fas fa-calendar-check"></i>
             </div>
             <div class="summary-content">
-                <span class="summary-value">@Model.Where(m => m.NgayKetThucNop > DateTime.UtcNow).Min(m => (m.NgayKetThucNop - DateTime.UtcNow).Days)</span>
-                <span class="summary-label">Ngày đến hạn gần nhất</span>
+                <span class="summary-value">@Model.Count(m => DateTime.UtcNow > m.NgayKetThucNop && DateTime.UtcNow <= m.NgayKetThuc)</span>
+                <span class="summary-label">Đang xét duyệt</span>
             </div>
         </div>
     </div>
@@ -162,16 +161,23 @@
                             }
                         </div>
                     </div>
-                    
-                    <div class="scholarship-actions">
-                        <a asp-action="Details" asp-route-id="@item.ID" class="btn-details">
+                      <div class="scholarship-actions">                        <a asp-action="Details" asp-route-id="@item.ID" class="btn-details">
                             <i class="fas fa-info-circle"></i> Xem chi tiết
                         </a>
                         @if (statusClass == "open")
                         {
-                            <a href="#" class="btn-apply">
-                                <i class="fas fa-paper-plane"></i> Đăng ký ngay
-                            </a>
+                            @if (ViewBag.AppliedScholarshipIds != null && ViewBag.AppliedScholarshipIds.Contains(item.ID))
+                            {
+                                <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Index" class="btn-already-applied">
+                                    <i class="fas fa-check-circle"></i> Đã đăng ký
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@item.ID" class="btn-apply">
+                                    <i class="fas fa-paper-plane"></i> Đăng ký ngay
+                                </a>
+                            }
                         }
                     </div>
                 </div>
@@ -523,8 +529,7 @@
             display: flex;
             gap: 1rem;
         }
-        
-        .btn-details, .btn-apply {
+          .btn-details, .btn-apply, .btn-already-applied {
             padding: 0.5rem 1.2rem;
             border-radius: 20px;
             font-size: 0.9rem;
@@ -554,6 +559,17 @@
             background-color: var(--dark-color);
             color: white;
             transform: translateY(-2px);
+        }
+        
+        .btn-already-applied {
+            color: white;
+            background-color: #6c757d;
+            cursor: default;
+        }
+        
+        .btn-already-applied:hover {
+            color: white;
+            text-decoration: none;
         }
         
         .empty-state {

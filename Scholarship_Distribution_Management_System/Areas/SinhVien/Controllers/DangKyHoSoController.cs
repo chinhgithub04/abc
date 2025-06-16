@@ -61,8 +61,7 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
                 new BreadcrumbItem { Title = "Chi tiết " + @id,IsActive = true }
             };
             return View(don);
-        }
-        public async Task<IActionResult> Create(string idDot)
+        }        public async Task<IActionResult> Create(string idDot)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -80,9 +79,16 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
             var nghienCuuList = await _context.NghienCuuKhoaHocs.Select(n => new { n.ID, Label = n.TenDeTai + " - " + n.ThanhTich }).ToListAsync();
             var hoatDongList = await _context.HoatDongs.Select(n => n.TenHoatDong).ToListAsync();
 
+            // Get additional user details including student's class/major information
+            var userDetails = await _context.Users
+                .Include(u => u.LopSH)
+                    .ThenInclude(l => l.Nganh)
+                .FirstOrDefaultAsync(u => u.Id == user.Id);
+
             ViewBag.NghienCuuList = nghienCuuList;
             ViewBag.HoatDongList = hoatDongList;
             ViewBag.DotHocBong = dotHocBong;
+            ViewBag.UserDetails = userDetails;
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Title = "Trạng thái xét duyệt học bổng", Url = Url.Action("Index"), IsActive = false },
@@ -158,12 +164,16 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
-            }
-
-            // If validation fails, repopulate the ViewBag and return the form
-            ViewBag.NghienCuuList = await _context.NghienCuuKhoaHocs.Select(n => n.TenDeTai).ToListAsync();
+            }            // If validation fails, repopulate the ViewBag and return the form
+            var userDetails = await _context.Users
+                .Include(u => u.LopSH)
+                    .ThenInclude(l => l.Nganh)
+                .FirstOrDefaultAsync(u => u.Id == model.IDSinhVien);
+            
+            ViewBag.NghienCuuList = await _context.NghienCuuKhoaHocs.Select(n => new { n.ID, Label = n.TenDeTai + " - " + n.ThanhTich }).ToListAsync();
             ViewBag.HoatDongList = await _context.HoatDongs.Select(h => h.TenHoatDong).ToListAsync();
             ViewBag.DotHocBong = await _context.DotHocBongs.FindAsync(model.IDDot);
+            ViewBag.UserDetails = userDetails;
             return View(model);
         }
 

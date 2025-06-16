@@ -20,12 +20,25 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
         {
             _userManager = userManager;
             _context = context;
-        }
-
-        // GET: DotHocBongs
+        }        // GET: DotHocBongs
         public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.DotHocBongs.Include(d => d.NhanVien).Where(d => d.TrangThai == 1);
+        {            var applicationDbContext = _context.DotHocBongs
+                .Include(d => d.NhanVien)
+                .Where(d => d.TrangThai == 1)
+                .OrderByDescending(d => d.NgayBatDauNop); // Sort by start date in descending order (newest first)
+                
+            // Get the list of applications that the current user has already submitted
+            var appliedScholarshipIds = new List<string>();
+            if (User.Identity.IsAuthenticated && User.IsInRole("SinhVien"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                appliedScholarshipIds = await _context.DonXinHocBongs
+                    .Where(d => d.IDSinhVien == user.Id && d.TrangThai == 1)
+                    .Select(d => d.IDDot)
+                    .ToListAsync();
+            }
+            
+            ViewBag.AppliedScholarshipIds = appliedScholarshipIds;
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Title = "Thông báo", IsActive = true }
