@@ -1,16 +1,488 @@
 ﻿@{
-    ViewData["Title"] = "Trang Chủ";
+    ViewData["Title"] = "Dashboard CTSV";
     Layout = "~/Areas/CTSV/Views/Shared/_Layout.cshtml";
-}
-
-<h2>@ViewData["Title"]</h2>
-@using System.Security.Claims
-@{
+    
     var hoTen = User.FindFirst("HoTen")?.Value;
     var role = User.Claims.FirstOrDefault(c => c.Type == "VaiTro")?.Value;
 }
-<div class="welcome-box">
-    <p class="welcome-message">
-        Chào mừng @hoTen đến với hệ thống quản lý phân phát học bổng cho sinh viên trường đại học Sư phạm Kỹ thuật Đà Nẵng
-    </p>
+
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Phòng Công tác Sinh viên</h1>
+        <div class="dashboard-date">
+            <i class="far fa-calendar-alt"></i> @DateTime.Now.ToString("dddd, dd/MM/yyyy")
+        </div>
+    </div>
+
+    <div class="welcome-card">
+        <div class="welcome-card-content">
+            <h2>Xin chào, @hoTen!</h2>
+            <p>Chào mừng trở lại với hệ thống quản lý học bổng. Đây là trang tổng quan với các thống kê và chức năng chính.</p>
+        </div>
+        <div class="quick-actions">
+            <a href="#" class="quick-action-btn">
+                <i class="fas fa-plus-circle"></i> Tạo đợt học bổng
+            </a>
+            <a href="#" class="quick-action-btn">
+                <i class="fas fa-clipboard-check"></i> Duyệt đơn
+            </a>
+            <a href="#" class="quick-action-btn">
+                <i class="fas fa-file-export"></i> Xuất báo cáo
+            </a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-award"></i>
+            </div>
+            <div class="stat-info">
+                <p class="stat-title">Học bổng đang mở</p>
+                <p class="stat-value">5</p>
+                <p class="stat-desc">Còn 2 đợt sắp hết hạn</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="stat-info">
+                <p class="stat-title">Đơn đang chờ duyệt</p>
+                <p class="stat-value">28</p>
+                <p class="stat-desc">Cập nhật 2 giờ trước</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="stat-info">
+                <p class="stat-title">Sinh viên nhận học bổng</p>
+                <p class="stat-value">142</p>
+                <p class="stat-desc">Trong học kỳ hiện tại</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-info">
+                <p class="stat-title">Tổng giá trị học bổng</p>
+                <p class="stat-value">568.5M</p>
+                <p class="stat-desc">Năm học 2024-2025</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-sections">
+        <div class="recent-applications">
+            <div class="section-header">
+                <h3><i class="fas fa-clock"></i> Đơn xin học bổng gần đây</h3>
+                <a href="#" class="view-all">Xem tất cả <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mã SV</th>
+                            <th>Họ tên</th>
+                            <th>Học bổng</th>
+                            <th>Ngày nộp</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>20112345</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>HB Khuyến khích HK2</td>
+                            <td>15/06/2025</td>
+                            <td><span class="status pending">Đang xử lý</span></td>
+                            <td><a href="#" class="btn-action">Xem</a></td>
+                        </tr>
+                        <tr>
+                            <td>20156789</td>
+                            <td>Trần Thị B</td>
+                            <td>HB Doanh nghiệp ABC</td>
+                            <td>14/06/2025</td>
+                            <td><span class="status approved">Đã duyệt</span></td>
+                            <td><a href="#" class="btn-action">Xem</a></td>
+                        </tr>
+                        <tr>
+                            <td>20198765</td>
+                            <td>Lê Văn C</td>
+                            <td>HB Khuyến khích HK2</td>
+                            <td>13/06/2025</td>
+                            <td><span class="status rejected">Từ chối</span></td>
+                            <td><a href="#" class="btn-action">Xem</a></td>
+                        </tr>
+                        <tr>
+                            <td>20112468</td>
+                            <td>Phạm Thị D</td>
+                            <td>HB Vượt khó</td>
+                            <td>12/06/2025</td>
+                            <td><span class="status pending">Đang xử lý</span></td>
+                            <td><a href="#" class="btn-action">Xem</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="upcoming-deadlines">
+            <div class="section-header">
+                <h3><i class="fas fa-calendar-alt"></i> Sắp đến hạn</h3>
+            </div>
+            <div class="deadline-list">
+                <div class="deadline-item">
+                    <div class="deadline-date">
+                        <div class="day">30</div>
+                        <div class="month">Tháng 6</div>
+                    </div>
+                    <div class="deadline-info">
+                        <h4>Học bổng khuyến khích học tập HK2</h4>
+                        <p><i class="far fa-clock"></i> Còn 14 ngày để nộp hồ sơ</p>
+                    </div>
+                    <div class="deadline-count">
+                        <span>63</span>
+                        <small>đơn đã nhận</small>
+                    </div>
+                </div>
+                <div class="deadline-item">
+                    <div class="deadline-date">
+                        <div class="day">15</div>
+                        <div class="month">Tháng 7</div>
+                    </div>
+                    <div class="deadline-info">
+                        <h4>Học bổng doanh nghiệp ABC</h4>
+                        <p><i class="far fa-clock"></i> Còn 29 ngày để nộp hồ sơ</p>
+                    </div>
+                    <div class="deadline-count">
+                        <span>18</span>
+                        <small>đơn đã nhận</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to stats cards
+            document.querySelectorAll('.stat-card').forEach((card, index) => {
+                card.style.animationDelay = (index * 0.1) + 's';
+                card.classList.add('animate-in');
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .dashboard {
+            padding: 0;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .dashboard-date {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .welcome-card h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .welcome-card p {
+            margin: 0.5rem 0 0 0;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .quick-action-btn {
+            background-color: rgba(255,255,255,0.15);
+            border-radius: var(--radius);
+            padding: 0.7rem 1.2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .quick-action-btn:hover {
+            background-color: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.08);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transform: translateY(-3px);
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.5s forwards;
+        }
+        
+        
+        .stat-icon {
+            background-color: rgba(var(--primary-rgb), 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-title {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            margin: 0.3rem 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-desc {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .dashboard-sections {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .view-all {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            font-weight: 600;
+            background-color: rgba(0,0,0,0.02);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        
+        .status {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status.pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #f1a700;
+        }
+        
+        .status.approved {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .status.rejected {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .btn-action {
+            padding: 4px 10px;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+        }
+        
+        .btn-action:hover {
+            background-color: var(--dark-color);
+            color: white;
+        }
+        
+        .deadline-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .deadline-item {
+            border: 1px solid #eee;
+            border-radius: var(--radius);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: white;
+        }
+        
+        .deadline-date {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: var(--radius);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .deadline-date .day {
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .deadline-date .month {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        
+        .deadline-info {
+            flex: 1;
+        }
+        
+        .deadline-info h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 1rem;
+        }
+        
+        .deadline-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .deadline-count {
+            text-align: center;
+        }
+        
+        .deadline-count span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .deadline-count small {
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        
+    </style>
+}
