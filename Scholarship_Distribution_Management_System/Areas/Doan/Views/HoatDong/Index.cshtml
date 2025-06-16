@@ -3,46 +3,224 @@
     ViewData["Title"] = "Danh sách hoạt động";
 }
 
-<h2 class="mb-3">Danh sách hoạt động</h2>
+<div class="activity-management-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1><i class="fas fa-clipboard-list"></i> Quản lý hoạt động</h1>
+            <p class="subtitle">Quản lý danh sách hoạt động Đoàn - Hội trong hệ thống</p>
+        </div>
+        <a class="create-button" asp-action="Create">
+            <i class="fas fa-plus-circle"></i> Thêm hoạt động mới
+        </a>
+    </div>
 
-<a asp-action="Create" class="btn btn-primary mb-3">Thêm hoạt động</a>
-
-<table class="table table-bordered table-striped" id="HoatDongTable">
-    <thead class="table-light">
-        <tr>
-            <th>STT</th>
-            <th>Tên hoạt động</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
+    <div class="activity-grid">
         @foreach (var item in Model)
         {
-            <tr>
-                <td>@(Model.ToList().IndexOf(item) + 1)</td>
-                <td>@item.TenHoatDong</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">Xem</a>
-                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">Sửa</a>    
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')">Xóa</a>
-                </td>
-            </tr>
+            <div class="activity-card" data-id="@item.ID">
+                <div class="activity-number">@(Model.ToList().IndexOf(item) + 1)</div>
+                <div class="activity-content">
+                    <h3 class="activity-title">@item.TenHoatDong</h3>
+                </div>
+                <div class="activity-actions">
+                    <a asp-action="Details" asp-route-id="@item.ID" class="action-button view-button" title="Xem chi tiết">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@item.ID" class="action-button edit-button" title="Chỉnh sửa">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@item.ID" class="action-button delete-button" 
+                       onclick="return confirm('Bạn chắc chắn muốn xóa?')" title="Xóa hoạt động">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .activity-management-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header-content h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .subtitle {
+            color: #777;
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .create-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+        
+        .create-button:hover {
+            background: #2980b9;
+            color: white;
+        }
+        
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .activity-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        
+        .activity-number {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #f1f1f1;
+            color: #555;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 0 10px 0;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .activity-content {
+            padding: 10px 0 20px 0;
+        }
+        
+        .activity-title {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.4;
+            font-weight: 600;
+            padding-left: 35px;
+        }
+        
+        .activity-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid #f1f1f1;
+            padding-top: 15px;
+        }
+        
+        .action-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .view-button {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        .view-button:hover {
+            background: #bbdefb;
+            color: #1976d2;
+        }
+        
+        .edit-button {
+            background: #fff8e1;
+            color: #ffc107;
+        }
+        
+        .edit-button:hover {
+            background: #ffecb3;
+            color: #ff9800;
+        }
+        
+        .delete-button {
+            background: #ffebee;
+            color: #f44336;
+        }
+        
+        .delete-button:hover {
+            background: #ffcdd2;
+            color: #e53935;
+        }
+        
+        @@media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .create-button {
+                align-self: flex-start;
+            }
+            
+            .activity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Khởi tạo DataTables trên bảng có ID là 'duyetDiemTable'
+            // DataTable initialization is handled by the table HTML ID
+            // We're keeping this for compatibility but not using it actively
             $('#HoatDongTable').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
                 },
-                "paging": true,       // Bật phân trang
-                "ordering": true,     // Bật sắp xếp cột
-                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
-                "searching": true,    // Bật ô tìm kiếm toàn cục
-                "responsive": true    // Bật chế độ responsive cho bảng
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "responsive": true
             });
         });
     </script>

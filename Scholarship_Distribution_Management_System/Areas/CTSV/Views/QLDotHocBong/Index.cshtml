@@ -38,11 +38,6 @@
 
                         string statusText;
                         string statusClass;
-                        
-                        // Random sample values for số lượng and tiền (since your model doesn't have these fields)
-                        Random rand = new Random(item.ID.GetHashCode());
-                        int soLuong = rand.Next(10, 50);
-                        decimal tien = (decimal)(rand.Next(100, 300) * 10000);
 
                         if (item.TrangThai == 0)
                         {
@@ -88,8 +83,8 @@
                                 <div class="scholarship-name">@item.TenDot</div>
                                 <div class="scholarship-date">Tạo ngày: @item.NgayTao.ToString("dd/MM/yyyy")</div>
                             </td>
-                            <td class="td-center">@soLuong</td>
-                            <td class="td-center">@String.Format("{0:N0}", tien)</td>
+                            <td class="td-center">@item.SoLuong</td>
+                            <td class="td-center">@String.Format("{0:N0}", @item.Tien)</td>
                             <td class="td-center">
                                 <span class="status-badge @statusClass">@statusText</span>
                             </td>
