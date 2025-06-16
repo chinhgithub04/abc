@@ -2,18 +2,29 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList
 @{
-
-
-    ViewData["Title"] = "Trạng thái xét duyệt học bổng";
+    ViewData["Title"] = "Quản lý hồ sơ học bổng";
+    
     string GetStatusClass(int status)
     {
         return status switch
         {
-            1 => "bg-warning text-dark",     // Chờ xử lý
-            2 => "bg-success text-white",    // Hoàn thành
-            -1 => "bg-danger text-white",     // Đã hủy
-            0 => "bg-danger text-white",
-            _ => "bg-secondary text-white"
+            1 => "status-pending",     // Chờ xử lý
+            2 => "status-approved",    // Hoàn thành
+            -1 => "status-rejected",   // Từ chối
+            0 => "status-cancelled",   // Đã hủy
+            _ => "status-unknown"
+        };
+    }
+
+    string GetStatusBadgeClass(int status)
+    {
+        return status switch
+        {
+            1 => "badge bg-warning text-dark",
+            2 => "badge bg-success",
+            -1 => "badge bg-danger",
+            0 => "badge bg-secondary",
+            _ => "badge bg-secondary"
         };
     }
 
@@ -28,85 +39,876 @@
             _ => "Không xác định"
         };
     }
-}
-
-<h2 class="mb-4 text-primary fw-bold">Trạng thái xét duyệt học bổng của tôi</h2>
-
-@if (!Model.Any())
-{
-    <div class="alert alert-info">Bạn chưa nộp hồ sơ học bổng nào.</div>
-}
-else
-{
-    <div class="row g-4">
-        @foreach (var don in Model)
+    
+    string GetStatusIcon(int status)
+    {
+        return status switch
         {
+            -1 => "fa-times-circle",
+            1 => "fa-clock",
+            2 => "fa-check-circle",
+            0 => "fa-ban",
+            _ => "fa-question-circle"
+        };
+    }
+    
+    // Calculate the number of applications in each status
+    int pendingCount = Model.Count(d => d.TrangThai == 1);
+    int approvedCount = Model.Count(d => d.TrangThai == 2);
+    int rejectedCount = Model.Count(d => d.TrangThai == -1);
+    int cancelledCount = Model.Count(d => d.TrangThai == 0);
+}
 
-            var now = DateTime.UtcNow;
-            bool isInSubmissionPeriod = don.DotHocBong != null &&
-            don.DotHocBong.NgayBatDauNop <= now &&
-            don.DotHocBong.NgayKetThucNop >= now;
-
-            var dot = don.DotHocBong;
-            <div>
-                <div class="card shadow border-0">
-                    @if (don.TrangThai == 1 && isInSubmissionPeriod)
-                    {
-                        <div class="card-header bg-primary text-white fw-bold fs-5">
-                            @don.DotHocBong.TenDot
+<div class="applications-dashboard">
+    <!-- Page Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1><i class="fas fa-folder-open me-2"></i>Hồ sơ học bổng của tôi</h1>
+            <p class="text-muted">Quản lý và theo dõi trạng thái các đơn xin học bổng của bạn</p>
+        </div>
+    </div>
+    
+    <!-- Status Summary -->
+    @if (Model.Any())
+    {
+        <div class="status-summary">
+            <div class="status-card">
+                <div class="status-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="status-details">
+                    <h3>@pendingCount</h3>
+                    <p>Đang chờ</p>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon approved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="status-details">
+                    <h3>@approvedCount</h3>
+                    <p>Đã duyệt</p>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon rejected">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="status-details">
+                    <h3>@rejectedCount</h3>
+                    <p>Từ chối</p>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon cancelled">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div class="status-details">
+                    <h3>@cancelledCount</h3>
+                    <p>Đã hủy</p>
+                </div>
+            </div>
+        </div>
+    }
+    
+    <!-- Application List -->
+    <div class="applications-container">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <h3>Chưa có hồ sơ nào</h3>
+                <p>Bạn chưa đăng ký học bổng nào. Hãy tìm kiếm các cơ hội học bổng phù hợp và đăng ký ngay!</p>
+                <a asp-area="SinhVien" asp-controller="DotHocBong" asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Tìm học bổng
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="filter-options mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="filter-tabs">
+                        <button class="filter-btn active" data-filter="all">Tất cả</button>
+                        <button class="filter-btn" data-filter="status-pending">Đang chờ</button>
+                        <button class="filter-btn" data-filter="status-approved">Đã duyệt</button>
+                        <button class="filter-btn" data-filter="status-rejected">Từ chối</button>
+                        <button class="filter-btn" data-filter="status-cancelled">Đã hủy</button>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="card-view"><i class="fas fa-th-large"></i></button>
+                        <button class="view-btn" data-view="list-view"><i class="fas fa-list"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="applications-list card-view">
+                @foreach (var don in Model)
+                {
+                    var now = DateTime.UtcNow;
+                    bool isInSubmissionPeriod = don.DotHocBong != null &&
+                        don.DotHocBong.NgayBatDauNop <= now &&
+                        don.DotHocBong.NgayKetThucNop >= now;
+                    
+                    string statusClass = GetStatusClass(don.TrangThai ?? -1);
+                    string statusText = GetStatusText(don.TrangThai ?? -1);
+                    string statusIcon = GetStatusIcon(don.TrangThai ?? -1);
+                    string badgeClass = GetStatusBadgeClass(don.TrangThai ?? -1);
+                    
+                    var dot = don.DotHocBong;
+                    
+                    <div class="application-item @statusClass">
+                        <div class="application-status">
+                            <i class="fas @statusIcon"></i>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="card-header @GetStatusClass(don.TrangThai ?? -1) fw-bold fs-5">
-                            @don.DotHocBong.TenDot
-                        </div>
-                    }
+                        
+                        <div class="application-content">
+                            <div class="application-header">
+                                <h3>@don.DotHocBong?.TenDot</h3>
+                                <span class="@badgeClass">@statusText</span>
+                            </div>
+                            
+                            <div class="application-details">
+                                <div class="detail-item">
+                                    <span class="detail-label"><i class="fas fa-hashtag me-1"></i>Mã hồ sơ:</span>
+                                    <span class="detail-value">@don.ID.Substring(0, Math.Min(8, don.ID.Length))...</span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label"><i class="fas fa-calendar-alt me-1"></i>Ngày nộp:</span>
+                                    <span class="detail-value">@don.NgayNop.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label"><i class="fas fa-graduation-cap me-1"></i>Điểm học tập:</span>
+                                    <span class="detail-value">@don.DiemHocTap</span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label"><i class="fas fa-medal me-1"></i>Điểm rèn luyện:</span>
+                                    <span class="detail-value">@don.DiemRenLuyen</span>
+                                </div>
+                            </div>
+                            
+                            <div class="application-timeline">
+                                <div class="timeline-progress">                                    
+                                    @{
+                                        int progressPercentage = 0;
+                                        var rightNow = DateTime.UtcNow;
+                                        
+                                        // Application is canceled
+                                        if (don.TrangThai == 0)
+                                        {
+                                            progressPercentage = 15;
+                                        }
+                                        // Application is rejected
+                                        else if (don.TrangThai == -1)
+                                        {
+                                            progressPercentage = 66; // Rejected at council review stage
+                                        }
+                                        // Application is approved and completed
+                                        else if (don.TrangThai == 2)
+                                        {
+                                            progressPercentage = 100; // Fully approved
+                                        }
+                                        // Application is pending
+                                        else if (don.TrangThai == 1)
+                                        {
+                                            // In submission period
+                                            if (don.DotHocBong != null && rightNow <= don.DotHocBong.NgayKetThucNop)
+                                            {
+                                                progressPercentage = 25; // Submitted
+                                            }
+                                            // In application review period
+                                            else if (don.DotHocBong != null && rightNow > don.DotHocBong.NgayKetThucNop && rightNow <= don.DotHocBong.NgayHoiDongDuyet)
+                                            {
+                                                progressPercentage = 50; // Under review
+                                            }
+                                            // In council review period
+                                            else if (don.DotHocBong != null && rightNow > don.DotHocBong.NgayHoiDongDuyet && rightNow <= don.DotHocBong.NgayPTCDuyet)
+                                            {
+                                                progressPercentage = 75; // Council review
+                                            }
+                                            // In award period
+                                            else if (don.DotHocBong != null && rightNow > don.DotHocBong.NgayPTCDuyet)
+                                            {
+                                                progressPercentage = 90; // Awaiting final award
+                                            }
+                                        }
+                                    }
+                                    <div class="progress">
+                                        <div class="progress-bar @(don.TrangThai == 2 ? "bg-success" : don.TrangThai == -1 ? "bg-danger" : "bg-primary")" 
+                                             role="progressbar" style="width: @progressPercentage%" 
+                                             aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                      <div class="timeline-steps">                                        <div class="step @(don.TrangThai != null && don.TrangThai >= 0 ? "completed" : "")">
+                                            <span class="step-icon"><i class="fas fa-paper-plane"></i></span>
+                                            <span class="step-label">Nộp hồ sơ</span>
+                                        </div>
+                                        
+                                        @{
+                                            var today = DateTime.UtcNow;
+                                            bool isApplicationReviewPeriod = don.DotHocBong != null && 
+                                                                            today > don.DotHocBong.NgayKetThucNop && 
+                                                                            today <= don.DotHocBong.NgayHoiDongDuyet;
+                                            
+                                            bool isCouncilReviewPeriod = don.DotHocBong != null && 
+                                                                        today > don.DotHocBong.NgayHoiDongDuyet && 
+                                                                        today <= don.DotHocBong.NgayPTCDuyet;
+                                                                        
+                                            bool isAwardPeriod = don.DotHocBong != null && 
+                                                               today > don.DotHocBong.NgayPTCDuyet && 
+                                                               today <= don.DotHocBong.NgayKetThuc;
 
-                    <div class="card-body">
-                        <p><strong>Mã hồ sơ:</strong> @don.ID</p>
-                        <p><strong>Ngày nộp:</strong> @don.NgayNop.ToString("dd/MM/yyyy")</p>
-                        <p>
-                            <strong>Trạng thái:</strong>
-                            @if (don.TrangThai == 1 && isInSubmissionPeriod)
-                            {
-                                <span class="fw-semibold">Đã nộp</span>
-                            }
-                            else
-                            {
-                                <span class="fw-semibold">@GetStatusText(don.TrangThai ?? -1)</span>
-                            }
-
-                        </p>
-                        <div style="float: right">
-                            <a asp-action="Details" asp-route-id="@don.ID" class="btn btn-info btn-sm ms-sm-4">Xem chi tiết</a>
+                                            // Only show steps as active when we're actually in that time period or it's been completed
+                                            bool showReviewStep = isApplicationReviewPeriod || isCouncilReviewPeriod || isAwardPeriod || 
+                                                                (don.TrangThai > 0 && today > don.DotHocBong.NgayKetThucNop);
+                                                                
+                                            bool showCouncilStep = isCouncilReviewPeriod || isAwardPeriod || 
+                                                                 (don.DuyetHoiDong == true && today > don.DotHocBong.NgayHoiDongDuyet);
+                                                                 
+                                            bool showAwardStep = isAwardPeriod || 
+                                                               (don.TrangThai == 2 && today > don.DotHocBong.NgayPTCDuyet);
+                                        }
+                                        
+                                        <div class="step @(showReviewStep ? "completed" : "")">
+                                            <span class="step-icon"><i class="fas fa-search"></i></span>
+                                            <span class="step-label">Xét duyệt</span>
+                                        </div>
+                                        
+                                        <div class="step @(showCouncilStep ? "completed" : don.TrangThai == -1 ? "rejected" : "")">
+                                            <span class="step-icon">
+                                                <i class="fas @(don.DuyetHoiDong == true ? "fa-check" : don.TrangThai == -1 ? "fa-times" : "fa-hourglass")"></i>
+                                            </span>
+                                            <span class="step-label">Hội đồng</span>
+                                        </div>
+                                        
+                                        <div class="step @(showAwardStep ? "completed" : don.TrangThai == -1 ? "rejected" : "")">
+                                            <span class="step-icon">
+                                                <i class="fas @(don.TrangThai == 2 ? "fa-check" : don.TrangThai == -1 ? "fa-times" : "fa-hourglass")"></i>
+                                            </span>
+                                            <span class="step-label">Cấp phát</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="application-actions">
+                                <a asp-action="Details" asp-route-id="@don.ID" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                </a>
+                                  @if (don.TrangThai == 1 && isInSubmissionPeriod)
+                                {
+                                    <form asp-action="HuyDon" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@don.ID" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                onclick="return confirm('Bạn có chắc chắn muốn hủy đơn này không?');">
+                                            <i class="fas fa-trash-alt me-1"></i>Hủy đơn
+                                        </button>
+                                    </form>
+                                }
+                                @if (don.TrangThai == 0 && isInSubmissionPeriod)
+                                {
+                                    <a asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@don.IDDot" 
+                                       class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-redo me-1"></i>Đăng ký lại
+                                    </a>
+                                }
+                            </div>
                         </div>
                     </div>
-
-                </div>
-
+                }
             </div>
-
-        }
-        @Html.PagedListPager(
-                Model,
-                page => Url.Action("Index", new { page }),
-                new PagedListRenderOptions
-    {
-        LiElementClasses = new[] { "page-item" },
-        PageClasses = new[] { "page-link" },
-        LinkToPreviousPageFormat = "<i class='bi bi-chevron-left'></i> Trước",
-        LinkToNextPageFormat = "Sau <i class='bi bi-chevron-right'></i>",
-        MaximumPageNumbersToDisplay = 4,
-        ContainerDivClasses = new[] { "d-flex", "justify-content-center" },
-        DisplayLinkToFirstPage = PagedListDisplayMode.Never,
-        DisplayLinkToLastPage = PagedListDisplayMode.Never,
-        DisplayLinkToIndividualPages = true,
-        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-        DisplayLinkToNextPage = PagedListDisplayMode.Always
-    }
+            
+            <div class="pagination-container">
+                @Html.PagedListPager(
+                    Model,
+                    page => Url.Action("Index", new { page }),
+                    new PagedListRenderOptions
+                    {
+                        LiElementClasses = new[] { "page-item" },
+                        PageClasses = new[] { "page-link" },
+                        LinkToPreviousPageFormat = "<i class='fas fa-chevron-left'></i>",
+                        LinkToNextPageFormat = "<i class='fas fa-chevron-right'></i>",
+                        MaximumPageNumbersToDisplay = 5,
+                        ContainerDivClasses = new[] { "pagination-wrapper" },
+                        UlElementClasses = new[] { "pagination" },
+                        DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                        DisplayLinkToLastPage = PagedListDisplayMode.Never,
+                        DisplayLinkToIndividualPages = true,
+                        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                        DisplayLinkToNextPage = PagedListDisplayMode.Always
+                    }
                 )
-
+            </div>
+        }
     </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const applicationItems = document.querySelectorAll('.application-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Show/hide items based on filter
+                    applicationItems.forEach(item => {
+                        if (filter === 'all') {
+                            item.style.display = 'flex';
+                        } else {
+                            if (item.classList.contains(filter)) {
+                                item.style.display = 'flex';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // View toggle functionality
+            const viewButtons = document.querySelectorAll('.view-btn');
+            const applicationsList = document.querySelector('.applications-list');
+            
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all view buttons
+                    viewButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const viewType = this.getAttribute('data-view');
+                    
+                    // Remove all view classes
+                    applicationsList.classList.remove('card-view', 'list-view');
+                    
+                    // Add the selected view class
+                    applicationsList.classList.add(viewType);
+                });
+            });
+            
+            // Animate items on page load
+            applicationItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('show');
+                }, 100 * index);
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        /* Dashboard styles */
+        .applications-dashboard {
+            padding: 0;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Status Summary */
+        .status-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .status-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .status-icon.pending {
+            background-color: #ffc107;
+        }
+        
+        .status-icon.approved {
+            background-color: #28a745;
+        }
+        
+        .status-icon.rejected {
+            background-color: #dc3545;
+        }
+        
+        .status-icon.cancelled {
+            background-color: #6c757d;
+        }
+        
+        .status-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-details h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .status-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+        
+        /* Filter Options */
+        .filter-options {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+        
+        .filter-btn:hover {
+            background-color: rgba(var(--primary-rgb), 0.05);
+            color: var(--primary-color);
+            border-color: rgba(var(--primary-rgb), 0.2);
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .view-btn {
+            background: none;
+            border: 1px solid #ddd;
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn:hover {
+            background-color: rgba(var(--primary-rgb), 0.05);
+            color: var(--primary-color);
+            border-color: rgba(var(--primary-rgb), 0.2);
+        }
+        
+        .view-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Applications List */
+        .applications-list {
+            margin-bottom: 2rem;
+        }
+        
+        .applications-list.card-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .applications-list.list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .applications-list.list-view .application-item {
+            flex-direction: row;
+        }
+        
+        .applications-list.list-view .application-status {
+            margin-bottom: 0;
+            margin-right: 1.5rem;
+            align-self: center;
+        }
+        
+        .applications-list.list-view .application-content {
+            flex: 1;
+        }
+        
+        .applications-list.list-view .application-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .applications-list.list-view .detail-item {
+            flex: 0 0 auto;
+            margin-bottom: 0;
+        }
+        
+        .application-item {
+            position: relative;
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(15px);
+            overflow: hidden;
+        }
+        
+        .application-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .application-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        
+        .application-item.status-pending {
+            border-left: 4px solid #ffc107;
+        }
+        
+        .application-item.status-approved {
+            border-left: 4px solid #28a745;
+        }
+        
+        .application-item.status-rejected {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .application-item.status-cancelled {
+            border-left: 4px solid #6c757d;
+        }
+        
+        .application-status {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .status-pending .application-status {
+            color: #ffc107;
+        }
+        
+        .status-approved .application-status {
+            color: #28a745;
+        }
+        
+        .status-rejected .application-status {
+            color: #dc3545;
+        }
+        
+        .status-cancelled .application-status {
+            color: #6c757d;
+        }
+        
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .application-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--primary-color);
+        }
+        
+        .application-details {
+            margin-bottom: 1.25rem;
+        }
+        
+        .detail-item {
+            margin-bottom: 0.5rem;
+            display: flex;
+            font-size: 0.9rem;
+        }
+        
+        .detail-label {
+            color: #666;
+            margin-right: 0.5rem;
+            width: 120px;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .application-timeline {
+            margin-bottom: 1.5rem;
+        }
+        
+        .timeline-progress .progress {
+            height: 6px;
+            margin-bottom: 1rem;
+            background-color: #e9ecef;
+        }
+        
+        .timeline-steps {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 33.333%;
+            position: relative;
+        }
+        
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 0.7rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .step.completed .step-icon {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .step.rejected .step-icon {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+        
+        .step.completed .step-label {
+            color: #28a745;
+            font-weight: 500;
+        }
+        
+        .step.rejected .step-label {
+            color: #dc3545;
+            font-weight: 500;
+        }
+        
+        .application-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(var(--primary-rgb), 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Pagination */
+        .pagination-container {
+            margin-top: 2rem;
+        }
+        
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .pagination {
+            display: flex;
+            padding-left: 0;
+            list-style: none;
+            border-radius: 0.25rem;
+        }
+        
+        .page-item:first-child .page-link {
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+        
+        .page-item:last-child .page-link {
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+        
+        .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            cursor: auto;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+        
+        .page-link {
+            position: relative;
+            display: block;
+            padding: 0.5rem 0.75rem;
+            margin-left: -1px;
+            line-height: 1.25;
+            color: var(--primary-color);
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+        
+        .page-link:hover {
+            z-index: 2;
+            color: var(--primary-color);
+            text-decoration: none;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+        
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .applications-list.card-view {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .applications-list.list-view .application-item {
+                flex-direction: column;
+            }
+            
+            .applications-list.list-view .application-status {
+                margin-right: 0;
+                margin-bottom: 1rem;
+                align-self: flex-start;
+            }
+            
+            .applications-list.list-view .application-details {
+                flex-direction: column;
+            }
+            
+            .filter-tabs {
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                width: 100%;
+            }
+            
+            .filter-btn {
+                white-space: nowrap;
+            }
+            
+            .detail-label {
+                width: 100px;
+            }
+        }
+    </style>
 }
 

@@ -1,7 +1,6 @@
 ﻿@model Scholarship_Distribution_Management_System.Models.Entities.DonXinHocBong
 
 @{
-
     var now = DateTime.UtcNow;
     bool isInSubmissionPeriod = Model.DotHocBong != null &&
                                 Model.DotHocBong.NgayBatDauNop <= now &&
@@ -17,78 +16,728 @@
         0 => "Đã hủy",
         _ => "Không xác định"
     };
+    
     string GetStatusClass(int status)
     {
         return status switch
         {
-            1 => "bg-warning text-dark",     // Chờ xử lý
-            2 => "bg-success text-white",    // Hoàn thành
-            -1 => "bg-danger text-white",     // Đã hủy
-            0 => "bg-danger text-white",
-            _ => "bg-secondary text-white"
+            1 => "pending",
+            2 => "completed",
+            -1 => "rejected",
+            0 => "cancelled",
+            _ => "unknown"
         };
     }
-
+    
+    string GetStatusIcon(int status)
+    {
+        return status switch
+        {
+            1 => "fa-clock",
+            2 => "fa-check-circle",
+            -1 => "fa-times-circle",
+            0 => "fa-ban",
+            _ => "fa-question-circle"
+        };
+    }
+    
+    string GetProgressPercentage(int status)
+    {
+        return status switch
+        {
+            1 => "40",
+            2 => "100",
+            -1 => "100",
+            0 => "20",
+            _ => "0"
+        };
+    }
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<div class="card shadow-sm p-4 mt-3">
-    <dl class="row">
-        <dt class="col-sm-3">Mã hồ sơ:</dt>
-        <dd class="col-sm-9">@Model.ID</dd>
-
-        <dt class="col-sm-3">Ngày nộp:</dt>
-        <dd class="col-sm-9">@Model.NgayNop.ToString("dd/MM/yyyy")</dd>
-
-        <dt class="col-sm-3">Trạng thái:</dt>
-        <dd class="col-sm-9">
-            @if (Model.TrangThai == 1 && isInSubmissionPeriod)
-            {
-                <span class="badge bg-primary text-white">Đã nộp</span>
-            }
-            else
-            {
-                <span class="badge @GetStatusClass(Model.TrangThai ?? -1)">@status</span>
-            }
+<div class="application-details-container">
+    <!-- Header Section -->
+    <div class="details-header">
+        <div class="breadcrumbs">
+            <a asp-action="Index"><i class="fas fa-home"></i> Danh sách đơn</a> / 
+            <span>Chi tiết đơn</span>
+        </div>
+        <h1><i class="fas fa-file-alt"></i> Chi tiết đơn xin học bổng</h1>
+        <div class="application-id">Mã hồ sơ: <span>@Model.ID</span></div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="details-content">
+        <!-- Left Column -->
+        <div class="details-main">
+            <!-- Status Card -->
+            <div class="status-card @GetStatusClass(Model.TrangThai ?? -1)">
+                <div class="status-icon">
+                    <i class="fas @GetStatusIcon(Model.TrangThai ?? -1)"></i>
+                </div>
+                <div class="status-info">
+                    <h3>Trạng thái: @status</h3>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: @(GetProgressPercentage(Model.TrangThai ?? -1))%"></div>
+                    </div>
+                </div>
+            </div>
             
+            <!-- Scholarship Info -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-award"></i> Thông tin học bổng
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <div class="info-label">Tên đợt học bổng:</div>
+                        <div class="info-value">@Model.DotHocBong?.TenDot</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Giá trị học bổng:</div>
+                        <div class="info-value">@(Model.DotHocBong?.Tien.ToString("N0")) VNĐ</div>
+                    </div>
+                    @if (Model.DotHocBong != null)
+                    {
+                        <div class="info-item">
+                            <div class="info-label">Thời gian nộp:</div>
+                            <div class="info-value">
+                                @Model.DotHocBong.NgayBatDauNop.ToString("dd/MM/yyyy") - 
+                                @Model.DotHocBong.NgayKetThucNop.ToString("dd/MM/yyyy")
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
             
-        </dd>
-
-        <dt class="col-sm-3">Tên đợt học bổng:</dt>
-        <dd class="col-sm-9">@Model.DotHocBong?.TenDot</dd>
-    </dl>
-
-    <h5 class="mt-4">Nghiên cứu khoa học</h5>
-    <ul>
-        @foreach (var item in Model.NghienCuuCuaSinhViens)
-        {
-            <li>@item.NghienCuu.TenDeTai @item.NghienCuu.ThanhTich</li>
-        }
-    </ul>
-
-    <h5 class="mt-4">Hoạt động</h5>
-    <ul>
-        @foreach (var item in Model.HoatDongCuaSinhViens)
-        {
-            <li>@item.HoatDong.TenHoatDong</li>
-        }
-    </ul>
+            <!-- Research Activities -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-microscope"></i> Nghiên cứu khoa học
+                </div>
+                <div class="card-body">
+                    @if (Model.NghienCuuCuaSinhViens != null && Model.NghienCuuCuaSinhViens.Any())
+                    {
+                        <ul class="activity-list">
+                            @foreach (var item in Model.NghienCuuCuaSinhViens)
+                            {
+                                <li>
+                                    <div class="activity-icon"><i class="fas fa-flask"></i></div>
+                                    <div class="activity-details">
+                                        <div class="activity-title">@item.NghienCuu.TenDeTai</div>
+                                        <div class="activity-subtitle">Thành tích: @item.NghienCuu.ThanhTich</div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="fas fa-info-circle"></i> Không có nghiên cứu khoa học nào được đăng ký
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- Extracurricular Activities -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-running"></i> Hoạt động ngoại khóa
+                </div>
+                <div class="card-body">
+                    @if (Model.HoatDongCuaSinhViens != null && Model.HoatDongCuaSinhViens.Any())
+                    {
+                        <ul class="activity-list">
+                            @foreach (var item in Model.HoatDongCuaSinhViens)
+                            {
+                                <li>
+                                    <div class="activity-icon"><i class="fas fa-calendar-check"></i></div>
+                                    <div class="activity-details">
+                                        <div class="activity-title">@item.HoatDong.TenHoatDong</div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="fas fa-info-circle"></i> Không có hoạt động ngoại khóa nào được đăng ký
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="details-sidebar">
+            <!-- Application Timeline -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-history"></i> Tiến trình hồ sơ
+                </div>
+                <div class="card-body">                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="timeline-content">
+                                <h4>Nộp hồ sơ</h4>
+                                <p>@Model.NgayNop.ToString("dd/MM/yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                          @{
+                            bool isApplicationReviewPeriod = Model.DotHocBong != null && 
+                                                           now > Model.DotHocBong.NgayKetThucNop && 
+                                                           now <= Model.DotHocBong.NgayHoiDongDuyet;
+                            
+                            bool isCouncilReviewPeriod = Model.DotHocBong != null && 
+                                                       now > Model.DotHocBong.NgayHoiDongDuyet && 
+                                                       now <= Model.DotHocBong.NgayPTCDuyet;
+                            
+                            bool isAwardPeriod = Model.DotHocBong != null && 
+                                               now > Model.DotHocBong.NgayPTCDuyet && 
+                                               now <= Model.DotHocBong.NgayKetThuc;
+                                               
+                            // Only show steps as active when we're actually in that time period or it's been completed
+                            bool showReviewStep = isApplicationReviewPeriod || isCouncilReviewPeriod || isAwardPeriod || 
+                                                (Model.TrangThai > 0 && now > Model.DotHocBong.NgayKetThucNop);
+                                                
+                            bool showCouncilStep = isCouncilReviewPeriod || isAwardPeriod || 
+                                                 (Model.DuyetHoiDong == true && now > Model.DotHocBong.NgayHoiDongDuyet);
+                                                 
+                            bool showAwardStep = isAwardPeriod || 
+                                               (Model.DuyetCapPhatHocBong == true && now > Model.DotHocBong.NgayPTCDuyet);
+                        }
+                        
+                        <div class="timeline-item @(showReviewStep ? "completed" : "")">
+                            <div class="timeline-icon"><i class="fas fa-search"></i></div>
+                            <div class="timeline-content">
+                                <h4>Xét duyệt hồ sơ</h4>
+                                <p>
+                                    @if(Model.DotHocBong != null) 
+                                    {
+                                        @(Model.DotHocBong.NgayKetThucNop.ToString("dd/MM/yyyy") + " - " + Model.DotHocBong.NgayHoiDongDuyet.ToString("dd/MM/yyyy"))
+                                        @if (isApplicationReviewPeriod)
+                                        {
+                                            <span class="badge bg-warning text-dark ms-2">Đang diễn ra</span>
+                                        }
+                                        else if (now <= Model.DotHocBong.NgayKetThucNop)
+                                        {
+                                            <span class="badge bg-secondary ms-2">Chưa bắt đầu</span>
+                                        }
+                                        else if (now > Model.DotHocBong.NgayHoiDongDuyet)
+                                        {
+                                            <span class="badge bg-success ms-2">Đã hoàn thành</span>
+                                        }
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item @(showCouncilStep ? "completed" : "")">
+                            <div class="timeline-icon"><i class="fas fa-users"></i></div>
+                            <div class="timeline-content">
+                                <h4>Hội đồng duyệt</h4>
+                                <p>
+                                    @if(Model.DotHocBong != null) 
+                                    {
+                                        @(Model.DotHocBong.NgayHoiDongDuyet.ToString("dd/MM/yyyy") + " - " + Model.DotHocBong.NgayPTCDuyet.ToString("dd/MM/yyyy"))
+                                        @if (isCouncilReviewPeriod)
+                                        {
+                                            <span class="badge bg-warning text-dark ms-2">Đang diễn ra</span>
+                                        }
+                                        else if (now <= Model.DotHocBong.NgayHoiDongDuyet)
+                                        {
+                                            <span class="badge bg-secondary ms-2">Chưa bắt đầu</span>
+                                        }
+                                        else if (now > Model.DotHocBong.NgayPTCDuyet)
+                                        {
+                                            <span class="badge bg-success ms-2">Đã hoàn thành</span>
+                                        }
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item @(showAwardStep ? "completed" : "")">
+                            <div class="timeline-icon"><i class="fas fa-check-double"></i></div>
+                            <div class="timeline-content">
+                                <h4>Cấp phát học bổng</h4>
+                                <p>
+                                    @if(Model.DotHocBong != null) 
+                                    {
+                                        @(Model.DotHocBong.NgayPTCDuyet.ToString("dd/MM/yyyy") + " - " + Model.DotHocBong.NgayKetThuc.ToString("dd/MM/yyyy"))
+                                        @if (isAwardPeriod)
+                                        {
+                                            <span class="badge bg-warning text-dark ms-2">Đang diễn ra</span>
+                                        }
+                                        else if (now <= Model.DotHocBong.NgayPTCDuyet)
+                                        {
+                                            <span class="badge bg-secondary ms-2">Chưa bắt đầu</span>
+                                        }
+                                        else if (now > Model.DotHocBong.NgayKetThuc)
+                                        {
+                                            <span class="badge bg-success ms-2">Đã hoàn thành</span>
+                                        }
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Academic Info -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-graduation-cap"></i> Thông tin học tập
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <div class="info-label">Điểm học tập:</div>
+                        <div class="info-value">
+                            @(Model.DiemHocTap.HasValue ? Model.DiemHocTap.Value.ToString("F2") : "Chưa có")
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Điểm rèn luyện:</div>
+                        <div class="info-value">
+                            @(Model.DiemRenLuyen.HasValue ? Model.DiemRenLuyen.Value.ToString("F2") : "Chưa có")
+                        </div>
+                    </div>
+                    @if (Model.KQDiemHT.HasValue || Model.KQDiemRL.HasValue)
+                    {
+                        <div class="divider"></div>
+                        <h5>Kết quả đánh giá</h5>
+                        
+                        @if (Model.KQDiemHT.HasValue)
+                        {
+                            <div class="info-item">
+                                <div class="info-label">KQ điểm học tập:</div>
+                                <div class="info-value">@Model.KQDiemHT.Value.ToString("F2")</div>
+                            </div>
+                        }
+                        
+                        @if (Model.KQDiemRL.HasValue)
+                        {
+                            <div class="info-item">
+                                <div class="info-label">KQ điểm rèn luyện:</div>
+                                <div class="info-value">@Model.KQDiemRL.Value.ToString("F2")</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                
+                @if (Model.TrangThai == 1 && isInSubmissionPeriod)
+                {
+                    <form asp-action="HuyDon" asp-route-id="@Model.ID" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger" 
+                                onclick="return confirm('Bạn có chắc chắn muốn rút lại hồ sơ này không?');">
+                            <i class="fas fa-trash-alt"></i> Huỷ đơn
+                        </button>
+                    </form>
+                }
+                else if (Model.TrangThai == 0 && isInSubmissionPeriod)
+                {
+                    <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" 
+                       asp-route-idDot="@Model.IDDot" class="btn btn-primary">
+                        <i class="fas fa-redo"></i> Đăng ký lại
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 
-
-<div class="container-btn">
-    <a asp-action="Index" class="btn btn-secondary m-3">Quay lại</a>
-    @if (Model.TrangThai == 1 && isInSubmissionPeriod)
-    {
-        <form asp-action="HuyDon" asp-route-id="@Model.ID" method="post">
-            <button type="submit" class="btn btn-danger m-3">
-                Rút lại hồ sơ
-            </button>
-        </form>
-    }else if (Model.TrangThai == 0 && isInSubmissionPeriod){
-        <a asp-area="SinhVien" asp-controller="DangKyHoSo" asp-action="Create" asp-route-idDot="@Model.IDDot"
-           class="btn btn-primary m-3">Đăng ký lại</a>
+<style>
+    .application-details-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #333;
     }
-</div>
+    
+    .details-header {
+        margin-bottom: 30px;
+    }
+    
+    .breadcrumbs {
+        font-size: 14px;
+        margin-bottom: 15px;
+        color: #666;
+    }
+    
+    .breadcrumbs a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+    
+    .breadcrumbs a:hover {
+        text-decoration: underline;
+    }
+    
+    .details-header h1 {
+        margin: 0 0 10px;
+        font-size: 32px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+    
+    .application-id {
+        color: #666;
+        font-size: 16px;
+    }
+    
+    .application-id span {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .details-content {
+        display: flex;
+        gap: 30px;
+    }
+    
+    .details-main {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+    
+    .details-sidebar {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+    
+    .status-card {
+        display: flex;
+        padding: 20px;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        gap: 20px;
+        align-items: center;
+        border-left: 5px solid #ccc;
+    }
+    
+    .status-card.pending {
+        border-left-color: #f0ad4e;
+    }
+    
+    .status-card.completed {
+        border-left-color: #5cb85c;
+    }
+    
+    .status-card.rejected {
+        border-left-color: #d9534f;
+    }
+    
+    .status-card.cancelled {
+        border-left-color: #d9534f;
+    }
+    
+    .status-icon {
+        font-size: 36px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .pending .status-icon {
+        color: #f0ad4e;
+    }
+    
+    .completed .status-icon {
+        color: #5cb85c;
+    }
+    
+    .rejected .status-icon,
+    .cancelled .status-icon {
+        color: #d9534f;
+    }
+    
+    .status-info {
+        flex: 1;
+    }
+    
+    .status-info h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .progress {
+        height: 8px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background-color: #007bff;
+        border-radius: 4px;
+    }
+    
+    .pending .progress-bar {
+        background-color: #f0ad4e;
+    }
+    
+    .completed .progress-bar {
+        background-color: #5cb85c;
+    }
+    
+    .rejected .progress-bar,
+    .cancelled .progress-bar {
+        background-color: #d9534f;
+    }
+    
+    .info-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .card-header {
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        font-weight: 600;
+        font-size: 16px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .card-header i {
+        margin-right: 8px;
+        color: #0d6efd;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .info-item {
+        display: flex;
+        margin-bottom: 12px;
+    }
+    
+    .info-label {
+        width: 40%;
+        color: #666;
+        font-size: 14px;
+    }
+    
+    .info-value {
+        width: 60%;
+        font-weight: 500;
+    }
+    
+    .activity-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .activity-list li {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    
+    .activity-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #f0f7ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        margin-right: 15px;
+    }
+    
+    .activity-details {
+        flex: 1;
+    }
+    
+    .activity-title {
+        font-weight: 500;
+        margin-bottom: 3px;
+    }
+    
+    .activity-subtitle {
+        font-size: 13px;
+        color: #666;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+    
+    .empty-state i {
+        font-size: 20px;
+        margin-right: 8px;
+        color: #999;
+    }
+    
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+    
+    .timeline:before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background: #ddd;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .timeline-icon {
+        position: absolute;
+        left: -40px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #f5f5f5;
+        border: 2px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        z-index: 1;
+    }
+    
+    .timeline-item.completed .timeline-icon {
+        background: #5cb85c;
+        border-color: #5cb85c;
+        color: white;
+    }
+    
+    .timeline-content h4 {
+        margin: 0 0 5px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    
+    .timeline-content p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .divider {
+        height: 1px;
+        background: #eee;
+        margin: 15px 0;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        border: none;
+    }
+    
+    .btn i {
+        margin-right: 8px;
+    }
+    
+    .btn-secondary {
+        background: #f8f9fa;
+        color: #333;
+        border: 1px solid #ddd;
+    }
+    
+    .btn-primary {
+        background: #0d6efd;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #0b5ed7;
+    }
+    
+    .btn-danger {
+        background: #d9534f;
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background: #c9302c;
+    }
+    
+    /* Responsive adjustments */
+    @@media (max-width: 992px) {
+        .details-content {
+            flex-direction: column;
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .info-item {
+            flex-direction: column;
+        }
+        
+        .info-label, .info-value {
+            width: 100%;
+        }
+        
+        .info-label {
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
 

@@ -26,14 +26,13 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
                 .Include(d => d.NhanVien)
                 .Where(d => d.TrangThai == 1)
                 .OrderByDescending(d => d.NgayBatDauNop); // Sort by start date in descending order (newest first)
-                
-            // Get the list of applications that the current user has already submitted
+                  // Get the list of applications that the current user has already submitted
             var appliedScholarshipIds = new List<string>();
             if (User.Identity.IsAuthenticated && User.IsInRole("SinhVien"))
             {
                 var user = await _userManager.GetUserAsync(User);
                 appliedScholarshipIds = await _context.DonXinHocBongs
-                    .Where(d => d.IDSinhVien == user.Id && d.TrangThai == 1)
+                    .Where(d => d.IDSinhVien == user.Id && d.TrangThai == 1) // Only consider active applications
                     .Select(d => d.IDDot)
                     .ToListAsync();
             }
@@ -54,19 +53,25 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
            .FirstOrDefaultAsync(d => d.ID == id);
 
             if (dot == null)
-                return NotFound();
-
-            bool daDangKy = false;
+                return NotFound();            bool daDangKy = false;
+            string applicationId = null;
 
             // Nếu đã đăng nhập và là Sinh Viên
             if (User.Identity.IsAuthenticated && User.IsInRole("SinhVien"))
             {
                 var user = await _userManager.GetUserAsync(User);
-                daDangKy = await _context.DonXinHocBongs
-                    .AnyAsync(d => d.IDDot == id && d.IDSinhVien == user.Id && d.TrangThai == 1);
+                var application = await _context.DonXinHocBongs
+                    .FirstOrDefaultAsync(d => d.IDDot == id && d.IDSinhVien == user.Id && d.TrangThai == 1);
+                
+                if (application != null)
+                {
+                    daDangKy = true;
+                    applicationId = application.ID;
+                }
             }
 
             ViewBag.DaDangKy = daDangKy;
+            ViewBag.ApplicationId = applicationId;
             ViewBag.IDDot = id;
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {

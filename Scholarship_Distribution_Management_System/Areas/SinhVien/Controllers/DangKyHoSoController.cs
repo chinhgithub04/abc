@@ -100,13 +100,10 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
                 IDSinhVien = user.Id,
                 NgayNop = DateTime.Now
             });
-        }
-
-        // POST: Submit scholarship application
+        }        // POST: Submit scholarship application
         [HttpPost]
         public async Task<IActionResult> Create(DonXinHocBong model, string[] selectedNghienCuu, string[] selectedHoatDong)
         {
-
             foreach (var key in ModelState.Keys)
             {
                 var state = ModelState[key];
@@ -117,13 +114,50 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
             }
             if (ModelState.IsValid)
             {
-                model.ID = Guid.NewGuid().ToString();
-                model.TrangThai = 1;
-                model.DuyetHoiDong = false;
-                model.DuyetCapPhatHocBong = false;
+                // Check if there's an existing canceled application for this scholarship
+                var existingCanceledApplication = await _context.DonXinHocBongs
+                    .FirstOrDefaultAsync(d => d.IDSinhVien == model.IDSinhVien 
+                                         && d.IDDot == model.IDDot 
+                                         && d.TrangThai == 0); // 0 = Canceled
 
-                // Save DONXINHOCBONG
-                _context.DonXinHocBongs.Add(model);
+                if (existingCanceledApplication != null)
+                {
+                    // Update the existing canceled application instead of creating a new one
+                    existingCanceledApplication.NgayNop = DateTime.Now;
+                    existingCanceledApplication.TrangThai = 1; // Set to Pending
+                    existingCanceledApplication.DuyetHoiDong = false;
+                    existingCanceledApplication.DuyetCapPhatHocBong = false;
+                    existingCanceledApplication.NoiDung = model.NoiDung;
+                    existingCanceledApplication.DiemHocTap = model.DiemHocTap;
+                    existingCanceledApplication.DiemRenLuyen = model.DiemRenLuyen;
+                    existingCanceledApplication.KQDiemRL = null;
+                    existingCanceledApplication.KQDiemHT = null;
+                    
+                    // Remove existing research and activity relationships
+                    var existingResearch = await _context.nghienCuuCuaSinhViens
+                        .Where(n => n.IDDon == existingCanceledApplication.ID)
+                        .ToListAsync();
+                    
+                    var existingActivities = await _context.HoatDongCuaSinhViens
+                        .Where(h => h.IDDon == existingCanceledApplication.ID)
+                        .ToListAsync();
+                    
+                    _context.nghienCuuCuaSinhViens.RemoveRange(existingResearch);
+                    _context.HoatDongCuaSinhViens.RemoveRange(existingActivities);
+                    
+                    model.ID = existingCanceledApplication.ID; // Use the existing ID for adding new relationships
+                }
+                else
+                {
+                    // Create a new application
+                    model.ID = Guid.NewGuid().ToString();
+                    model.TrangThai = 1;
+                    model.DuyetHoiDong = false;
+                    model.DuyetCapPhatHocBong = false;
+
+                    // Add new application to context
+                    _context.DonXinHocBongs.Add(model);
+                }
 
                 // Save selected NGHIENCUUCUASINHVIEN
                 if (selectedNghienCuu != null)
@@ -141,7 +175,6 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
                             });
                         }
                     }
-
                 }
 
                 // Save selected HOATDONGCUASINHVIEN
@@ -164,7 +197,7 @@ namespace Scholarship_Distribution_Management_System.Areas.SinhVien.Controllers
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
-            }            // If validation fails, repopulate the ViewBag and return the form
+            }// If validation fails, repopulate the ViewBag and return the form
             var userDetails = await _context.Users
                 .Include(u => u.LopSH)
                     .ThenInclude(l => l.Nganh)
