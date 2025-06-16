@@ -61,6 +61,10 @@
                                 statusText = "Đang mở";
                                 statusClass = "status-active";
                             }
+                            else if (now > item.NgayKetThuc && now <= item.NgayHoiDongDuyet){
+                                statusText = "Đang duyệt";
+                                statusClass = "status-active";
+                            }
                             else if (now > item.NgayKetThuc)
                             {
                                 statusText = "Kết thúc";

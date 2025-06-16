@@ -4,96 +4,91 @@
     ViewData["Title"] = "Duyệt điểm rèn luyện";
 }
 
-<div class="duyet-diem-container">
-    <div class="duyet-diem-header">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h2>@ViewData["Title"]</h2>
-                <p class="text-muted">Quản lý điểm rèn luyện của sinh viên trong hệ thống</p>
-            </div>
-            <div class="col-md-4 text-end">
-                <button type="button" class="btn btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#importModal">
-                    <i class="bi bi-upload"></i> Duyệt tự động
-                </button>
-            </div>
+<div class="duyet-diem-renluyen-container">
+    <div class="header-section">
+        <div>
+            <h1><i class="fas fa-check-circle"></i> @ViewData["Title"]</h1>
+            <p class="subtitle">Quản lý điểm rèn luyện của sinh viên trong hệ thống</p>
         </div>
+        <button type="button" class="import-btn" data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="fas fa-upload"></i> Duyệt tự động
+        </button>
     </div>
 
     @if (TempData["Message"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Message"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="alert-success-custom">
+            <i class="fas fa-check-circle"></i> @TempData["Message"]
+            <button type="button" class="close-alert" data-bs-dismiss="alert" aria-label="Close">&times;</button>
         </div>
     }
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <table id="duyetDiemTable" class="table table-striped table-hover responsive nowrap text-start" width="100%">
-                <thead>
+    <div class="table-section">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã SV</th>
+                    <th>Họ và tên</th>
+                    <th>Ngày nộp</th>
+                    <th>Điểm RL (SV)</th>
+                    <th>Điểm RL (KQ)</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var item = Model[i];
                     <tr>
-                        <th class="text-center">STT</th>
-                        <th>Mã sinh viên</th>
-                        <th>Họ và tên</th>
-                        <th class="text-center">Ngày nộp</th>
-                        <th class="text-center">Điểm RL (SV)</th>
-                        <th class="text-center">Điểm RL (KQ)</th>
-                        <th class="text-center">Trạng thái</th>
-                        <th class="text-center">Thao tác</th>
+                        <td>@(i + 1)</td>
+                        <td>@item.SinhVienId</td>
+                        <td>@item.HoTen</td>
+                        <td>@item.NgayNop?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (item.DiemRenLuyen.HasValue)
+                            {
+                                <span class="badge-cell badge-gray">@((int)item.DiemRenLuyen.Value)</span>
+                            }
+                            else
+                            {
+                                <span class="badge-cell badge-gray">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.KQDiemRL.HasValue)
+                            {
+                                <span class="badge-cell badge-green">@((int)item.KQDiemRL.Value)</span>
+                            }
+                            else
+                            {
+                                <span class="badge-cell badge-yellow">Chưa duyệt</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.KQDiemRL == null && item.TrangThaiDon == 1)
+                            {
+                                <span class="status-badge status-wait">Chờ xử lý</span>
+                            }
+                            else if (item.KQDiemRL == item.DiemRenLuyen && item.TrangThaiDon == 1)
+                            {
+                                <span class="status-badge status-done">Đã duyệt</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-reject">Từ chối</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.DonHocBongId" class="action-btn" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td class="text-center"></td>
-                            <td>@item.SinhVienId</td>
-                            <td>@item.HoTen</td>
-                            <td class="text-center">@item.NgayNop?.ToShortDateString()</td>
-                            <td class="text-center">
-                                @if (item.DiemRenLuyen.HasValue)
-                                {
-                                    <span class="badge bg-secondary">@((int)item.DiemRenLuyen.Value)</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">-</span>
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if (item.KQDiemRL.HasValue)
-                                {
-                                    <span class="badge bg-success">@((int)item.KQDiemRL.Value)</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Chưa duyệt</span>
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if (item.KQDiemRL == null && item.TrangThaiDon == 1)
-                                {
-                                    <span class="badge bg-warning text-dark">Chờ xử lý</span>
-                                }
-                                else if (item.KQDiemRL == item.DiemRenLuyen && item.TrangThaiDon == 1)
-                                {
-                                    <span class="badge bg-success">Đã duyệt</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Từ chối</span>
-                                }
-                            </td>
-                            <td class="text-center">
-                                <a asp-action="Details" asp-route-id="@item.DonHocBongId" class="btn btn-sm btn-info" title="Xem chi tiết">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -106,7 +101,7 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title" id="importModalLabel">
-                        <i class="bi bi-file-earmark-excel me-2"></i>
+                        <i class="fas fa-file-excel"></i>
                         Tải lên file Excel điểm rèn luyện
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
@@ -131,10 +126,10 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Hủy
+                        <i class="fas fa-times"></i> Hủy
                     </button>
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-upload"></i> Tải lên
+                        <i class="fas fa-upload"></i> Tải lên
                     </button>
                 </div>
             </form>
@@ -142,10 +137,161 @@
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/js/duyetDiemRenLuyen.js"></script>
-}
-
 @section Styles {
-    <link rel="stylesheet" href="~/css/duyetDiemRenLuyen.css" />
+    <style>
+        .duyet-diem-renluyen-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 0;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+        .header-section h1 {
+            font-size: 1.7rem;
+            margin: 0 0 6px 0;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+        .import-btn {
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 18px;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .import-btn:hover {
+            background: #0b5ed7;
+        }
+        .alert-success-custom {
+            background: #e6ffed;
+            color: #2c9e3c;
+            border: 1px solid #aae0b3;
+            border-radius: 4px;
+            padding: 12px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            position: relative;
+        }
+        .close-alert {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #888;
+            position: absolute;
+            right: 12px;
+            top: 8px;
+            cursor: pointer;
+        }
+        .table-section {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 0 0 18px 0;
+        }
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        .custom-table thead {
+            background: #f8f9fa;
+        }
+        .custom-table th, .custom-table td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .custom-table th {
+            color: #444;
+            font-weight: 600;
+        }
+        .custom-table tbody tr:hover {
+            background: #f1f7ff;
+        }
+        .badge-cell {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.98rem;
+            font-weight: 500;
+        }
+        .badge-gray {
+            background: #e9ecef;
+            color: #555;
+        }
+        .badge-green {
+            background: #e6ffed;
+            color: #2c9e3c;
+        }
+        .badge-yellow {
+            background: #fffbe6;
+            color: #d48806;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.98rem;
+            font-weight: 500;
+        }
+        .status-wait {
+            background: #fffbe6;
+            color: #d48806;
+        }
+        .status-done {
+            background: #e6ffed;
+            color: #2c9e3c;
+        }
+        .status-reject {
+            background: #ffeaea;
+            color: #e74c3c;
+        }
+        .action-btn {
+            background: #f8f9fa;
+            color: #0d6efd;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .action-btn:hover {
+            background: #e2e6ea;
+        }
+        @@media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .custom-table th, .custom-table td {
+                font-size: 0.95rem;
+                padding: 8px 4px;
+            }
+        }
+    </style>
 }

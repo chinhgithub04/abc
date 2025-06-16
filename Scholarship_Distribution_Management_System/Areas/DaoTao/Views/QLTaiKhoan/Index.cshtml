@@ -5,68 +5,277 @@
     ViewData["Title"] = "Danh sách tài khoản";
 }
 
-<h2>@ViewData["Title"]</h2>
-<a class="btn btn-primary mb-3" asp-action="Create">Thêm tài khoản</a>
+<div class="account-management-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1><i class="fas fa-users"></i> Quản lý tài khoản</h1>
+            <p class="subtitle">Quản lý danh sách tài khoản trong hệ thống</p>
+        </div>
+        <a class="add-account-btn" asp-action="Create">
+            <i class="fas fa-user-plus"></i> Thêm tài khoản mới
+        </a>
+    </div>
 
-@* Thêm id="myTable" và class="display responsive nowrap" *@
-<table id="myTable" class="table table-bordered table-hover display responsive nowrap" style="width:100%">
-    <thead>
-        <tr>
-            <th>STT</th>
-            <th class="text-start">Mã</th>
-            <th>Họ tên</th>
-            <th>Email</th>
-            <th>Vai trò</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@(Model.IndexOf(u) + 1)</td>
-                <td class="text-start">@u.ID</td>
-                <td>@u.HoTen</td>
-                <td>@u.Email</td>
-                <td>@u.VaiTro</td>
-                <td>@if(u.TrangThai == 1)
-                    {
-                        <span class="badge bg-success">Mở</span>
-                    }
-                    else if (u.TrangThai == 0)
-                    {
-                        <span class="badge bg-danger">Khóa</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Hết hạn</span>
-                    }
+    <div class="accounts-table-wrapper">
+        <table id="myTable" class="accounts-table display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th width="50">STT</th>
+                    <th>Mã</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th width="180">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td class="text-center">@(Model.IndexOf(u) + 1)</td>
+                        <td>@u.ID</td>
+                        <td>
+                            <div class="user-info">
+                                <img src="~/Images/Avatar.png" alt="Avatar" class="user-avatar">
+                                <span>@u.HoTen</span>
+                            </div>
+                        </td>
+                        <td>@u.Email</td>
+                        <td>
+                            <span class="role-badge">@u.VaiTro</span>
+                        </td>
+                        <td>
+                            @if(u.TrangThai == 1)
+                            {
+                                <span class="status-badge status-active">
+                                    <i class="fas fa-check-circle"></i> Mở
+                                </span>
+                            }
+                            else if (u.TrangThai == 0)
+                            {
+                                <span class="status-badge status-locked">
+                                    <i class="fas fa-lock"></i> Khóa
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-expired">
+                                    <i class="fas fa-clock"></i> Hết hạn
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a class="action-btn view-btn" asp-action="Details" asp-route-id="@u.ID" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a class="action-btn edit-btn" asp-action="Edit" asp-route-id="@u.ID" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a class="action-btn delete-btn" asp-action="Delete" asp-route-id="@u.ID"
+                                   onclick="return confirm('Bạn có chắc muốn Khóa?')" title="Khóa tài khoản">
+                                    <i class="fas fa-lock"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                </td>
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@u.ID">Xem</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@u.ID">Sửa</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@u.ID"
-                       onclick="return confirm('Bạn có chắc muốn Khóa?')">Khóa</a>
-                </td>
-            </tr>
+@section Styles {
+    <style>
+        .account-management-container {
+            padding: 20px 0;
         }
-    </tbody>
-</table>
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-content h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin: 0;
+        }
+
+        .add-account-btn {
+            background: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .add-account-btn:hover {
+            background: #27ae60;
+            color: white;
+        }
+
+        .accounts-table-wrapper {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .accounts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .accounts-table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .accounts-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .role-badge {
+            background: #e8f3ff;
+            color: #0966aa;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #e6ffed;
+            color: #2c9e3c;
+        }
+
+        .status-locked {
+            background: #fff1f0;
+            color: #e74c3c;
+        }
+
+        .status-expired {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .view-btn {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .view-btn:hover {
+            background: #bbdefb;
+            color: #1565c0;
+        }
+
+        .edit-btn {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .edit-btn:hover {
+            background: #ffe0b2;
+            color: #ef6c00;
+        }
+
+        .delete-btn {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .delete-btn:hover {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        @@media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+}
 
 @section Scripts {
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
                 },
-                "paging": true,       // Bật phân trang
-                "ordering": true,     // Bật sắp xếp cột
-                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
-                "searching": true,    // Bật ô tìm kiếm toàn cục
-                "responsive": true    // Bật chế độ responsive cho bảng
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "responsive": true
             });
         });
     </script>

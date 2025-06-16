@@ -4,175 +4,177 @@
     ViewData["Title"] = "Chi tiết duyệt điểm rèn luyện";
 }
 
-<div class="duyet-diem-container">
-    <div class="duyet-diem-header">
-        <h2>@ViewData["Title"]</h2>
-        <p class="text-muted">Thông tin chi tiết về điểm rèn luyện của sinh viên</p>
+<div class="simple-details-container">
+    <h1 class="details-title">@ViewData["Title"]</h1>
+    <div class="details-section">
+        <h2>Thông tin sinh viên</h2>
+        <dl>
+            <dt>Mã sinh viên</dt>
+            <dd>@Model.SinhVienId</dd>
+            <dt>Họ và tên</dt>
+            <dd>@Model.HoTen</dd>
+            <dt>Giới tính</dt>
+            <dd>@Model.GioiTinh</dd>
+            <dt>Ngày sinh</dt>
+            <dd>@Model.NgaySinh?.ToShortDateString()</dd>
+            <dt>Email</dt>
+            <dd>@Model.Email</dd>
+            <dt>Lớp</dt>
+            <dd>@Model.TenLopSH</dd>
+            <dt>Ngành</dt>
+            <dd>@Model.TenNganh</dd>
+            <dt>Khoa</dt>
+            <dd>@Model.TenKhoa</dd>
+        </dl>
     </div>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <!-- Phần so sánh điểm học tập và rèn luyện -->
-            <div class="score-comparison">
-                <h5 class="score-title">Thông tin điểm số</h5>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="score-item">
-                            <div class="row align-items-center">
-                                <div class="col-6 text-center">
-                                    <div class="score-label">Điểm học tập (SV)</div>
-                                    <div class="score-value student-score">
-                                        @if (Model.DiemHocTap.HasValue)
-                                        {
-                                            @string.Format("{0:0.00}", Model.DiemHocTap)
-                                        }
-                                        else
-                                        {
-                                            <span>-</span>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="col-6 text-center">
-                                    <div class="score-label">Kết quả điểm HT</div>
-                                    <div class="score-value actual-score">
-                                        @if (Model.KQDiemHT.HasValue)
-                                        {
-                                            @string.Format("{0:0.00}", Model.KQDiemHT)
-                                        }
-                                        else
-                                        {
-                                            <span>Chưa duyệt</span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="score-item">
-                            <div class="row align-items-center">
-                                <div class="col-6 text-center">
-                                    <div class="score-label">Điểm rèn luyện</div>
-                                    <div class="score-value student-score">
-                                        @if (Model.DiemRenLuyen.HasValue)
-                                        {
-                                            @((int)Model.DiemRenLuyen.Value)
-                                        }
-                                        else
-                                        {
-                                            <span>-</span>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="col-6 text-center">
-                                    <div class="score-label">Kết quả điểm rèn luyện</div>
-                                    <div class="score-value actual-score">
-                                        @if (Model.KQDiemRL.HasValue)
-                                        {
-                                            @((int)Model.KQDiemRL.Value)
-                                        }
-                                        else
-                                        {
-                                            <span>Chưa duyệt</span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <div class="alert @(Model.KQDiemRL == null ? "alert-warning" : (Model.KQDiemRL == Model.DiemRenLuyen ? "alert-success" : "alert-danger"))">
-                            <div class="d-flex align-items-center">
-                                @if (Model.KQDiemRL == null && Model.TrangThaiDon == 1)
-                                {
-                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                    <text><strong>Trạng thái: Chờ xử lý</strong> - Đơn đang chờ duyệt điểm rèn luyện.</text>
-                                }
-                                else if (Model.KQDiemRL == Model.DiemRenLuyen && Model.TrangThaiDon == 1)
-                                {
-                                    <i class="bi bi-check-circle-fill me-2"></i>
-                                    <text><strong>Trạng thái: Đã duyệt</strong> - Điểm rèn luyện đã được xác nhận.</text>
-                                }
-                                else
-                                {
-                                    <i class="bi bi-x-circle-fill me-2"></i>
-                                    <text><strong>Trạng thái: Từ chối</strong> - Điểm rèn luyện không khớp với thông tin khai báo.</text>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thông tin sinh viên -->
-            <div class="student-info-section">
-                <h5 class="section-title">Thông tin sinh viên</h5>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Mã sinh viên</div>
-                        <div class="info-value">@Model.SinhVienId</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Họ và tên</div>
-                        <div class="info-value">@Model.HoTen</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Giới tính</div>
-                        <div class="info-value">@Model.GioiTinh</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Ngày sinh</div>
-                        <div class="info-value">@Model.NgaySinh?.ToShortDateString()</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Email</div>
-                        <div class="info-value">@Model.Email</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Lớp</div>
-                        <div class="info-value">@Model.TenLopSH</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Ngành</div>
-                        <div class="info-value">@Model.TenNganh</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Khoa</div>
-                        <div class="info-value">@Model.TenKhoa</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thông tin đơn học bổng -->
-            <div class="application-info-section">
-                <h5 class="section-title">Thông tin đơn học bổng</h5>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Mã đơn</div>
-                        <div class="info-value">@Model.DonHocBongId</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Ngày nộp đơn</div>
-                        <div class="info-value">@Model.NgayNop?.ToShortDateString()</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group mt-4">
-                <a asp-action="Index" asp-route-IdDot="@Model.DotHocBongId" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
-                </a>
-            </div>
+    <div class="details-section">
+        <h2>Thông tin đơn học bổng</h2>
+        <dl>
+            <dt>Mã đơn</dt>
+            <dd>@Model.DonHocBongId</dd>
+            <dt>Ngày nộp đơn</dt>
+            <dd>@Model.NgayNop?.ToShortDateString()</dd>
+        </dl>
+    </div>
+    <div class="details-section">
+        <h2>Điểm số</h2>
+        <dl>
+            <dt>Điểm học tập (SV)</dt>
+            <dd>@(Model.DiemHocTap.HasValue ? string.Format("{0:0.00}", Model.DiemHocTap) : "-")</dd>
+            <dt>Kết quả điểm HT</dt>
+            <dd>@(Model.KQDiemHT.HasValue ? string.Format("{0:0.00}", Model.KQDiemHT) : "Chưa duyệt")</dd>
+            <dt>Điểm rèn luyện</dt>
+            <dd>@(Model.DiemRenLuyen.HasValue ? ((int)Model.DiemRenLuyen.Value).ToString() : "-")</dd>
+            <dt>Kết quả điểm rèn luyện</dt>
+            <dd>@(Model.KQDiemRL.HasValue ? ((int)Model.KQDiemRL.Value).ToString() : "Chưa duyệt")</dd>
+        </dl>
+    </div>
+    <div class="details-section">
+        <h2>Trạng thái</h2>
+        <div class="status-block">
+            @if (Model.KQDiemRL == null && Model.TrangThaiDon == 1)
+            {
+                <span class="status-label status-wait">Chờ xử lý</span>
+                <span class="status-desc">Đơn đang chờ duyệt điểm rèn luyện.</span>
+            }
+            else if (Model.KQDiemRL == Model.DiemRenLuyen && Model.TrangThaiDon == 1)
+            {
+                <span class="status-label status-done">Đã duyệt</span>
+                <span class="status-desc">Điểm rèn luyện đã được xác nhận.</span>
+            }
+            else
+            {
+                <span class="status-label status-reject">Từ chối</span>
+                <span class="status-desc">Điểm rèn luyện không khớp với thông tin khai báo.</span>
+            }
         </div>
+    </div>
+    <div class="details-actions">
+        <a asp-action="Index" asp-route-IdDot="@Model.DotHocBongId" class="back-btn">⬅ Quay lại danh sách</a>
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/js/duyetDiemRenLuyen.js"></script>
-}
-
 @section Styles {
-    <link rel="stylesheet" href="~/css/duyetDiemRenLuyen.css" />
+    <style>
+        .simple-details-container {
+            max-width: 700px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 32px 24px 24px 24px;
+        }
+        .details-title {
+            font-size: 1.6rem;
+            color: #2c3e50;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .details-section {
+            margin-bottom: 28px;
+        }
+        .details-section h2 {
+            font-size: 1.1rem;
+            color: #0966aa;
+            margin-bottom: 10px;
+            border-left: 3px solid #0966aa;
+            padding-left: 8px;
+        }
+        dl {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            row-gap: 8px;
+            column-gap: 12px;
+            margin: 0;
+        }
+        dt {
+            color: #666;
+            font-weight: 500;
+            text-align: right;
+        }
+        dd {
+            margin: 0;
+            color: #222;
+            font-weight: 400;
+        }
+        .status-block {
+            padding: 12px 16px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        }
+        .status-label {
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .status-wait {
+            background: #fffbe6;
+            color: #d48806;
+        }
+        .status-done {
+            background: #e6ffed;
+            color: #2c9e3c;
+        }
+        .status-reject {
+            background: #ffeaea;
+            color: #e74c3c;
+        }
+        .status-desc {
+            font-size: 0.98rem;
+            color: #555;
+        }
+        .details-actions {
+            text-align: center;
+            margin-top: 18px;
+        }
+        .back-btn {
+            display: inline-block;
+            background: #f5f5f5;
+            color: #444;
+            border-radius: 4px;
+            padding: 8px 18px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #e8e8e8;
+        }
+        @@media (max-width: 600px) {
+            .simple-details-container {
+                padding: 16px 4px;
+            }
+            dl {
+                grid-template-columns: 1fr;
+            }
+            dt {
+                text-align: left;
+            }
+        }
+    </style>
 }

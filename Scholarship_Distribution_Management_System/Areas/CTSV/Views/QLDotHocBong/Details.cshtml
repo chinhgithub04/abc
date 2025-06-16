@@ -4,90 +4,387 @@
     ViewData["Title"] = "Chi tiết đợt học bổng";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="scholarship-details-container">
+    <div class="details-header">
+        <div class="details-title">
+            <h1><i class="fas fa-info-circle"></i> Chi tiết đợt học bổng</h1>
+            <h2>@Model.TenDot</h2>
+        </div>
+        <div class="details-actions">
+            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn-edit">
+                <i class="fas fa-edit"></i> Chỉnh sửa
+            </a>
+            <a asp-action="Index" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
 
-<div class="card mt-4">
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3 text-muted">Tên đợt:</dt>
-            <dd class="col-sm-9">@Model.TenDot</dd>
+    <div class="details-content">
+        <div class="details-card main-info">
+            <div class="card-header">
+                <h3><i class="fas fa-file-alt"></i> Thông tin cơ bản</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-group">
+                    <label>Tên đợt học bổng:</label>
+                    <p>@Model.TenDot</p>
+                </div>
+                <div class="info-group">
+                    <label>Số lượng:</label>
+                    <p><span class="badge badge-primary">@Model.SoLuong suất</span></p>
+                </div>
+                <div class="info-group">
+                    <label>Giá trị mỗi suất:</label>
+                    <p><span class="badge badge-success">@Model.Tien.ToString("N0") VNĐ</span></p>
+                </div>
+                <div class="info-group">
+                    <label>Ngày tạo:</label>
+                    <p>@Model.NgayTao.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
 
-            <dt class="col-sm-3 text-muted">Điều kiện:</dt>
-            <dd class="col-sm-9">@Model.DieuKien</dd>
+        <div class="details-card eligibility">
+            <div class="card-header">
+                <h3><i class="fas fa-clipboard-check"></i> Điều kiện xét duyệt</h3>
+            </div>
+            <div class="card-body">
+                <p class="condition-text">@Model.DieuKien</p>
+            </div>
+        </div>
 
-            <dt class="col-sm-3 text-muted">Số lượng:</dt>
-            <dd class="col-sm-9">@Model.SoLuong</dd>
-
-            <dt class="col-sm-3 text-muted">Tiền:</dt>
-            <dd class="col-sm-9">@Model.Tien.ToString("N0") VNĐ</dd>
-
-            <dt class="col-sm-3 text-muted">Ngày tạo:</dt>
-            <dd class="col-sm-9">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-3 text-muted">Thời gian nộp hồ sơ:</dt>
-            <dd class="col-sm-9">@Model.NgayBatDauNop.ToString("dd/MM/yyyy") → @Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-3 text-muted">Ngày xét duyệt:</dt>
-            <dd class="col-sm-9">@Model.NgayKetThucNop.ToString("dd/MM/yyyy") → @Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-3 text-muted">Ngày hội đồng duyệt:</dt>
-            <dd class="col-sm-9">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy") → @Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-3 text-muted">Ngày PTC duyệt:</dt>
-            <dd class="col-sm-9">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy") → @Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-3 text-muted">Ngày kết thúc:</dt>
-            <dd class="col-sm-9">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-3 text-muted">Trạng thái:</dt>
-            <dd class="col-sm-9">
-                @{
-                    var now = DateTime.Now;
-                    string statusText = "";
-                    string statusColor = "";
-
-                    if (Model.TrangThai == 0)
-                    {
-                        statusText = "Đã hủy";
-                        statusColor = "danger";
-                    }
-                    else if (Model.TrangThai == 1)
-                    {
-                        if (now < Model.NgayBatDauNop)
-                        {
-                            statusText = "Sắp mở";
-                            statusColor = "info";
-                        }
-                        else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThuc)
-                        {
-                            statusText = "Đang mở";
-                            statusColor = "success";
-                        }
-                        else if (now > Model.NgayKetThuc)
-                        {
-                            statusText = "Kết thúc";
-                            statusColor = "secondary";
-                        }
-                        else
-                        {
-                            statusText = "Không xác định";
-                            statusColor = "dark";
-                        }
-                    }
-                    else
-                    {
-                        statusText = "Không xác định";
-                        statusColor = "dark";
-                    }
-                }
-                <span class="badge bg-@statusColor">@statusText</span>
-            </dd>
-
-        </dl>
-
-        <div class="mt-3">
-            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-warning me-2">Chỉnh sửa</a>
-            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        <div class="details-card timeline">
+            <div class="card-header">
+                <h3><i class="fas fa-calendar-alt"></i> Thời gian thực hiện</h3>
+            </div>
+            <div class="card-body">
+                <div class="timeline-container">
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <span class="date-badge">@Model.NgayBatDauNop.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Bắt đầu nộp đơn</h4>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <span class="date-badge">@Model.NgayKetThucNop.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Kết thúc nộp đơn</h4>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <span class="date-badge">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Hội đồng đầu duyệt</h4>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <span class="date-badge">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Kết thúc hội đồng duyệt</h4>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <span class="date-badge">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Kết thúc đợt học bổng</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .scholarship-details-container {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .details-title h1 {
+        font-size: 24px;
+        margin: 0;
+        color: #444;
+        margin-bottom: 10px;
+    }
+
+    .details-title h2 {
+        font-size: 20px;
+        margin: 0;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .details-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-edit, .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-edit {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .btn-edit:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-back {
+        background-color: #f8f9fa;
+        color: #212529;
+        border: 1px solid #dee2e6;
+    }
+
+    .btn-back:hover {
+        background-color: #e2e6ea;
+    }
+
+    .details-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .details-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #555;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .info-group {
+        margin-bottom: 15px;
+    }
+
+    .info-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-group label {
+        display: block;
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .info-group p {
+        margin: 0;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .condition-text {
+        white-space: pre-line;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .timeline-container {
+        position: relative;
+    }
+
+    .timeline-container:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 120px;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 150px;
+        margin-bottom: 20px;
+    }
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-date {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 110px;
+        text-align: right;
+    }
+
+    .date-badge {
+        display: inline-block;
+        padding: 5px 8px;
+        font-size: 12px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        color: #555;
+    }
+
+    .timeline-content {
+        position: relative;
+        padding-left: 25px;
+    }
+
+    .timeline-content:before {
+        content: '';
+        position: absolute;
+        left: -5px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #007bff;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px #007bff;
+    }
+
+    .timeline-content h4 {
+        margin: 0;
+        font-size: 15px;
+        color: #333;
+    }
+
+    .status-display {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .status-indicator {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+    }
+
+    .status-text {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .progress-container {
+        margin-top: 20px;
+    }
+
+    .progress {
+        height: 10px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: #007bff;
+        border-radius: 5px;
+        transition: width 0.3s ease;
+    }
+
+    .progress-text {
+        font-size: 14px;
+        color: #666;
+        text-align: right;
+    }
+
+    @@media (max-width: 768px) {
+        .details-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .timeline-item {
+            padding-left: 30px;
+        }
+
+        .timeline-container:before {
+            left: 0;
+        }
+
+        .timeline-date {
+            position: relative;
+            left: auto;
+            top: auto;
+            width: auto;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content {
+            padding-left: 20px;
+        }
+
+        .timeline-content:before {
+            left: 0;
+        }
+    }
+</style>
