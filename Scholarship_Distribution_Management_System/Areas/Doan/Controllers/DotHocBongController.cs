@@ -1,14 +1,13 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.EntityFrameworkCore;
 using Scholarship_Distribution_Management_System.Models;
 using Scholarship_Distribution_Management_System.Models.Entities;
 
-namespace Scholarship_Distribution_Management_System.Areas.HoiDong.Controllers
+namespace Scholarship_Distribution_Management_System.Areas.Doan.Controllers
 {
-    [Area("HoiDong")]
+    [Area("Doan")]
     public class DotHocBongController : Controller
     {
 
@@ -23,7 +22,7 @@ namespace Scholarship_Distribution_Management_System.Areas.HoiDong.Controllers
         // GET: DotHocBongs
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.DotHocBongs.Include(d => d.NhanVien).Where(d => (d.NgayHoiDongDuyet <= DateTime.Now && d.NgayPTCDuyet >= DateTime.Now) && d.TrangThai == 1);
+            var applicationDbContext = _context.DotHocBongs.Include(d => d.NhanVien).Where(d => d.TrangThai == 1).OrderByDescending(d=>d.NgayKetThucNop);
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Title = "Danh sách đợt xét duyệt", IsActive = true }

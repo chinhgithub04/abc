@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Scholarship_Distribution_Management_System.Models;
 using Scholarship_Distribution_Management_System.Models.Entities;
 
-namespace Scholarship_Distribution_Management_System.Areas.Doan.Controllers
+namespace Scholarship_Distribution_Management_System.Areas.HoiDong.Controllers
 {
-    [Area("Doan")]
+    [Area("HoiDong")]
     public class DotHocBongController : Controller
     {
 
@@ -23,7 +23,7 @@ namespace Scholarship_Distribution_Management_System.Areas.Doan.Controllers
         // GET: DotHocBongs
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.DotHocBongs.Include(d => d.NhanVien).Where(d => (d.NgayKetThucNop <= DateTime.Now && d.NgayHoiDongDuyet >= DateTime.Now) && d.TrangThai == 1);
+            var applicationDbContext = _context.DotHocBongs.Include(d => d.NhanVien).Where(d => (d.NgayHoiDongDuyet <= DateTime.Now && d.NgayPTCDuyet >= DateTime.Now) && d.TrangThai == 1);
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Title = "Danh sách đợt xét duyệt", IsActive = true }
