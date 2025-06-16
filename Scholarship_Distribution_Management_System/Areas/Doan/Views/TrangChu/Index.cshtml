@@ -1,16 +1,732 @@
 ﻿@{
-    ViewData["Title"] = "Trang Chủ";
+    ViewData["Title"] = "Trang Chủ Đoàn";
     Layout = "~/Areas/Doan/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Trang chủ</h2>
 @using System.Security.Claims
 @{
     var hoTen = User.FindFirst("HoTen")?.Value;
     var role = User.Claims.FirstOrDefault(c => c.Type == "VaiTro")?.Value;
 }
-<div class="welcome-box">
-    <p class="welcome-message">
-        Chào mừng @hoTen đến với hệ thống quản lý phân phát học bổng cho sinh viên trường đại học Sư phạm Kỹ thuật Đà Nẵng
-    </p>
+
+<div class="dashboard-container">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-content">
+            <h1>Xin chào, @hoTen!</h1>
+            <p>Chào mừng bạn đến với hệ thống quản lý hoạt động Đoàn</p>
+            <a href="#quick-access" class="btn btn-light btn-banner mt-3">
+                <i class="fas fa-arrow-down me-2"></i>Khám phá ngay
+            </a>
+        </div>
+        <div class="welcome-image">
+            <img src="~/Images/dashboard-illustration.svg" alt="Dashboard Illustration" onerror="this.src='/Images/logo.png'">
+        </div>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+        <div class="stat-card primary-gradient">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+                <h3>24</h3>
+                <p>Hoạt động đã tạo</p>
+            </div>
+            <div class="stat-progress">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span><i class="fas fa-chart-line me-1"></i>75% so với kỳ trước</span>
+            </div>
+        </div>
+        
+        <div class="stat-card success-gradient">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>156</h3>
+                <p>Sinh viên tham gia</p>
+            </div>
+            <div class="stat-progress">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 83%" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span><i class="fas fa-chart-line me-1"></i>83% so với kỳ trước</span>
+            </div>
+        </div>
+        
+        <div class="stat-card info-gradient">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>18</h3>
+                <p>Hoạt động đã duyệt</p>
+            </div>
+            <div class="stat-progress">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span><i class="fas fa-chart-line me-1"></i>65% so với kỳ trước</span>
+            </div>
+        </div>
+        
+        <div class="stat-card warning-gradient">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>6</h3>
+                <p>Đang chờ duyệt</p>
+            </div>
+            <div class="stat-progress">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span><i class="fas fa-chart-line me-1"></i>35% so với kỳ trước</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Access -->
+    <div id="quick-access" class="quick-access">
+        <h2><i class="fas fa-bolt me-2"></i>Truy cập nhanh</h2>
+        <div class="access-cards">
+            <a asp-controller="HoatDong" asp-action="Create" asp-area="Doan" class="access-card create-card">
+                <div class="access-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="access-content">
+                    <h3>Tạo hoạt động mới</h3>
+                    <p>Thêm hoạt động mới vào hệ thống</p>
+                </div>
+                <div class="card-overlay">
+                    <span>Tạo ngay</span>
+                </div>
+            </a>
+            
+            <a asp-controller="DotHocBong" asp-action="Index" asp-area="Doan" class="access-card approve-card">
+                <div class="access-icon">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="access-content">
+                    <h3>Duyệt hoạt động</h3>
+                    <p>Xem và duyệt các hoạt động đang chờ</p>
+                </div>
+                <div class="card-overlay">
+                    <span>Duyệt ngay</span>
+                </div>
+            </a>
+            
+            <a asp-controller="HoatDong" asp-action="Index" asp-area="Doan" class="access-card manage-card">
+                <div class="access-icon">
+                    <i class="fas fa-list"></i>
+                </div>
+                <div class="access-content">
+                    <h3>Quản lý hoạt động</h3>
+                    <p>Xem và quản lý tất cả hoạt động</p>
+                </div>
+                <div class="card-overlay">
+                    <span>Quản lý</span>
+                </div>
+            </a>
+            
+            <a href="#" class="access-card report-card">
+                <div class="access-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="access-content">
+                    <h3>Báo cáo thống kê</h3>
+                    <p>Xem báo cáo và số liệu thống kê</p>
+                </div>
+                <div class="card-overlay">
+                    <span>Xem báo cáo</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Recent Activities -->
+    <div class="recent-activities">
+        <div class="section-header">
+            <h2><i class="fas fa-history me-2"></i>Hoạt động gần đây</h2>
+            <a asp-controller="HoatDong" asp-action="Index" asp-area="Doan" class="view-all-link">Xem tất cả <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+        
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-icon bg-success">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>Hoạt động tình nguyện mùa hè xanh 2025</h4>
+                    <p><i class="fas fa-clock me-1"></i>Đã được duyệt vào 15/06/2025</p>
+                    <div class="activity-meta">
+                        <span><i class="fas fa-user"></i> 45 sinh viên tham gia</span>
+                        <span><i class="fas fa-calendar"></i> 25/06/2025 - 15/07/2025</span>
+                    </div>
+                </div>
+                <div class="activity-status">
+                    <span class="badge bg-success">Đã duyệt</span>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-warning">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>Hội thảo kỹ năng mềm cho sinh viên năm cuối</h4>
+                    <p><i class="fas fa-clock me-1"></i>Mới được tạo vào 14/06/2025</p>
+                    <div class="activity-meta">
+                        <span><i class="fas fa-user"></i> 25 sinh viên đăng ký</span>
+                        <span><i class="fas fa-calendar"></i> 20/06/2025</span>
+                    </div>
+                </div>
+                <div class="activity-status">
+                    <span class="badge bg-warning">Chờ duyệt</span>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-info">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>Cuộc thi lập trình ICPC 2025</h4>
+                    <p><i class="fas fa-clock me-1"></i>Cập nhật thông tin vào 13/06/2025</p>
+                    <div class="activity-meta">
+                        <span><i class="fas fa-user"></i> 15 sinh viên tham gia</span>
+                        <span><i class="fas fa-calendar"></i> 30/06/2025</span>
+                    </div>
+                </div>
+                <div class="activity-status">
+                    <span class="badge bg-info">Đã cập nhật</span>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-success">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>Hiến máu tình nguyện đợt 2 năm 2025</h4>
+                    <p><i class="fas fa-clock me-1"></i>Đã được duyệt vào 10/06/2025</p>
+                    <div class="activity-meta">
+                        <span><i class="fas fa-user"></i> 78 sinh viên tham gia</span>
+                        <span><i class="fas fa-calendar"></i> 12/06/2025</span>
+                    </div>
+                </div>
+                <div class="activity-status">
+                    <span class="badge bg-success">Đã duyệt</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .dashboard-container {
+        padding: 25px 0;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* Welcome Banner */
+    .welcome-banner {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border-radius: 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 40px;
+        margin-bottom: 35px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(100px, -150px);
+    }
+    
+    .welcome-banner::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(-80px, 80px);
+    }
+    
+    .welcome-content {
+        flex: 2;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .welcome-content h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .welcome-content p {
+        font-size: 18px;
+        opacity: 0.9;
+        margin-bottom: 5px;
+    }
+    
+    .btn-banner {
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-banner:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .welcome-image {
+        flex: 1;
+        text-align: right;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .welcome-image img {
+        max-width: 200px;
+        height: auto;
+        filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-15px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+    
+    /* Stats Overview */
+    .stats-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+    
+    .stat-card {
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        color: white;
+    }
+    
+    .primary-gradient {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    .success-gradient {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    }
+    
+    .info-gradient {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+    }
+    
+    .warning-gradient {
+        background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(30px, -30px);
+    }
+    
+    .stat-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 28px;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .stat-content h3 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .stat-content p {
+        font-size: 16px;
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
+    
+    .stat-progress {
+        margin-top: 15px;
+    }
+    
+    .stat-progress .progress {
+        height: 8px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .stat-progress .progress-bar {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .stat-progress span {
+        font-size: 13px;
+        opacity: 0.9;
+    }
+    
+    /* Quick Access */
+    .quick-access {
+        margin-bottom: 40px;
+        scroll-margin-top: 20px;
+    }
+    
+    .quick-access h2 {
+        margin-bottom: 25px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        border-left: 4px solid #4e73df;
+        padding-left: 15px;
+    }
+    
+    .access-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+    }
+    
+    .access-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #5a5c69;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .create-card:hover { border-left: 5px solid #4e73df; }
+    .approve-card:hover { border-left: 5px solid #1cc88a; }
+    .manage-card:hover { border-left: 5px solid #36b9cc; }
+    .report-card:hover { border-left: 5px solid #f6c23e; }
+    
+    .access-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .access-card:hover .access-icon {
+        transform: scale(1.1);
+    }
+    
+    .access-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        font-size: 24px;
+        transition: all 0.3s ease;
+    }
+    
+    .create-card .access-icon { background: rgba(78, 115, 223, 0.1); color: #4e73df; }
+    .approve-card .access-icon { background: rgba(28, 200, 138, 0.1); color: #1cc88a; }
+    .manage-card .access-icon { background: rgba(54, 185, 204, 0.1); color: #36b9cc; }
+    .report-card .access-icon { background: rgba(246, 194, 62, 0.1); color: #f6c23e; }
+    
+    .access-content h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        transition: color 0.3s ease;
+    }
+    
+    .access-content p {
+        font-size: 14px;
+        color: #858796;
+        margin: 0;
+    }
+    
+    .card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(78, 115, 223, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+    
+    .create-card .card-overlay { background: rgba(78, 115, 223, 0.9); }
+    .approve-card .card-overlay { background: rgba(28, 200, 138, 0.9); }
+    .manage-card .card-overlay { background: rgba(54, 185, 204, 0.9); }
+    .report-card .card-overlay { background: rgba(246, 194, 62, 0.9); }
+    
+    .access-card:hover .card-overlay {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    
+    /* Recent Activities */
+    .recent-activities {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #f1f1f1;
+        padding-bottom: 15px;
+    }
+    
+    .section-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+        color: #333;
+    }
+    
+    .view-all-link {
+        color: #4e73df;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .view-all-link:hover {
+        color: #224abe;
+        transform: translateX(5px);
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid #f8f8f8;
+        transition: transform 0.3s ease;
+    }
+    
+    .activity-item:hover {
+        transform: translateX(5px);
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        color: white;
+        font-size: 18px;
+    }
+    
+    .activity-content {
+        flex: 1;
+    }
+    
+    .activity-content h4 {
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+    }
+    
+    .activity-content p {
+        font-size: 14px;
+        color: #858796;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .activity-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .activity-meta span {
+        font-size: 13px;
+        color: #858796;
+        background: #f8f9fc;
+        padding: 4px 10px;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .activity-meta i {
+        margin-right: 5px;
+        color: #4e73df;
+    }
+    
+    .activity-status {
+        margin-left: 20px;
+    }
+    
+    .badge {
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+    
+    /* Responsive Adjustments */
+    @@media (max-width: 1200px) {
+        .stats-overview {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @@media (max-width: 992px) {
+        .welcome-banner {
+            flex-direction: column;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .welcome-content {
+            margin-bottom: 20px;
+        }
+        
+        .welcome-image {
+            text-align: center;
+        }
+        
+        .welcome-image img {
+            max-width: 150px;
+        }
+        
+        .access-cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .stats-overview,
+        .access-cards {
+            grid-template-columns: 1fr;
+        }
+        
+        .activity-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .activity-icon {
+            margin-bottom: 15px;
+        }
+        
+        .activity-status {
+            margin-left: 0;
+            margin-top: 15px;
+        }
+        
+        .activity-meta {
+            flex-direction: column;
+            gap: 8px;
+        }
+    }
+    
+    @@media (max-width: 480px) {
+        .welcome-banner {
+            padding: 25px;
+        }
+        
+        .welcome-content h1 {
+            font-size: 24px;
+        }
+        
+        .welcome-content p {
+            font-size: 16px;
+        }
+        
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .view-all-link {
+            margin-top: 10px;
+        }
+    }
+</style>
