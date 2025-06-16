@@ -9,87 +9,163 @@
 @{
     ViewData["Title"] = "Chi tiết đợt học bổng";
 }
-<div class="card">
-    <div class="card-header bg-primary text-white fw-bold fs-5">
-        📝 @Model.TenDot
+
+<div class="scholarship-detail-container">
+    <h1 class="detail-title">@ViewData["Title"]</h1>
+    <div class="detail-section">
+        <h2>Thông tin cơ bản</h2>
+        <dl>
+            <dt>Tên đợt</dt>
+            <dd>@Model.TenDot</dd>
+            <dt>Điều kiện</dt>
+            <dd>@Model.DieuKien</dd>
+            <dt>Số lượng</dt>
+            <dd>@Model.SoLuong</dd>
+            <dt>Tiền học bổng</dt>
+            <dd>@Model.Tien.ToString("N0") VNĐ</dd>
+            <dt>Người phụ trách</dt>
+            <dd>@Model.NhanVien?.HoTen</dd>
+        </dl>
     </div>
-
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-4 text-muted">Điều kiện</dt>
-            <dd class="col-sm-8">@Model.DieuKien</dd>
-
-            <dt class="col-sm-4 text-muted">Số lượng</dt>
-            <dd class="col-sm-8">@Model.SoLuong</dd>
-
-            <dt class="col-sm-4 text-muted">Tiền học bổng</dt>
-            <dd class="col-sm-8">@Model.Tien.ToString("N0") VNĐ</dd>
-
-            <dt class="col-sm-4 text-muted">Trạng thái</dt>
-            <dd class="col-sm-8">
+    <div class="detail-section">
+        <h2>Thời gian & Trạng thái</h2>
+        <dl>
+            <dt>Ngày tạo</dt>
+            <dd>@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
+            <dt>Thời gian nộp hồ sơ</dt>
+            <dd>@Model.NgayBatDauNop.ToString("dd/MM/yyyy") - @Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
+            <dt>Ngày xét duyệt</dt>
+            <dd>@Model.NgayKetThucNop.ToString("dd/MM/yyyy") - @Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
+            <dt>Ngày hội đồng duyệt</dt>
+            <dd>@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy") - @Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
+            <dt>Ngày PTC duyệt</dt>
+            <dd>@Model.NgayPTCDuyet.ToString("dd/MM/yyyy") - @Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
+            <dt>Ngày kết thúc</dt>
+            <dd>@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
+            <dt>Trạng thái</dt>
+            <dd>
                 @{
                     var now = DateTime.UtcNow;
-
                     string statusText;
-                    string statusColor;
-
+                    string statusClass;
                     if (now < Model.NgayBatDauNop)
                     {
                         statusText = "Sắp mở";
-                        statusColor = "secondary";
+                        statusClass = "status-upcoming";
                     }
                     else if (now >= Model.NgayBatDauNop && now <= Model.NgayKetThucNop)
                     {
                         statusText = "Đang mở";
-                        statusColor = "success";
+                        statusClass = "status-open";
                     }
                     else if (now > Model.NgayKetThucNop && now <= Model.NgayKetThuc)
                     {
                         statusText = "Đang xét duyệt";
-                        statusColor = "warning";
+                        statusClass = "status-review";
                     }
                     else if (now > Model.NgayKetThuc)
                     {
                         statusText = "Kết thúc";
-                        statusColor = "secondary";
+                        statusClass = "status-closed";
                     }
                     else
                     {
                         statusText = "Không xác định";
-                        statusColor = "dark";
+                        statusClass = "status-unknown";
                     }
                 }
-                <span class="badge bg-@statusColor">@statusText</span>
-
+                <span class="status-badge @statusClass">@statusText</span>
             </dd>
-
-            <dt class="col-sm-4 text-muted">Ngày tạo</dt>
-            <dd class="col-sm-8">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Thời gian nộp hồ sơ</dt>
-            <dd class="col-sm-8">@Model.NgayBatDauNop.ToString("dd/MM/yyyy") → @Model.NgayKetThucNop.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày xét duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayKetThucNop.ToString("dd/MM/yyyy") → @Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày hội đồng duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayHoiDongDuyet.ToString("dd/MM/yyyy") → @Model.NgayPTCDuyet.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày PTC duyệt</dt>
-            <dd class="col-sm-8">@Model.NgayPTCDuyet.ToString("dd/MM/yyyy") → @Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Ngày kết thúc</dt>
-            <dd class="col-sm-8">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4 text-muted">Người phụ trách</dt>
-            <dd class="col-sm-8">@Model.NhanVien?.HoTen</dd>
         </dl>
     </div>
-
-    <div class="card-footer text-end">
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            ⬅ Quay lại
-        </a>
-
+    <div class="detail-actions">
+        <a asp-action="Index" class="back-btn">⬅ Quay lại danh sách</a>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        .scholarship-detail-container {
+            max-width: 700px;
+            margin: 32px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 32px 24px 24px 24px;
+        }
+        .detail-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .detail-section {
+            margin-bottom: 28px;
+        }
+        .detail-section h2 {
+            font-size: 1.1rem;
+            color: #0966aa;
+            margin-bottom: 10px;
+            border-left: 3px solid #0966aa;
+            padding-left: 8px;
+        }
+        dl {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            row-gap: 8px;
+            column-gap: 12px;
+            margin: 0;
+        }
+        dt {
+            color: #666;
+            font-weight: 500;
+            text-align: right;
+        }
+        dd {
+            margin: 0;
+            color: #222;
+            font-weight: 400;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+        }
+        .status-upcoming { background: #0dcaf0; }
+        .status-open { background: #198754; }
+        .status-review { background: #ffc107; color: #333; }
+        .status-closed { background: #6c757d; }
+        .status-unknown { background: #212529; }
+        .detail-actions {
+            text-align: center;
+            margin-top: 18px;
+        }
+        .back-btn {
+            display: inline-block;
+            background: #f5f5f5;
+            color: #444;
+            border-radius: 4px;
+            padding: 8px 18px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #e8e8e8;
+        }
+        @@media (max-width: 600px) {
+            .scholarship-detail-container {
+                padding: 16px 4px;
+            }
+            dl {
+                grid-template-columns: 1fr;
+            }
+            dt {
+                text-align: left;
+            }
+        }
+    </style>
+}

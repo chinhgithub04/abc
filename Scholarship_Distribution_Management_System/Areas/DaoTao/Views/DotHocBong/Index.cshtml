@@ -1,74 +1,214 @@
 ﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.Entities.DotHocBong>
 
 @{
-    ViewData["Title"] = "Duyệt điểm học tập";
+    ViewData["Title"] = "Danh sách đợt học bổng";
 }
 
-<h2 class="mb-4 text-primary fw-bold">Danh sách đợt xét duyệt</h2>
+<div class="scholarship-index-container">
+    <div class="page-header">
+        <h1><i class="fas fa-list-alt"></i> Danh sách đợt học bổng</h1>
+        <p class="subtitle">Tổng hợp các đợt học bổng hiện có trong hệ thống</p>
+    </div>
 
-@foreach (var item in Model)
-{
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-primary text-white fw-bold">
-            <span class="me-sm-5">@item.TenDot</span>
-            <p class="m-0" style="font-size: 0.8rem; float: right">
-                @item.NgayTao.ToString("dd/MM/yyyy")
-            </p>
-        </div>
-        <div class="card-body">
-
-            <p style="font-size: 0.95rem;">
-                <strong>Nội dung:</strong> @item.DieuKien
-            </p>
-
-            <div class="d-flex justify-content-between mt-3">
-                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.ID">
-                    Xem chi tiết
-                </a>
-                <a class="btn btn-sm btn-outline-primary" asp-action="Index" asp-controller="DuyetDiemHocTap" asp-route-IdDot="@item.ID">
-                    Danh sách hồ sơ cần duyệt
-                </a>
-                <div class="text-end">
-                    @{
-                        var now = DateTime.UtcNow;
-
-                        string statusText;
-                        string statusColor;
-
-                        if (now < item.NgayBatDauNop)
-                        {
-                            statusText = "Sắp mở";
-                            statusColor = "info";
-                        }
-                        else if (now >= item.NgayBatDauNop && now <= item.NgayKetThucNop)
-                        {
-                            statusText = "Đang mở";
-                            statusColor = "success";
-                        }
-                        else if (now > item.NgayKetThucNop && now <= item.NgayKetThuc)
-                        {
-                            statusText = "Đang xét duyệt";
-                            statusColor = "warning";
-                        }
-                        else if (now > item.NgayKetThuc)
-                        {
-                            statusText = "Kết thúc";
-                            statusColor = "secondary";
-                        }
-                        else
-                        {
-                            statusText = "Không xác định";
-                            statusColor = "dark";
-                        }
-
-                    }
-                    <span class="badge bg-@statusColor">@statusText</span>
+    <div class="scholarship-list-grid">
+        @foreach (var item in Model)
+        {
+            var now = DateTime.UtcNow;
+            string statusText;
+            string statusClass;
+            if (now < item.NgayBatDauNop)
+            {
+                statusText = "Sắp mở";
+                statusClass = "status-upcoming";
+            }
+            else if (now >= item.NgayBatDauNop && now <= item.NgayKetThucNop)
+            {
+                statusText = "Đang mở";
+                statusClass = "status-open";
+            }
+            else if (now > item.NgayKetThucNop && now <= item.NgayKetThuc)
+            {
+                statusText = "Đang xét duyệt";
+                statusClass = "status-review";
+            }
+            else if (now > item.NgayKetThuc)
+            {
+                statusText = "Kết thúc";
+                statusClass = "status-closed";
+            }
+            else
+            {
+                statusText = "Không xác định";
+                statusClass = "status-unknown";
+            }
+        <div class="scholarship-card">
+            <div class="scholarship-card-header">
+                <div class="scholarship-title">@item.TenDot</div>
+                <div class="scholarship-status @statusClass">@statusText</div>
+            </div>
+            <div class="scholarship-card-body">
+                <div class="scholarship-info-row">
+                    <span class="info-label">Điều kiện:</span>
+                    <span class="info-value">@(item.DieuKien.Length > 100 ? item.DieuKien.Substring(0, 100) + "..." : item.DieuKien)</span>
+                </div>
+                <div class="scholarship-info-row">
+                    <span class="info-label">Số lượng:</span>
+                    <span class="info-value">@item.SoLuong</span>
+                </div>
+                <div class="scholarship-info-row">
+                    <span class="info-label">Tiền mỗi suất:</span>
+                    <span class="info-value">@item.Tien.ToString("N0") VNĐ</span>
+                </div>
+                <div class="scholarship-info-row">
+                    <span class="info-label">Ngày tạo:</span>
+                    <span class="info-value">@item.NgayTao.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="scholarship-info-row">
+                    <span class="info-label">Nộp hồ sơ:</span>
+                    <span class="info-value">@item.NgayBatDauNop.ToString("dd/MM/yyyy") - @item.NgayKetThucNop.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="scholarship-info-row">
+                    <span class="info-label">Kết thúc:</span>
+                    <span class="info-value">@item.NgayKetThuc.ToString("dd/MM/yyyy")</span>
                 </div>
             </div>
+            <div class="scholarship-card-actions">
+                <a class="action-btn details-btn" asp-action="Details" asp-route-id="@item.ID">
+                    <i class="fas fa-eye"></i> Xem chi tiết
+                </a>
+                <a class="action-btn review-btn" asp-action="Index" asp-controller="DuyetDiemHocTap" asp-route-IdDot="@item.ID">
+                    <i class="fas fa-clipboard-check"></i> Duyệt điểm
+                </a>
+            </div>
         </div>
-        <div class="card-footer text-muted small">
-            <i class="bi bi-calendar-event"></i> Nộp: @item.NgayBatDauNop.ToString("dd/MM/yyyy") - @item.NgayKetThucNop.ToString("dd/MM/yyyy")
-        </div>
+        }
     </div>
+</div>
+
+@section Styles {
+    <style>
+        .scholarship-index-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 0;
+        }
+        .page-header {
+            margin-bottom: 28px;
+        }
+        .page-header h1 {
+            font-size: 1.6rem;
+            color: #2c3e50;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+        .scholarship-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 22px;
+        }
+        .scholarship-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            display: flex;
+            flex-direction: column;
+            min-height: 320px;
+            transition: box-shadow 0.2s;
+        }
+        .scholarship-card:hover {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.13);
+        }
+        .scholarship-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px 10px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .scholarship-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #0966aa;
+        }
+        .scholarship-status {
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: #fff;
+        }
+        .status-upcoming { background: #0dcaf0; }
+        .status-open { background: #198754; }
+        .status-review { background: #ffc107; color: #333; }
+        .status-closed { background: #6c757d; }
+        .status-unknown { background: #212529; }
+        .scholarship-card-body {
+            padding: 18px 20px 10px 20px;
+            flex: 1;
+        }
+        .scholarship-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .info-label {
+            color: #888;
+            min-width: 110px;
+        }
+        .info-value {
+            color: #222;
+            font-weight: 500;
+        }
+        .scholarship-card-actions {
+            display: flex;
+            gap: 10px;
+            padding: 14px 20px 16px 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .action-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 8px 0;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .details-btn {
+            background: #f8f9fa;
+            color: #0d6efd;
+            border: 1px solid #dee2e6;
+        }
+        .details-btn:hover {
+            background: #e2e6ea;
+        }
+        .review-btn {
+            background: #0d6efd;
+            color: white;
+        }
+        .review-btn:hover {
+            background: #0b5ed7;
+        }
+        @@media (max-width: 768px) {
+            .scholarship-list-grid {
+                grid-template-columns: 1fr;
+            }
+            .scholarship-card {
+                min-height: unset;
+            }
+        }
+    </style>
 }
 
