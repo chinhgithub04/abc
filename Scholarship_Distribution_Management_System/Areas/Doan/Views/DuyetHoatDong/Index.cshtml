@@ -1,56 +1,558 @@
 ﻿@model IEnumerable<Scholarship_Distribution_Management_System.Models.ViewModel.HoatDongCuaSinhVienViewModel>
 
 @{
-    ViewData["Title"] = "Danh sách duyệt hoạt động";
+    ViewData["Title"] = "Duyệt hoạt động sinh viên";
+    var scholarshipName = ViewBag.ScholarshipName ?? "Đợt học bổng";
 }
 
-<h2>Danh sách duyệt hoạt động</h2>
+<div class="activity-approval-container">
+    <!-- Alerts Section -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-<table class="table table-bordered table-striped" id="Table">
-    <thead class="table-light">
-        <tr>
-            <th>STT</th>
-            <th>ID Sinh viên</th>
-            <th>Tên hoạt động</th> 
-            <th>ID Đơn</th>
-            <th>Trạng thái</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@(Model.ToList().IndexOf(item) + 1)</td>
-                <td>@item.IDSinhVien</td>
-                <td>@item.TenHoatDong</td>
-                <td>@item.IDDon</td>
-                <td>
-                    @if (item.DaDuyet)
+    <!-- Header Section -->
+    <div class="approval-header">
+        <div class="approval-title">
+            <h1><i class="fas fa-clipboard-check"></i> Duyệt hoạt động sinh viên</h1>
+            <p>Đợt học bổng: <span class="scholarship-name">@scholarshipName</span></p>
+        </div>
+        <div class="approval-actions">
+            <button type="button" class="btn btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="bi bi-upload"></i> Duyệt tự động
+            </button>
+        </div>
+    </div>
+    
+    <!-- Stats Section -->
+    <div class="approval-stats">
+        <div class="stat-card total">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="totalCount">@Model.Count()</h3>
+                <p>Tổng số hồ sơ</p>
+            </div>
+        </div>
+        
+        <div class="stat-card pending">
+            <div class="stat-icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="pendingCount">@Model.Count(m => !m.DaDuyet)</h3>
+                <p>Chưa xác nhận</p>
+            </div>
+        </div>
+        
+        <div class="stat-card approved">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="approvedCount">@Model.Count(m => m.DaDuyet && m.AllActivitiesApproved)</h3>
+                <p>Đã duyệt</p>
+            </div>
+        </div>
+        
+        <div class="stat-card rejected">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="rejectedCount">@Model.Count(m => m.DaDuyet && !m.AllActivitiesApproved)</h3>
+                <p>Từ chối</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table Section -->
+    <div class="table-responsive approval-table-container">
+        <table id="approvalTable" class="table approval-table">
+            <thead>
+                <tr>
+                    <th width="5%">STT</th>
+                    <th width="15%">ID Sinh viên</th>
+                    <th width="50%">Tên các hoạt động</th>
+                    <th width="15%">Trạng thái</th>
+                    <th width="15%">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var index = 1;
+                    foreach (var item in Model)
                     {
-                        <span class="badge bg-success">Đã duyệt</span>
+                        string statusClass;
+                        string statusText;
+                        string statusIcon;
+                        
+                        if (!item.DaDuyet)
+                        {
+                            statusClass = "pending";
+                            statusText = "Chưa xác nhận";
+                            statusIcon = "hourglass-half";
+                        }
+                        else if (item.AllActivitiesApproved)
+                        {
+                            statusClass = "approved";
+                            statusText = "Đã duyệt";
+                            statusIcon = "check-circle";
+                        }
+                        else
+                        {
+                            statusClass = "rejected";
+                            statusText = "Từ chối";
+                            statusIcon = "times-circle";
+                        }
+
+                        <tr data-status="@statusClass">
+                            <td class="text-center">@(index++)</td>
+                            <td>
+                                <div class="student-id">
+                                    <i class="fas fa-id-card"></i>
+                                    <span>@item.IDSinhVien</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="activities-list">
+                                    @foreach (var activity in item.ActivityNames)
+                                    {
+                                        <span class="activity-pill">
+                                            <i class="fas fa-certificate"></i> @activity
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge @statusClass">
+                                    <i class="fas fa-@statusIcon"></i> @statusText
+                                </span>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-view-details" data-id="@item.IDDon" data-student="@item.IDSinhVien">
+                                    <i class="fas fa-eye"></i> Chi tiết
+                                </button>
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <span class="badge bg-warning text-dark">Chưa xác nhận</span>
-                    }
-                </td>
-            </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal (Form nổi) -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="@Url.Action("ImportFromExcel", "DuyetHoatDong", new { area = "Doan", idDot = ViewBag.IdDot })" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">
+                        <i class="bi bi-file-earmark-excel me-2"></i>
+                        Tải lên file Excel hoạt động (nhiều file)
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="fileInput" class="form-label">Chọn file Excel:</label>
+                        <input class="form-control" type="file" id="fileInput" name="files" accept=".xlsx, .xls" multiple required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="maSVCol" class="form-label">Vị trí cột có chứa mã sinh viên:</label>
+                        <input class="form-control" type="number" id="maSVCol" name="maSVCol" value="1" min="1" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="hoatDongCol" class="form-label">Vị trí cột có chứa tên hoạt động:</label>
+                        <input class="form-control" type="number" id="hoatDongCol" name="hoatDongCol" value="2" min="1" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Hủy
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload"></i> Tải lên
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Main Container Styles */
+    .activity-approval-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    /* Alert Styles */
+    .alert {
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid;
+        font-weight: 500;
+    }
+    
+    .alert-success {
+        background-color: #e8f5e9;
+        border-left-color: #2ecc71;
+        color: #1b5e20;
+    }
+    
+    .alert-danger {
+        background-color: #ffebee;
+        border-left-color: #e74c3c;
+        color: #b71c1c;
+    }
+    
+    /* Header Section Styles */
+    .approval-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .approval-title h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .approval-title p {
+        margin: 0;
+        color: #7f8c8d;
+        font-size: 15px;
+    }
+    
+    .scholarship-name {
+        color: #3498db;
+        font-weight: 600;
+    }
+    
+    .approval-actions {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .search-container {
+        position: relative;
+        width: 250px;
+    }
+    
+    .search-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #95a5a6;
+    }
+    
+    #searchInput {
+        padding-right: 40px;
+        border-radius: 50px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .filter-container select {
+        border-radius: 50px;
+        padding: 0.375rem 1.5rem;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        min-width: 180px;
+    }
+    
+    /* Stats Section Styles */
+    .approval-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card.total { border-left: 4px solid #3498db; }
+    .stat-card.pending { border-left: 4px solid #f39c12; }
+    .stat-card.approved { border-left: 4px solid #2ecc71; }
+    .stat-card.rejected { border-left: 4px solid #e74c3c; }
+    
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 18px;
+    }
+    
+    .stat-card.total .stat-icon { background-color: rgba(52,152,219,0.1); color: #3498db; }
+    .stat-card.pending .stat-icon { background-color: rgba(243,156,18,0.1); color: #f39c12; }
+    .stat-card.approved .stat-icon { background-color: rgba(46,204,113,0.1); color: #2ecc71; }
+    .stat-card.rejected .stat-icon { background-color: rgba(231,76,60,0.1); color: #e74c3c; }
+    
+    .stat-info h3 {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+    }
+    
+    .stat-info p {
+        margin: 0;
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+    
+    /* Table Styles */
+    .approval-table-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    
+    .approval-table {
+        margin-bottom: 0;
+    }
+    
+    .approval-table thead th {
+        background: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 15px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .approval-table tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    
+    .approval-table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    /* Student ID Styles */
+    .student-id {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .student-id i {
+        color: #7f8c8d;
+    }
+    
+    /* Activities List Styles */
+    .activities-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .activity-pill {
+        background: #f8f9fa;
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-size: 13px;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .activity-pill i {
+        color: #3498db;
+        font-size: 11px;
+    }
+    
+    /* Status Badge Styles */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .status-badge.pending {
+        background-color: rgba(243,156,18,0.1);
+        color: #f39c12;
+    }
+    
+    .status-badge.approved {
+        background-color: rgba(46,204,113,0.1);
+        color: #2ecc71;
+    }
+    
+    .status-badge.rejected {
+        background-color: rgba(231,76,60,0.1);
+        color: #e74c3c;
+    }
+    
+    .status-badge i {
+        margin-right: 5px;
+    }
+    
+    /* Button Styles */
+    .btn-view-details {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 6px 12px;
+        font-size: 13px;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-view-details:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Responsive Adjustments */
+    @@media (max-width: 992px) {
+        .approval-header {
+            flex-direction: column;
+            align-items: stretch;
         }
-    </tbody>
-</table>
+        
+        .approval-actions {
+            flex-direction: column;
+        }
+        
+        .search-container {
+            width: 100%;
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .stat-card {
+            padding: 10px;
+        }
+        
+        .stat-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 14px;
+        }
+        
+        .stat-info h3 {
+            font-size: 18px;
+        }
+        
+        .stat-info p {
+            font-size: 12px;
+        }
+    }
+</style>
+
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Khởi tạo DataTables trên bảng có ID là 'duyetDiemTable'
-            $('#Table').DataTable({
+            // Initialize DataTable with custom options
+            const approvalTable = $('#approvalTable').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" // Ngôn ngữ tiếng Việt
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
                 },
-                "paging": true,       // Bật phân trang
-                "ordering": true,     // Bật sắp xếp cột
-                "info": true,         // Bật thông tin bảng (Hiển thị X đến Y của Z mục)
-                "searching": true,    // Bật ô tìm kiếm toàn cục
-                "responsive": true    // Bật chế độ responsive cho bảng
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "responsive": true,
+                "dom": '<"top"f>rt<"bottom"ip><"clear">',
+                "columnDefs": [
+                    { "orderable": false, "targets": [2, 4] }
+                ]
+            });
+            
+            // Custom search functionality
+            $('#searchInput').on('keyup', function() {
+                approvalTable.search(this.value).draw();
+            });
+            
+            // Status filter functionality
+            $('#statusFilter').on('change', function() {
+                const status = $(this).val();
+                
+                if (status === 'all') {
+                    approvalTable.column(3).search('').draw();
+                } else {
+                    approvalTable.column(3).search(status).draw();
+                }
+            });
+            
+            // Details button click handler (to be implemented later)
+            $('.btn-view-details').on('click', function() {
+                const id = $(this).data('id');
+                const student = $(this).data('student');
+                // We'll implement this later as mentioned in requirements
+                console.log(`View details for application ${id} of student ${student}`);
+            });
+            
+            // Auto hide alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+            
+            // Auto close modal after successful upload
+            if (document.querySelector('.alert-success')) {
+                $('#importModal').modal('hide');
+            }
+            
+            // Clear file input when opening the modal
+            $('#importModal').on('show.bs.modal', function() {
+                $('#fileInput').val('');
             });
         });
     </script>

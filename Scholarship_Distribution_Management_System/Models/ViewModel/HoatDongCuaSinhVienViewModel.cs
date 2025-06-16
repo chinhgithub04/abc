@@ -7,5 +7,10 @@
         public string IDSinhVien { get; set; }
         public string TenHoatDong { get; set; }
         public bool DaDuyet { get; set; }
+        
+        // New properties
+        public bool AllActivitiesApproved { get; set; }
+        public bool AnyActivityApproved { get; set; }
+        public List<string> ActivityNames { get; set; } = new List<string>();
     }
 }

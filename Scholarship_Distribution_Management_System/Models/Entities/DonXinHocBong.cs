@@ -22,6 +22,7 @@ namespace Scholarship_Distribution_Management_System.Models.Entities
         public bool? DuyetCapPhatHocBong { get; set; }
         public float? KQDiemRL { get; set; }
         public float? KQDiemHT { get; set; }
+        public bool isDuyetHoatDong { get; set; } = false;
 
         [ForeignKey("IDSinhVien")]
         public ApplicationUser? SinhVien { get; set; }
